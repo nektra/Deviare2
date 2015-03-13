@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
+  <assemblyIdentity type="win32" name="DeviareCOM" version="2.0.0.0" processorArchitecture="x86" />
+
+  <file name="DeviareCOM.dll" hashalg="SHA1">
+    <comClass clsid="{6C58E03D-ACFF-426F-95AC-56C1FA8B0C73}" tlbid="{6E5EC37D-CF01-49B1-96C7-5E8ECF21A14C}" description="NktObject Class" threadingModel="Neutral"/>
+    <comClass clsid="{E5FD693D-4E04-4058-BBBA-8D60BAAEE16C}" tlbid="{6E5EC37D-CF01-49B1-96C7-5E8ECF21A14C}" description="NktProcess Class" threadingModel="Neutral"/>
+    <comClass clsid="{6D477BF3-F521-475F-ACF5-536D160486B1}" tlbid="{6E5EC37D-CF01-49B1-96C7-5E8ECF21A14C}" description="NktProcessesEnum Class" threadingModel="Neutral"/>
+    <comClass clsid="{5D36944B-2FBA-4CA1-A888-C5D926593D20}" tlbid="{6E5EC37D-CF01-49B1-96C7-5E8ECF21A14C}" description="NktModule Class" threadingModel="Neutral"/>
+    <comClass clsid="{4207729B-B2F5-4628-9885-23C0D0B1935B}" tlbid="{6E5EC37D-CF01-49B1-96C7-5E8ECF21A14C}" description="NktModulesEnum Class" threadingModel="Neutral"/>
+    <comClass clsid="{D901F1D6-FC59-4DCA-9DAD-E9C1EE7A3280}" tlbid="{6E5EC37D-CF01-49B1-96C7-5E8ECF21A14C}" description="NktExportedFunction Class" threadingModel="Neutral"/>
+    <comClass clsid="{BD246936-6FDD-4E9C-9CD4-E3A8EF7392DC}" tlbid="{6E5EC37D-CF01-49B1-96C7-5E8ECF21A14C}" description="NktExportedFunctionsEnum Class" threadingModel="Neutral"/>
+    <comClass clsid="{4C71C5D5-B510-465A-B2E4-EAC7B271C164}" tlbid="{6E5EC37D-CF01-49B1-96C7-5E8ECF21A14C}" description="NktHook Class" threadingModel="Neutral"/>
+    <comClass clsid="{329BE071-4C82-4106-B7B1-E4A668EAFC1E}" tlbid="{6E5EC37D-CF01-49B1-96C7-5E8ECF21A14C}" description="NktHooksEnum Class" threadingModel="Neutral"/>
+    <comClass clsid="{5DA31131-A1AD-40B2-A526-876F61E1DF48}" tlbid="{6E5EC37D-CF01-49B1-96C7-5E8ECF21A14C}" description="NktParam Class" threadingModel="Neutral"/>
+    <comClass clsid="{51BFF27D-9E5F-47E6-AAB8-76BFD2592F43}" tlbid="{6E5EC37D-CF01-49B1-96C7-5E8ECF21A14C}" description="NktParamsEnum Class" threadingModel="Neutral"/>
+    <comClass clsid="{D41D1782-E887-4C10-8DCF-9A25D9DDA888}" tlbid="{6E5EC37D-CF01-49B1-96C7-5E8ECF21A14C}" description="NktHookCallInfo Class" threadingModel="Neutral"/>
+    <comClass clsid="{D9706C19-23F1-435C-97FB-1D21378ECC88}" tlbid="{6E5EC37D-CF01-49B1-96C7-5E8ECF21A14C}" description="NktProcessMemory Class" threadingModel="Neutral"/>
+    <comClass clsid="{ABF7E938-AF08-47AB-9857-CFF16E6C3215}" tlbid="{6E5EC37D-CF01-49B1-96C7-5E8ECF21A14C}" description="NktStackTrace Class" threadingModel="Neutral"/>
+    <comClass clsid="{4C7A99AA-560C-4F75-885E-3AF6CBD3CF32}" tlbid="{6E5EC37D-CF01-49B1-96C7-5E8ECF21A14C}" description="NktSpyMgr Class" threadingModel="Neutral"/>
+    <comClass clsid="{CA025A96-CE32-45B6-BD88-14D342E15314}" tlbid="{6E5EC37D-CF01-49B1-96C7-5E8ECF21A14C}" description="NktDbObject Class" threadingModel="Neutral"/>
+    <comClass clsid="{1505BE0D-8C51-4362-B7A1-784F2C8462D0}" tlbid="{6E5EC37D-CF01-49B1-96C7-5E8ECF21A14C}" description="NktDbObjectsEnum Class" threadingModel="Neutral"/>
+    <comClass clsid="{2D6F0D5D-0265-4A2E-8190-1788C7CAF081}" tlbid="{6E5EC37D-CF01-49B1-96C7-5E8ECF21A14C}" description="NktDbModule Class" threadingModel="Neutral"/>
+    <comClass clsid="{534B629F-0C66-4479-82CC-F7E5743FC65F}" tlbid="{6E5EC37D-CF01-49B1-96C7-5E8ECF21A14C}" description="NktDbModulesEnum Class" threadingModel="Neutral"/>
+    <comClass clsid="{46071676-3D4D-40b2-9088-55354732414B}" tlbid="{6E5EC37D-CF01-49B1-96C7-5E8ECF21A14C}" description="NktTools Class" threadingModel="Neutral"/>
+    <comClass clsid="{B51A9270-C6BF-47c5-A71C-E4617A4C413A}" tlbid="{6E5EC37D-CF01-49B1-96C7-5E8ECF21A14C}" description="NktStructPEFileHeader Class" threadingModel="Neutral"/>
+    <comClass clsid="{EE31335B-46A8-4e52-B00E-9576E56DBB27}" tlbid="{6E5EC37D-CF01-49B1-96C7-5E8ECF21A14C}" description="NktStructPEOptionalHeader Class" threadingModel="Neutral"/>
+    <comClass clsid="{36238075-92D6-4573-AF09-76BE12CE3369}" tlbid="{6E5EC37D-CF01-49B1-96C7-5E8ECF21A14C}" description="NktStructPESections Class" threadingModel="Neutral"/>
+    <comClass clsid="{B0506A96-1E21-4da4-9177-B85546756B8C}" tlbid="{6E5EC37D-CF01-49B1-96C7-5E8ECF21A14C}" description="NktHookInfo Class" threadingModel="Neutral"/>
+    <comClass clsid="{10BBBE7A-A01F-45fd-BB27-92CBDCE738E4}" tlbid="{6E5EC37D-CF01-49B1-96C7-5E8ECF21A14C}" description="NktHookCallInfoPlugin Class" threadingModel="Neutral"/>
+    <comClass clsid="{913602A6-9390-4cca-84F2-7CBB53F46689}" tlbid="{6E5EC37D-CF01-49B1-96C7-5E8ECF21A14C}" description="NktPdbFunctionSymbol Class" threadingModel="Neutral"/>
+    <typelib tlbid="{6E5EC37D-CF01-49B1-96C7-5E8ECF21A14C}" resourceid="1" version="2.0" helpdir="" flags="HASDISKIMAGE"></typelib>
+  </file>
+
+  <comInterfaceExternalProxyStub name="INktObject"                 iid="{3B886748-DC9B-43B0-B761-68DAD9E5484F}" tlbid="{6E5EC37D-CF01-49B1-96C7-5E8ECF21A14C}" baseInterface="{00000000-0000-0000-C000-000000000046}" proxyStubClsid32="{00020424-0000-0000-C000-000000000046}"/>
+  <comInterfaceExternalProxyStub name="INktProcess"                iid="{32EC8909-95FE-483C-A5BA-BEE86470C210}" tlbid="{6E5EC37D-CF01-49B1-96C7-5E8ECF21A14C}" baseInterface="{00000000-0000-0000-C000-000000000046}" proxyStubClsid32="{00020424-0000-0000-C000-000000000046}"/>
+  <comInterfaceExternalProxyStub name="INktModulesEnum"            iid="{382A6E42-3E59-40D7-BA40-AFD10611C5B8}" tlbid="{6E5EC37D-CF01-49B1-96C7-5E8ECF21A14C}" baseInterface="{00000000-0000-0000-C000-000000000046}" proxyStubClsid32="{00020424-0000-0000-C000-000000000046}"/>
+  <comInterfaceExternalProxyStub name="INktModule"                 iid="{F12AAEB4-3CD8-435F-BF6B-7D2C2AFFD4EC}" tlbid="{6E5EC37D-CF01-49B1-96C7-5E8ECF21A14C}" baseInterface="{00000000-0000-0000-C000-000000000046}" proxyStubClsid32="{00020424-0000-0000-C000-000000000046}"/>
+  <comInterfaceExternalProxyStub name="INktExportedFunctionsEnum"  iid="{B110FD2E-174C-40EC-B180-AA2BF98C992D}" tlbid="{6E5EC37D-CF01-49B1-96C7-5E8ECF21A14C}" baseInterface="{00000000-0000-0000-C000-000000000046}" proxyStubClsid32="{00020424-0000-0000-C000-000000000046}"/>
+  <comInterfaceExternalProxyStub name="INktExportedFunction"       iid="{1B91884B-E65C-487D-AE89-0D86278C93C9}" tlbid="{6E5EC37D-CF01-49B1-96C7-5E8ECF21A14C}" baseInterface="{00000000-0000-0000-C000-000000000046}" proxyStubClsid32="{00020424-0000-0000-C000-000000000046}"/>
+  <comInterfaceExternalProxyStub name="INktDbObject"               iid="{8B4C6D62-05C5-48EE-A527-E1E1C35F522C}" tlbid="{6E5EC37D-CF01-49B1-96C7-5E8ECF21A14C}" baseInterface="{00000000-0000-0000-C000-000000000046}" proxyStubClsid32="{00020424-0000-0000-C000-000000000046}"/>
+  <comInterfaceExternalProxyStub name="INktDbObjectsEnum"          iid="{E36B3F2F-DEA5-4d55-9348-8B67A4157B21}" tlbid="{6E5EC37D-CF01-49B1-96C7-5E8ECF21A14C}" baseInterface="{00000000-0000-0000-C000-000000000046}" proxyStubClsid32="{00020424-0000-0000-C000-000000000046}"/>
+  <comInterfaceExternalProxyStub name="INktDbModule"               iid="{9AB36611-AB19-4346-9563-AB47A71A863F}" tlbid="{6E5EC37D-CF01-49B1-96C7-5E8ECF21A14C}" baseInterface="{00000000-0000-0000-C000-000000000046}" proxyStubClsid32="{00020424-0000-0000-C000-000000000046}"/>
+  <comInterfaceExternalProxyStub name="INktDbModulesEnum"          iid="{D8E4F664-6EC1-4c6b-8791-D72EC69EBCA1}" tlbid="{6E5EC37D-CF01-49B1-96C7-5E8ECF21A14C}" baseInterface="{00000000-0000-0000-C000-000000000046}" proxyStubClsid32="{00020424-0000-0000-C000-000000000046}"/>
+  <comInterfaceExternalProxyStub name="INktHook"                   iid="{F69A083D-105F-417B-B1E3-EE430E58431A}" tlbid="{6E5EC37D-CF01-49B1-96C7-5E8ECF21A14C}" baseInterface="{00000000-0000-0000-C000-000000000046}" proxyStubClsid32="{00020424-0000-0000-C000-000000000046}"/>
+  <comInterfaceExternalProxyStub name="INktHookCallInfo"           iid="{1A2D8AE6-6CF9-49DB-880D-A806D559EE20}" tlbid="{6E5EC37D-CF01-49B1-96C7-5E8ECF21A14C}" baseInterface="{00000000-0000-0000-C000-000000000046}" proxyStubClsid32="{00020424-0000-0000-C000-000000000046}"/>
+  <comInterfaceExternalProxyStub name="INktStackTrace"             iid="{42B03B4D-C3DA-463D-98B7-73405754A764}" tlbid="{6E5EC37D-CF01-49B1-96C7-5E8ECF21A14C}" baseInterface="{00000000-0000-0000-C000-000000000046}" proxyStubClsid32="{00020424-0000-0000-C000-000000000046}"/>
+  <comInterfaceExternalProxyStub name="INktParamsEnum"             iid="{718E4DBC-DFC2-4FA8-BFE6-0A8192CEEF5D}" tlbid="{6E5EC37D-CF01-49B1-96C7-5E8ECF21A14C}" baseInterface="{00000000-0000-0000-C000-000000000046}" proxyStubClsid32="{00020424-0000-0000-C000-000000000046}"/>
+  <comInterfaceExternalProxyStub name="INktParam"                  iid="{BB0A417B-D0F2-4C69-8158-95087B0A0C8F}" tlbid="{6E5EC37D-CF01-49B1-96C7-5E8ECF21A14C}" baseInterface="{00000000-0000-0000-C000-000000000046}" proxyStubClsid32="{00020424-0000-0000-C000-000000000046}"/>
+  <comInterfaceExternalProxyStub name="INktProcessMemory"          iid="{ACE2F499-AA1C-4B36-912F-189F8F8B6765}" tlbid="{6E5EC37D-CF01-49B1-96C7-5E8ECF21A14C}" baseInterface="{00000000-0000-0000-C000-000000000046}" proxyStubClsid32="{00020424-0000-0000-C000-000000000046}"/>
+  <comInterfaceExternalProxyStub name="INktProcessesEnum"          iid="{DF43831B-7A0B-43D4-AC40-6136A7C95B28}" tlbid="{6E5EC37D-CF01-49B1-96C7-5E8ECF21A14C}" baseInterface="{00000000-0000-0000-C000-000000000046}" proxyStubClsid32="{00020424-0000-0000-C000-000000000046}"/>
+  <comInterfaceExternalProxyStub name="INktHooksEnum"              iid="{A31B9BE8-CE9A-4D7C-A624-20640ACA532C}" tlbid="{6E5EC37D-CF01-49B1-96C7-5E8ECF21A14C}" baseInterface="{00000000-0000-0000-C000-000000000046}" proxyStubClsid32="{00020424-0000-0000-C000-000000000046}"/>
+  <comInterfaceExternalProxyStub name="INktSpyMgr"                 iid="{DD71FF07-B1E6-430E-8439-53B760E90062}" tlbid="{6E5EC37D-CF01-49B1-96C7-5E8ECF21A14C}" baseInterface="{00000000-0000-0000-C000-000000000046}" proxyStubClsid32="{00020424-0000-0000-C000-000000000046}"/>
+  <comInterfaceExternalProxyStub name="INktTools"                  iid="{D9C5FF67-2311-494f-BA9A-C7C5AAF14301}" tlbid="{6E5EC37D-CF01-49B1-96C7-5E8ECF21A14C}" baseInterface="{00000000-0000-0000-C000-000000000046}" proxyStubClsid32="{00020424-0000-0000-C000-000000000046}"/>
+  <comInterfaceExternalProxyStub name="INktStructPEFileHeader"     iid="{4192DDF7-FB9A-4de5-8AE5-ADCB5C986B8F}" tlbid="{6E5EC37D-CF01-49B1-96C7-5E8ECF21A14C}" baseInterface="{00000000-0000-0000-C000-000000000046}" proxyStubClsid32="{00020424-0000-0000-C000-000000000046}"/>
+  <comInterfaceExternalProxyStub name="INktStructPEOptionalHeader" iid="{FE1FD754-7630-44db-BFAA-06505C445B59}" tlbid="{6E5EC37D-CF01-49B1-96C7-5E8ECF21A14C}" baseInterface="{00000000-0000-0000-C000-000000000046}" proxyStubClsid32="{00020424-0000-0000-C000-000000000046}"/>
+  <comInterfaceExternalProxyStub name="INktStructPESections"       iid="{5BF7BC52-7158-4e0f-857E-F7FDB137249F}" tlbid="{6E5EC37D-CF01-49B1-96C7-5E8ECF21A14C}" baseInterface="{00000000-0000-0000-C000-000000000046}" proxyStubClsid32="{00020424-0000-0000-C000-000000000046}"/>
+  <comInterfaceExternalProxyStub name="INktHookInfo"               iid="{99DE4737-C1B4-49f6-8072-A7645E78BA8B}" tlbid="{6E5EC37D-CF01-49B1-96C7-5E8ECF21A14C}" baseInterface="{00000000-0000-0000-C000-000000000046}" proxyStubClsid32="{00020424-0000-0000-C000-000000000046}"/>
+  <comInterfaceExternalProxyStub name="INktHookCallInfoPlugin"     iid="{D7630D7B-12E3-407a-8056-CF08A25B3A07}" tlbid="{6E5EC37D-CF01-49B1-96C7-5E8ECF21A14C}" baseInterface="{00000000-0000-0000-C000-000000000046}" proxyStubClsid32="{00020424-0000-0000-C000-000000000046}"/>
+  <comInterfaceExternalProxyStub name="INktPdbFunctionSymbol"      iid="{21403F16-B370-4bc7-9D7E-0DEDA54EAD01}" tlbid="{6E5EC37D-CF01-49B1-96C7-5E8ECF21A14C}" baseInterface="{00000000-0000-0000-C000-000000000046}" proxyStubClsid32="{00020424-0000-0000-C000-000000000046}"/>
+</assembly>

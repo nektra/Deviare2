@@ -1,0 +1,270 @@
+﻿Known issues:
+============
+* C# plugins may not work if RegisterClass is hooked because CoInitialize(Ex) calls RegisterClass on STA and, at this
+  point, COM initialization in not complete yet.
+* Plugins may not work in IE8 unless executed with elevated privileges because of COM security model used by the app.
+  (Resolved in 2.7.2)
+
+Version 2.7.4
+=============
+-Fixed an api not found bug in CallCustomApi when the call succeeded.
+-Fixed NktProcessMemory read when reading quad words.
+
+Version 2.7.3
+=============
+-More documentation added.
+-Fixed some api hook code generation.
+-Checked Deviare against Windows 10 preview with success.
+-Stack walk stops when the instruction pointer becomes invalid.
+-Removed SendCustomMessage from INktHookCallInfoPlugin. Pluings should use the one from INktHookInfo.
+-Removed CoInitialize(Ex) calls from all threads and switched to the implicit MTA apartment type.
+
+Version 2.7.2
+=============
+-More documentation added.
+-Now Deviare fully supports IE8 with or without custom plugins.
+
+Version 2.7.1
+=============
+-Fixed hooked process unloading hang when using C# plugins.
+
+Version 2.7
+===========
+-Added ApiMapSet v4 handling.
+-Changed api's in hooking engine's threads suspender with ntdll counterparts.
+-Added ntdll stubs creation from original code in order to bypass some third party hooks.
+-Fixed issue with x64 version of Microsoft Office products and installer.
+-Added 'DisableStackWalk' hook flag to disable stack info retrieval when a hooked function is called.
+-Changed some opcode generator in jmp/call code relocator.
+-Added CreateProcessWithToken.
+
+Version 2.6.9
+=============
+-Fixed more x64 opcode generator in code relocator.
+-Fixed an infinite loop when agent is unloading.
+-Added more compatibility patches when hooking ThinApp'ed applications.
+-Added INktSpyMgr::UnloadAgent to force agent unloading in a hooked application.
+-Fixed plugin detaching when unhooking a hook being in use.
+
+Version 2.6.8
+=============
+-Fixed some x64 opcode generator in code relocator.
+-Added exception check to stack unwinding.
+
+Version 2.6.7
+=============
+-BREAKING CHANGE: INktSpyMgr::CreateProcess(WithLogon) will set continueEvent to NULL instead of 0 if 'suspended'
+ parameter is FALSE or an error occurs.
+-BREAKING CHANGE: OnLoadLibraryCall/OnFreeLibraryCall/OnCustomMessage events sends the direct VARIANT value instead
+ of seding a ByRef/Variant that points to another variant. (Should not affect C# project because its 'object' handling).
+-Fixed memory & handle leaks in some functions using the internal process handles manager.
+-Fixed messages being sent between server/client before connection tasks were completed.
+-Updated to latest SQLite version.
+-Added configurable agent load timeout (default is 10 seconds).
+
+Version 2.6.6
+=============
+-Fixed batch hooking being splitted if a dll was loaded in the middle of the hooking process.
+-Fixed loading of minimal databases with no modules associations included on them.
+-Added OnCustomMessage event for handling custom messages.
+-Fixed race hang when hooked process exits and a C# plugin was used.
+-Fixed PDB scanning memory leak due to a mistake in DIA SDK documentation.
+-Fixed custom handler loading in case function is not available in database.
+-Fixed COM interface method retrieval.
+-Fixed debug output reporting deadlock.
+-When hooked process calls ExitProcess, agent tries to shutdown gracefully.
+-Fixed module cache update when a library is loaded a datafile.
+-Added more opcodes to the code relocator.
+-Fixed handling when exception functions are hooked and some exception is raised inside another hooked function.
+-Fixed race condition bigpacket handling and dispatch based on source thread id.
+-Fixed LoadLibrary/FreeLibrary event raise that can cause deadlocks if loader lock was active.
+-Added manual module/exports cache invalidation.
+-Plugin threads can be ignored from global hooks.
+-Added methods to INktHookCallInfo and INktHookCallInfoPlugin to store/retrieve custom data between Pre & Post calls.
+-Fixed and updated trampoline's opcodes generation.
+-Fixed sign-extension issue when passing pointers from 32-bit applications to 64-bit manager.
+
+Version 2.6.5
+=============
+-Now hooks can target only 32 or 64-bit processes if the corresponding hook flags are specified.
+-Added a new interface INktPdbFunctionSymbol to retrieve function address from pdb's symbols.
+-Changed INktSpyMgr::CreateHookForAddress method to mantain concistency with other hook creation methods.
+-Now plugins can send a custom message to the server when processing a function call.
+-Added optional GetFunctionCallbackName method to plugins in order to reroute OnFunctionCall callback to
+ different methods.
+-Fixed big packet message handling that caused overflows on certain situations.
+-Fixed memory leak on COM objects not being fully released when internal counterpart object is released.
+-INktParamsEnum now returns dummy params on invalid index.
+-Fixed: INktParam returns TRUE in IsNullPointer if dummy param.
+-Agent loader code fixed when needed api's cannot be found on target process.
+-Fixed race condition in modules and exported functions enumeration from multiple threads.
+-Fixed deadlock in INktSpyMgr final release while processing an event.
+-Fixed agent attach into ThinApp virtualized applications.
+-Fixed attached COM event handler retrieval after another handler is removed.
+
+Version 2.6.4
+=============
+-Minor changes in internal data when child processes are created from a hooked one.
+-Added code to better handling of hooks of terminated processes.
+-Added free threading marshaller to all objects to minimize thread context switches and speedup calls.
+-Changed interface pointer marshalling system to avoid unusual deadlocks.
+-Fixed a deadlock while adding custom parameters inside a plugin.
+-Fixed a bug that causes the same C# plugin to be instatiated more than once if some situations.
+
+Version 2.6.3
+=============
+-Changed COM event firing implementation replacing ATL::IConnectionPointImpl to avoid rare deadlocks
+ from appearing in STA threads.
+-Fixed deadlock on connection being shutdown because of an error.
+-Major change: stErrorNotEnoughMemory and stErrorNotFound redefined.
+-DeviareCOM & DeviareCOM64 manifest files are now embedded into dlls.
+-If LoadLibrary/FreeLibrary ared called while hooking is in progress, notifications will be sent
+ asynchronously to avoid deadlocks.
+-Fixed an issue when a library is loaded/unloaded into the hooked process while a connection is being
+ established.
+-Fixed CreateProcess injection code to allow .NET processes to be hooked upon startup.
+
+Version 2.6.2
+=============
+-Fixed issue while unhooking when the hooked function is being called from another thread.
+-Fixed parameter value read/write in agent side.
+-Added module enumerator cache to improve performace.
+-Fixed hook removal state change being informed more than once in some situations.
+-Improved module export cache handling and memory consumpsion.
+-Fixed activation context not being activated in OnLoad custom plugin event.
+
+Version 2.6.1
+=============
+-Fixed minor issue in native custom plugins.
+-Applied free thread marshalling to custom plugins to avoid invocation problems while inside
+ a SendMessage (RPC_E_CANTCALLOUT_ININPUTSYNCCALL).
+-Fixed integer parsing in C sample.
+-Added GetFileNameFromHandle to the INktTools interface. Remember INktTools may throw exceptions.
+-Now, in custom handlers, the "64" suffix is added/removed from the dll filename if hooks are
+ propagated from x64 processes to x86 and viceversa.
+-Also, if a relative path is specified in custom handler dll, it will use agent dll path as the base.
+
+Version 2.6.0
+=============
+-COM interface code redesigned to avoid circular references in internal objects.
+-Fixed event callbacks attached to INktHook and INktProcess were not firing.
+-Added more functionallity INktHookCallInfoPlugin events.
+-Fixed issues with INktParam's inside plugin execution.
+-Plugin system redesigned to provide more information to the user.
+-Added activation context management to agent module to enable RegFree COM usage in plugins.
+-Fixed 32-bit -> 64-bit createprocess autohook bugs.
+-Fixed other autohook bugs.
+-Fixed INktHookEnum not adding/removing the AutoHook flag to each hook.
+
+Version 2.5.2
+=============
+-Memory management module completely rewritten to improve speed and balance comsumption.
+-Added FilterSpyMgrEvent method to the INktHookCallInfoPlugin in order to let the plugin filter calls
+ and prevent them from being sent to the Spy Manager object.
+-Change: Hooks that are automatically installed when a dll or child process is loaded now they are
+ installed synchronously.
+-Fixed PointerVal access in plugins.
+
+Version 2.5.1
+=============
+-Fixes related to memory consumption.
+-Fixed issue in which the INktProcess PlatformBits attribute would be incorrect.
+-Fixed internal processes' handles administration bug.
+
+Version 2.5.0
+=============
+-Improved message dispatcher (beta). Event delivery should be faster mainly in async ones.
+-New hook flags. Now you can specify if a hook/custom handler is called when the loader lock is active.
+-Fixed a race condition caused by GetModuleFileName returning ERROR_INVALID_HANDLE if the module is
+ being unloaded.
+-Fixed a bug on exported function enumerator causing a later access fault.
+-IEnumVARIANT code rewritten.
+-Code that links com objects and internal ones was rewritten to avoid some race conditions and circular
+ references.
+-INktSpy.ProcessHandle and INktProcess.Handle both returns duplicated handles that must be closed in
+ order to mantain consistency between the two functions.
+-Fixed an issue with target process' modules enumeration while the process is still initializing.
+-Fixed an issue when agent is loaded while target process is initializing.
+-Fixed a deadlock when SpyMgr process is shutting down.
+-Added more checks in api unhooking to prevent crashes when agent is about to be unloaded.
+-Fixed other minor bugs.
+-Fixed a timeout issue when agent/spymgr link is being established.
+-Implemented some changes in memory management.
+
+Version 2.1.2
+=============
+-Fixed a security descriptor issue in W2K.
+-GetProcessHandle now accepts current ProcessId.
+-Packets received by SpyMgr are delivered to a secondary thread pool to improve speed when multiple calls
+ are made from different threads in hooked applications.
+-Fixed some bugs in database generator application.
+-Fixed read/write of IntPtr/size_t parameters in some routines.
+
+Version 2.1.1
+=============
+-Fixed a bug in x64 trampoline code generation.
+-Fixed memory issues.
+-Fixed x64 stack retrieval
+-Added some new methods to INktSpyMgr for hooks collection and retrieval of window's procedure addresses.
+
+Version 2.1.0
+=============
+-Fixed process handle manager auto-referencing.
+-Module enumerator now lists dll's loaded as datafile too.
+-Changed product license manager.
+-Fixed some param-checking bugs in Read/Write methods of ProcessMemory interface.
+-Added interfaces that gives more process information.
+-Added full api namespace support. (still BETA)
+-Added multi-database merger application.
+-Batch hooking and unhooking can be done with INktHooksEnumerator. This should be faster than individual
+ hook/unhook.
+-Dynamic link libraries loaded as datafile now are listed in the modules enumerator.
+-Minor fixes applied.
+
+Version 2.0.7
+=============
+-Fixed issue when process handle is requested with a desired access of zero.
+-Fixed fpu crash when a hooked function is called and fpu stack is not empty.
+-Added initial namespace support to database.
+-Changed internal "insertion point" algorithm.
+-Added initial multi-hook-at-once support.
+-Added registry key entry to optionally display debug output.
+    [HKLM\\Software\\Nektra\\Deviare2 => DebugLevelMask (REG_DWORD)]
+
+Version 2.0.6
+=============
+-Fixed COM event firing when the current thread is inside a STA apartment model.
+-Fixed an issue when a function call is skipped by calling SkipCall method.
+-Added "For Each" enumeration for languages like C#, VB and VBScript. 
+
+Version 2.0.5
+=============
+-Minor fixes applied.
+
+Version 2.0.4
+=============
+-HookByAddress can now be associate to a function.
+-Documentation added to the project (still beta).
+
+Version 2.0.3
+=============
+-Database management code completely rewritten. Now it will load faster and consumes less memory.
+-Fixed some issues related to COM sta apartments used in vbscript.
+-Fixed an issue in routine that checks that no code is running inside agent while agent is being unloaded.
+
+Version 2.0.2
+=============
+-Process' modules and threads scanning completely rewritten to avoid using the unstable toolhelp library.
+-Added more functions to the COM interface.
+-Fixed an issue when a function is hooked more than once.
+
+Version 2.0.1
+=============
+-Fixed message ordering transmitted between the engine and the agent.
+-Added more special cases when building x64 hook trampoline.
+-Fixed miscellaneous deadlock related issues.
+-Added support for hooking x86 processes using the x64 engine.
+
+Version 2.0
+===========
+-Initial engine v2 release.

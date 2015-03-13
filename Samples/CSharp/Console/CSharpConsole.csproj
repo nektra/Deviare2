@@ -1,0 +1,338 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{37480340-9647-428E-96E7-1368468EB72C}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>CSharpConsole</RootNamespace>
+    <AssemblyName>CSharpConsole</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <NoWin32Manifest>true</NoWin32Manifest>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <AssemblyName>CSharpConsole</AssemblyName>
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\..\..\bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <AssemblyName>CSharpConsole</AssemblyName>
+    <OutputPath>..\..\..\bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
+    <AssemblyName>CSharpConsole64</AssemblyName>
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\..\..\bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
+    <AssemblyName>CSharpConsole64</AssemblyName>
+    <OutputPath>..\..\..\bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Nektra.Deviare2, Version=2.0.0.0, Culture=neutral, PublicKeyToken=ca654cbae704bad4, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>tools\DeviareEngine\Nektra.Deviare2.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data.DataSetExtensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Controls\NodeSorter.cs" />
+    <Compile Include="Controls\NodeWithUniqueChildren.cs" />
+    <Compile Include="Controls\FunctionNodeGroup.cs" />
+    <Compile Include="Controls\FunctionsTreeView.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\GroupNode.cs" />
+    <Compile Include="Controls\OutputNode.cs" />
+    <Compile Include="Controls\ParameterNode.cs" />
+    <Compile Include="Controls\ProcessCategoryNode.cs" />
+    <Compile Include="Controls\ProcessGroupNode.cs" />
+    <Compile Include="Controls\TreeViewOutput.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\Updating\TreeViewAdvUpdateJob.cs" />
+    <Compile Include="Controls\Updating\UpdateUIJob.cs" />
+    <Compile Include="Extensions\IEnumerableExtensions.cs" />
+    <Compile Include="Extensions\NktEnumExtensions.cs" />
+    <Compile Include="Extensions\NktExportedFunctionsEnumExtensions.cs" />
+    <Compile Include="Extensions\NktHookExtensions.cs" />
+    <Compile Include="Extensions\NktModulesEnumExtensions.cs" />
+    <Compile Include="Extensions\NktParamExtensios.cs" />
+    <Compile Include="Extensions\NktParamsEnumExtensions.cs" />
+    <Compile Include="Extensions\NktProcessEnumExtensions.cs" />
+    <Compile Include="Extensions\NktProcessExtensions.cs" />
+    <Compile Include="Extensions\NktSpyManagerExtensions.cs" />
+    <Compile Include="Model\Hooks\HookDictionary.cs" />
+    <Compile Include="Model\Adapters\CustomNktExportedFunctionsEnum.cs" />
+    <Compile Include="Model\Adapters\NktDbModuleToNktModuleAdapter.cs" />
+    <Compile Include="Model\Adapters\NktDbObjectToExportedFunctionAdapter.cs" />
+    <Compile Include="Model\Collections\EntityDictionary.cs" />
+    <Compile Include="Model\Modules\CustomModulesEnum.cs" />
+    <Compile Include="Model\Modules\DataBaseModule.cs" />
+    <Compile Include="Model\Filters\PluggableProcessFilter.cs" />
+    <Compile Include="Model\Function.cs" />
+    <Compile Include="Model\FunctionCall.cs" />
+    <Compile Include="Model\FunctionCallDispatcher.cs" />
+    <Compile Include="Model\FunctionCallHandlers\FunctionCallDispatcherHandler.cs" />
+    <Compile Include="Model\FunctionCallHandlers\FunctionCallInfo.cs" />
+    <Compile Include="Model\Nodes\FunctionNode.cs" />
+    <Compile Include="Model\Hooks\Hook.cs" />
+    <Compile Include="Model\HookStateHandlers\RefreshModulesViewOnHookStateChangeHandler.cs" />
+    <Compile Include="Model\HookStateHandlers\DisplayHookStateHandler.cs" />
+    <Compile Include="Model\HookStateHandlers\DisplayProcessOnHookStateChangeHandler.cs" />
+    <Compile Include="Model\HookStateHandlers\HookStateChangeInfo.cs" />
+    <Compile Include="Model\HookStateHandlers\IHookStateChangedHandler.cs" />
+    <Compile Include="Model\Hooks\HookLoader.cs" />
+    <Compile Include="Model\InspectedParameterSummaryBuilder.cs" />
+    <Compile Include="Model\Modules\RunningModule.cs" />
+    <Compile Include="Model\Modules\Module.cs" />
+    <Compile Include="Model\ProcessHandlers\IHandler.cs" />
+    <Compile Include="Model\ProcessHandlers\ProcessFilter.cs" />
+    <Compile Include="Model\ProcessHandlers\DisplayRunningProcessHandler.cs" />
+    <Compile Include="Model\ProcessHandlers\DisplayStartupProcessesHandler.cs" />
+    <Compile Include="Model\ProcessHandlers\DisplayTerminatedHookHandler.cs" />
+    <Compile Include="Model\ProcessHandlers\RemoveHooksTerminatedProcessHandler.cs" />
+    <Compile Include="Model\ProcessHandlers\HookLoaderHandler.cs" />
+    <Compile Include="Model\Filters\IProcessFilter.cs" />
+    <Compile Include="Model\ProcessHandlers\NullHandler.cs" />
+    <Compile Include="Model\ProcessHandlers\NonTerminalProcessHandler.cs" />
+    <Compile Include="Model\Hooks\HookingRule.cs" />
+    <Compile Include="Model\Hooks\HookingSettings.cs" />
+    <Compile Include="Model\Nodes\HookNode.cs" />
+    <Compile Include="Model\IApplicationSettings.cs" />
+    <Compile Include="Model\ISettingsView.cs" />
+    <Compile Include="Model\Nodes\ModuleNode.cs" />
+    <Compile Include="Model\Nodes\DeviareNode.cs" />
+    <Compile Include="Model\Nodes\NullDeviareNode.cs" />
+    <Compile Include="Model\Parsing\BasicTypeDescriptorGenerator.cs" />
+    <Compile Include="Model\Parsing\GuidDescriptor.cs" />
+    <Compile Include="Model\Parsing\MessageDescriptor.cs" />
+    <Compile Include="Model\Parsing\NullPointerDescriptor.cs" />
+    <Compile Include="Model\Parsing\ParameterDescriptor.cs" />
+    <Compile Include="Model\Parsing\PointerDescriptorGenerator.cs" />
+    <Compile Include="Model\Parsing\ResourceStringDescriptor.cs" />
+    <Compile Include="Model\Parsing\StringDescriptorGenerator.cs" />
+    <Compile Include="Model\Parsing\StructureDescriptorGenerator.cs" />
+    <Compile Include="Model\ProcessClasifier.cs" />
+    <Compile Include="Model\Nodes\ProcessNode.cs" />
+    <Compile Include="Model\Process\IProcess.cs" />
+    <Compile Include="Model\Process\IRunningProcess.cs" />
+    <Compile Include="Model\Process\NullProcess.cs" />
+    <Compile Include="Model\Process\ProcessBase.cs" />
+    <Compile Include="Model\Process\ProcessToBeHookedOnStart.cs" />
+    <Compile Include="Model\Process\RunningProcess.cs" />
+    <Compile Include="Model\Visitors\Collector.cs" />
+    <Compile Include="Model\Visitors\DeepDeleteVisitor.cs" />
+    <Compile Include="Model\Visitors\IDeviareNodeVisitor.cs" />
+    <Compile Include="Model\Visitors\DeviareNodeHandler.cs" />
+    <Compile Include="Model\Visitors\INktParameterVisitor.cs" />
+    <Compile Include="Model\Visitors\InspectedParameter.cs" />
+    <Compile Include="Model\Visitors\ParameterInspectorVisitor.cs" />
+    <Compile Include="Presenters\ApplicationPresenter.cs" />
+    <Compile Include="Model\ProcessHandlers\DisplayNewRunningProcessModulesHandler.cs" />
+    <Compile Include="Model\ProcessHandlers\DisplayProcessGroupModulesHandler.cs" />
+    <Compile Include="Presenters\FunctionCallInspectorPresenter.cs" />
+    <Compile Include="Presenters\ISpyManager.cs" />
+    <Compile Include="Model\ProcessHandlers\ProcessStartedSelectionRefreshHandler.cs" />
+    <Compile Include="Model\ProcessHandlers\ProcessTerminatedSelectionRefreshHandler.cs" />
+    <Compile Include="Model\Modules\ModuleStatus.cs" />
+    <Compile Include="Presenters\ProcessModulesDisplayer.cs" />
+    <Compile Include="Presenters\SettingsPresenter.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\DeviareConsoleForm.resx">
+      <DependentUpon>DeviareConsoleForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\FunctionCallInspectorForm.resx">
+      <DependentUpon>FunctionCallInspectorForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\ProcessSelectionForm.resx">
+      <DependentUpon>ProcessSelectionForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\SettingsForm.resx">
+      <DependentUpon>SettingsForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <None Include="app.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <Compile Include="Properties\SharedAssemblyFileVersion.cs" />
+    <Compile Include="Properties\SharedAssemblyInfo.cs" />
+    <Compile Include="SpyManager.cs" />
+    <Compile Include="Controls\DeviareTreeView.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\HooksTreeView.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\ModulesTreeView.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\ProcessesTreeView.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Views\ApplicationSettings.cs" />
+    <Compile Include="Views\DeviareConsoleForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\DeviareConsoleForm.Designer.cs">
+      <DependentUpon>DeviareConsoleForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\FunctionCallInspectorForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\FunctionCallInspectorForm.Designer.cs">
+      <DependentUpon>FunctionCallInspectorForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\IApplicationView.cs" />
+    <Compile Include="Views\IFunctionCallInspectorView.cs" />
+    <Compile Include="Views\ProcessSelectionForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\ProcessSelectionForm.Designer.cs">
+      <DependentUpon>ProcessSelectionForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\SettingsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\SettingsForm.Designer.cs">
+      <DependentUpon>SettingsForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\UIUpdater.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <COMReference Include="stdole">
+      <Guid>{00020430-0000-0000-C000-000000000046}</Guid>
+      <VersionMajor>2</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+    </COMReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Data\FunctionTypes.xml" />
+    <Content Include="How to Use the Console.txt" />
+    <Content Include="Images\112_Minus_Orange_16x16_72.png" />
+    <Content Include="Images\112_Plus_Green_16x16_72.png" />
+    <None Include="Images\BlankImage.png" />
+    <Content Include="Images\Delete.png" />
+    <None Include="Images\Run.png" />
+    <None Include="Images\Folder.png" />
+    <None Include="Images\Export.png" />
+    <None Include="Images\Import.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="Aga.Controls\Aga.Controls.csproj">
+      <Project>{E73BB233-D88B-44A7-A98F-D71EE158381D}</Project>
+      <Name>Aga.Controls</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <PropertyGroup>
+    <PostBuildEvent>IF "$(PlatformName)" == "x86" (
+  COPY /Y "$(ProjectDir)Manifests\CSharpConsole.embed.manifest" "$(TargetDir)CSharpConsole.exe.manifest"
+)
+IF "$(PlatformName)" == "x64" (
+  COPY /Y "$(ProjectDir)Manifests\CSharpConsole.embed64.manifest" "$(TargetDir)CSharpConsole64.exe.manifest"
+)
+</PostBuildEvent>
+  </PropertyGroup>
+</Project>

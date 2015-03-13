@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hooks>
+	<hook name="CoCreateInstanceEx">ole32.dll!CoCreateInstanceEx</hook>
+	<hook name="NtCreateFile">ntdll.dll!NtCreateFile</hook>
+	<hook name="NtOpenFile">ntdll.dll!NtOpenFile</hook>
+	<hook name="NtReadFile">ntdll.dll!NtReadFile</hook>
+	<hook name="NtWriteFile">ntdll.dll!NtWriteFile</hook>
+	<hook name="NtDeleteFile">ntdll.dll!NtDeleteFile</hook>
+	<hook name="NtCreateKey">ntdll.dll!NtCreateKey</hook> 
+	<hook name="NtDeleteKey">ntdll.dll!NtDeleteKey</hook> 
+	<hook name="NtDeleteValueKey">ntdll.dll!NtDeleteValueKey</hook> 
+	<hook name="NtEnumerateKey">ntdll.dll!NtEnumerateKey</hook> 
+	<hook name="NtEnumerateValueKey">ntdll.dll!NtEnumerateValueKey</hook>
+	<hook name="NtFlushKey">ntdll.dll!NtFlushKey</hook> 
+	<hook name="NtOpenKey">ntdll.dll!NtOpenKey</hook> 
+	<hook name="NtOpenKeyEx">ntdll.dll!NtOpenKeyEx</hook>
+	<hook name="NtQueryKey">ntdll.dll!NtQueryKey</hook> 
+	<hook name="NtQueryValueKey">ntdll.dll!NtQueryValueKey</hook> 
+	<hook name="NtQueryMultipleValueKey">ntdll.dll!NtQueryMultipleValueKey</hook> 
+	<hook name="NtReplaceKey">ntdll.dll!NtReplaceKey</hook> 
+	<hook name="NtRenameKey">ntdll.dll!NtRenameKey</hook> 
+	<hook name="NtSaveKey">ntdll.dll!NtSaveKey</hook> 
+	<hook name="NtSaveKeyEx">ntdll.dll!NtSaveKeyEx</hook> 
+	<hook name="NtSetValueKey">ntdll.dll!NtSetValueKey</hook> 
+</hooks>

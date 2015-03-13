@@ -1,0 +1,21 @@
+How To Use The Console
+======================
+
+1) Start Deviare C# Console from bin folder.
+
+   NOTE: The x86 version of this sample will only hook 32-bit applications.
+         Although x64 of Deviare is capable of hooking 32-bit processes, the
+         x64 version of this sample will only hook 64-bit processes.
+
+2) In the list of running processes pick the one you wish to hook.
+
+3) A list of all the process modules will be populated in the middle pane.
+   Pick the module that contains the function you wish to hook.
+
+3) Finally, in the right pane, select a function and click the "Add Hook"
+   button. In the lower left pane, all hooked functions will be listed.
+   In the lower right pane, information about hooked functions will be displayed
+   as they get called.
+
+4) Double click on any row in the lower right pane inspect access called
+   function's parameter deeply.

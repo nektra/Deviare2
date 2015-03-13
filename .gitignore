@@ -1,28 +1,19 @@
-# Compiled Object files
-*.slo
-*.lo
-*.o
+.svn/
+*.~*
+*.suo
+*.ncb
+*.exp
+*.user
+*.sdf
+*.log
 *.obj
-
-# Precompiled Headers
-*.gch
-*.pch
-
-# Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
-
-# Fortran module files
-*.mod
-
-# Compiled Static libraries
-*.lai
-*.la
-*.a
-*.lib
-
-# Executables
-*.exe
-*.out
-*.app
+Bin/*.lib
+Libs/*.idb
+obj/
+Source/MiscUtils/Certificate/nektra/
+Samples/CSharp/COMHookingBasis/obj/
+Samples/CSharp/Console/Aga.Controls/obj/
+Samples/CSharp/Console/obj/
+Samples/CSharp/FilePlugin/obj/
+Samples/CSharp/PrintLogger/obj/
+Samples/CSharp/RegistryPlugin/obj/

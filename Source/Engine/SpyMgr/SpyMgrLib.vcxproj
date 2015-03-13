@@ -1,0 +1,370 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{EBA4EC62-11CD-48FB-91B8-C3C85E4DD280}</ProjectGuid>
+    <RootNamespace>SpyMgrLib</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v110_xp</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v110_xp</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v110_xp</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v110_xp</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>11.0.61030.0</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>..\..\..\Libs\</OutDir>
+    <IntDir>..\..\..\obj\$(Configuration)\$(Platform)\$(ProjectName)\</IntDir>
+    <TargetName>$(ProjectName)_Debug</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>..\..\..\Libs\</OutDir>
+    <IntDir>..\..\..\obj\$(Configuration)\$(Platform)\$(ProjectName)\</IntDir>
+    <TargetName>$(ProjectName)64_Debug</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>..\..\..\Libs\</OutDir>
+    <IntDir>..\..\..\obj\$(Configuration)\$(Platform)\$(ProjectName)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>..\..\..\Libs\</OutDir>
+    <IntDir>..\..\..\obj\$(Configuration)\$(Platform)\$(ProjectName)\</IntDir>
+    <TargetName>$(ProjectName)64</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <PreBuildEvent />
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+    <Lib />
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <PreBuildEvent />
+    <Midl>
+      <TargetEnvironment>X64</TargetEnvironment>
+    </Midl>
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;WIN64;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Lib />
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <PreBuildEvent />
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Lib />
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <PreBuildEvent />
+    <Midl>
+      <TargetEnvironment>X64</TargetEnvironment>
+    </Midl>
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;WIN64;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Lib />
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="Hook.cpp" />
+    <ClCompile Include="HookCallInfo.cpp" />
+    <ClCompile Include="InternalProcessesList.cpp" />
+    <ClCompile Include="SpyMgr.cpp" />
+    <ClCompile Include="SpyMgrActiveAgent.cpp" />
+    <ClCompile Include="SpyMgrHookFuncs.cpp" />
+    <ClCompile Include="SpyMgrHookItems.cpp" />
+    <ClCompile Include="SpyMgrInit.cpp" />
+    <ClCompile Include="StackTrace.cpp" />
+    <ClCompile Include="TransportEngine.cpp" />
+    <ClCompile Include="..\..\Common\Base64.cpp" />
+    <ClCompile Include="..\..\Common\ComPtr.cpp" />
+    <ClCompile Include="..\..\Common\Database.cpp" />
+    <ClCompile Include="..\..\Common\DbObject.cpp" />
+    <ClCompile Include="..\..\Common\DbObjectBuildDefinition.cpp" />
+    <ClCompile Include="..\..\Common\Debug.cpp" />
+    <ClCompile Include="..\..\Common\DynamicAPIs.cpp" />
+    <ClCompile Include="..\..\Common\EngBaseObj.cpp" />
+    <ClCompile Include="..\..\Common\ExportedFunction.cpp" />
+    <ClCompile Include="..\..\Common\ExportedFunctionsEnum.cpp" />
+    <ClCompile Include="..\..\Common\FnvHash.cpp" />
+    <ClCompile Include="..\..\Common\FunctionParamsCache.cpp" />
+    <ClCompile Include="..\..\Common\MemoryManager.cpp" />
+    <ClCompile Include="..\..\Common\MemoryManagerPool.cpp" />
+    <ClCompile Include="..\..\Common\MemoryManagerTracker.cpp" />
+    <ClCompile Include="..\..\Common\Module.cpp" />
+    <ClCompile Include="..\..\Common\ModulesEnum.cpp" />
+    <ClCompile Include="..\..\Common\NtInternals.cpp" />
+    <ClCompile Include="..\..\Common\Param.cpp" />
+    <ClCompile Include="..\..\Common\ParamsEnum.cpp" />
+    <ClCompile Include="..\..\Common\PdbFunctionSymbol.cpp">
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(VSInstallDir)DIA SDK\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(VSInstallDir)DIA SDK\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(VSInstallDir)DIA SDK\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(VSInstallDir)DIA SDK\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <ClCompile Include="..\..\Common\Process.cpp" />
+    <ClCompile Include="..\..\Common\ProcessesEnum.cpp" />
+    <ClCompile Include="..\..\Common\ProcessHandle.cpp" />
+    <ClCompile Include="..\..\Common\ProcessMemory.cpp" />
+    <ClCompile Include="..\..\Common\RegistrySettings.cpp" />
+    <ClCompile Include="..\..\Common\ShutdownMutex.cpp" />
+    <ClCompile Include="..\..\Common\StringLiteW.cpp" />
+    <ClCompile Include="..\..\Common\Threads.cpp" />
+    <ClCompile Include="..\..\Common\Tools.cpp" />
+    <ClCompile Include="..\..\Common\TransportBigData.cpp" />
+    <ClCompile Include="..\..\Common\WaitableObjects.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Asm\Injector_x64.inl" />
+    <None Include="Asm\Injector_x86.inl" />
+    <CustomBuild Include="Asm\GetProcAddress_x64.inc.asm">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </Command>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+      </Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+      </Command>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </Command>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </Command>
+    </CustomBuild>
+    <CustomBuild Include="Asm\GetProcAddress_x86.inc.asm">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </Command>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+      </Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+      </Command>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </Command>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </Command>
+    </CustomBuild>
+    <CustomBuild Include="Asm\Injector_x64.asm">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Compiling assembler code...</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">ML64.EXE /c /nologo /Fo"%(RootDir)%(Directory)\%(Filename).obj" "%(FullPath)"
+IF ERRORLEVEL 1 goto bad_compile
+"$(ProjectDir)..\..\MiscUtils\File2Inc\bin\File2Inc.exe" "%(RootDir)%(Directory)\%(Filename).obj" "%(RootDir)%(Directory)\%(Filename).inl" /var:aInjectorX64 /type:obj
+GOTO end
+:bad_compile
+EXIT 1
+:end
+</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(RootDir)%(Directory)\GetProcAddress_x64.inc.asm;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(RootDir)%(Directory)\%(Filename).inl;%(Outputs)</Outputs>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Compiling assembler code...</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">ML64.EXE /c /nologo /Fo"%(RootDir)%(Directory)\%(Filename).obj" "%(FullPath)"
+IF ERRORLEVEL 1 goto bad_compile
+"$(ProjectDir)..\..\MiscUtils\File2Inc\bin\File2Inc.exe" "%(RootDir)%(Directory)\%(Filename).obj" "%(RootDir)%(Directory)\%(Filename).inl" /var:aInjectorX64 /type:obj
+GOTO end
+:bad_compile
+EXIT 1
+:end
+</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(RootDir)%(Directory)\GetProcAddress_x64.inc.asm;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(RootDir)%(Directory)\%(Filename).inl;%(Outputs)</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkObjects>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+    </CustomBuild>
+    <CustomBuild Include="Asm\Injector_x86.asm">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Compiling assembler code...</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">ML.EXE /c /nologo /Fo"%(RootDir)%(Directory)\%(Filename).obj" "%(FullPath)"
+IF ERRORLEVEL 1 goto bad_compile
+"$(ProjectDir)..\..\MiscUtils\File2Inc\bin\File2Inc.exe" "%(RootDir)%(Directory)\%(Filename).obj" "%(RootDir)%(Directory)\%(Filename).inl" /var:aInjectorX86 /type:obj
+GOTO end
+:bad_compile
+EXIT 1
+:end
+</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(RootDir)%(Directory)\GetProcAddress_x86.inc.asm;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(RootDir)%(Directory)\%(Filename).inl;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Compiling assembler code...</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">ML.EXE /c /nologo /Fo"%(RootDir)%(Directory)\%(Filename).obj" "%(FullPath)"
+IF ERRORLEVEL 1 goto bad_compile
+"$(ProjectDir)..\..\MiscUtils\File2Inc\bin\File2Inc.exe" "%(RootDir)%(Directory)\%(Filename).obj" "%(RootDir)%(Directory)\%(Filename).inl" /var:aInjectorX86 /type:obj
+GOTO end
+:bad_compile
+EXIT 1
+:end
+</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(RootDir)%(Directory)\GetProcAddress_x86.inc.asm;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(RootDir)%(Directory)\%(Filename).inl;%(Outputs)</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkObjects>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Hook.h" />
+    <ClInclude Include="InternalProcessesList.h" />
+    <ClInclude Include="SpyMgr.h" />
+    <ClInclude Include="StackTrace.h" />
+    <ClInclude Include="TransportEngine.h" />
+    <ClInclude Include="..\..\Common\AgentCommon.h" />
+    <ClInclude Include="..\..\Common\ArrayList.h" />
+    <ClInclude Include="..\..\Common\AutoPtr.h" />
+    <ClInclude Include="..\..\Common\Base64.h" />
+    <ClInclude Include="..\..\Common\ComPtr.h" />
+    <ClInclude Include="..\..\Common\Database.h" />
+    <ClInclude Include="..\..\Common\DbObject.h" />
+    <ClInclude Include="..\..\Common\Debug.h" />
+    <ClInclude Include="..\..\Common\DynamicAPIs.h" />
+    <ClInclude Include="..\..\Common\EngBaseObj.h" />
+    <ClInclude Include="..\..\Common\EngDefines.h" />
+    <ClInclude Include="..\..\Common\EngErrorCodes.h" />
+    <ClInclude Include="..\..\Common\EngObjCache.h" />
+    <ClInclude Include="..\..\Common\EnumeratorBase.h" />
+    <ClInclude Include="..\..\Common\ExportedFunction.h" />
+    <ClInclude Include="..\..\Common\ExportedFunctionsEnum.h" />
+    <ClInclude Include="..\..\Common\FnvHash.h" />
+    <ClInclude Include="..\..\Common\FunctionParamsCache.h" />
+    <ClInclude Include="..\..\Common\LinkedList.h" />
+    <ClInclude Include="..\..\Common\MemoryManager.h" />
+    <ClInclude Include="..\..\Common\MemoryManagerObjects.h" />
+    <CustomBuild Include="..\..\Common\MemoryManagerPool.h" />
+    <ClInclude Include="..\..\Common\MemoryManagerTracker.h" />
+    <ClInclude Include="..\..\Common\MiscEnums.h" />
+    <ClInclude Include="..\..\Common\Module.h" />
+    <ClInclude Include="..\..\Common\ModulesEnum.h" />
+    <ClInclude Include="..\..\Common\NtInternals.h" />
+    <ClInclude Include="..\..\Common\ObjectEnums.h" />
+    <ClInclude Include="..\..\Common\Param.h" />
+    <ClInclude Include="..\..\Common\ParamsEnum.h" />
+    <ClInclude Include="..\..\Common\PdbFunctionSymbol.h" />
+    <ClInclude Include="..\..\Common\Process.h" />
+    <ClInclude Include="..\..\Common\ProcessesEnum.h" />
+    <ClInclude Include="..\..\Common\ProcessHandle.h" />
+    <ClInclude Include="..\..\Common\ProcessMemory.h" />
+    <ClInclude Include="..\..\Common\RegistrySettings.h" />
+    <ClInclude Include="..\..\Common\ShutdownMutex.h" />
+    <ClInclude Include="..\..\Common\StringLiteW.h" />
+    <ClInclude Include="..\..\Common\Tools.h" />
+    <ClInclude Include="..\..\Common\TransportBigData.h" />
+    <ClInclude Include="..\..\Common\TransportCommon.h" />
+    <ClInclude Include="..\..\Common\WaitableObjects.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\SupportLibs\SqLite\SqLiteLib.vcxproj">
+      <Project>{c5233517-25fb-4301-86c2-c03c6ea41da5}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\SupportLibs\UDis86\UDis86Lib.vcxproj">
+      <Project>{0014c72e-342c-4406-80b7-2a009a5c1649}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

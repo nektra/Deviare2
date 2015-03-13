@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hooks>
+  <hook name="RegOpenKeyW">advapi32.dll!RegOpenKeyW</hook>
+  <hook name="RegOpenKeyExW">advapi32.dll!RegOpenKeyExW</hook>
+  <hook name="RegCreateKeyW">advapi32.dll!RegCreateKeyW</hook>
+  <hook name="RegCreateKeyExW">advapi32.dll!RegCreateKeyExW</hook>
+  <hook name="MapViewOfFile">kernel32.dll!MapViewOfFile</hook>
+</hooks>

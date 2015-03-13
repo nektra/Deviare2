@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hooks>
+	<hook name="CreateFileW">kernel32.dll!CreateFileW</hook>
+	<hook name="ReadFile">kernel32.dll!ReadFile</hook>
+	<hook name="WriteFile">kernel32.dll!WriteFile</hook>
+	<hook name="CloseHandle">kernel32.dll!CloseHandle</hook>
+</hooks>

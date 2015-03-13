@@ -1,0 +1,74 @@
+/*
+ * Copyright (C) 2010-2015 Nektra S.A., Buenos Aires, Argentina.
+ * All rights reserved. Contact: http://www.nektra.com
+ *
+ *
+ * This file is part of Deviare
+ *
+ *
+ * Commercial License Usage
+ * ------------------------
+ * Licensees holding valid commercial Deviare licenses may use this file
+ * in accordance with the commercial license agreement provided with the
+ * Software or, alternatively, in accordance with the terms contained in
+ * a written agreement between you and Nektra.  For licensing terms and
+ * conditions see http://www.nektra.com/licensing/. Use the contact form
+ * at http://www.nektra.com/contact/ for further information.
+ *
+ *
+ * GNU General Public License Usage
+ * --------------------------------
+ * Alternatively, this file may be used under the terms of the GNU General
+ * Public License version 3.0 as published by the Free Software Foundation
+ * and appearing in the file LICENSE.GPL included in the packaging of this
+ * file.  Please visit http://www.gnu.org/copyleft/gpl.html and review the
+ * information to ensure the GNU General Public License version 3.0
+ * requirements will be met.
+ *
+ **/
+
+using System;
+using System.Collections.Generic;
+using CSharpConsole.Model;
+using CSharpConsole.Model.Hooks;
+using CSharpConsole.Model.Modules;
+using CSharpConsole.Model.Process;
+using Nektra.Deviare2;
+
+namespace CSharpConsole.Presenters
+{
+    public interface ISpyManager : IDisposable
+    {
+        #region Event Handlers
+
+        Action<IRunningProcess> ProcessStartedHandler { set; }
+        Action<IRunningProcess> ProcessTerminatedHandler { set; }
+        Action<Hook, IRunningProcess, NktHookCallInfo> FunctionCalledHandler { set; }
+        Action<Hook, IRunningProcess, eNktHookState, eNktHookState> HookStateChangedHandler { set; }
+        Action<IRunningProcess, int> AgentLoadHandler { set; }
+
+        #endregion
+        
+        Hook AddHook(IRunningProcess aProcess, Module aModule, Function aFunction);
+        void RemoveHook(Hook aHook);
+        void RemoveAllHooks();
+
+        bool AtLeastOneHookWasCreated { get; }
+
+
+        Hook[] HooksOf(IRunningProcess aProcess);
+
+        IEnumerable<IRunningProcess> RunningProcesses();
+        Module[] HookableModulesFor(int platformBits);
+        Module ModuleByName(IRunningProcess aProcess, string aModuleName);
+
+        bool IsHookActiveOn(Hook aHook, IRunningProcess aProcess);
+        IEnumerable<Module> HookableModulesFor(IRunningProcess aProcess);
+        Function[] HookableFunctionsFor(Module aModule, IRunningProcess process);
+        bool IsAlive(RunningProcess aProcess, int timeOutInMilliseconds);
+        bool IsHooked(IRunningProcess aProcess);
+        bool AtLeastOneHookIsActiveOn(IRunningProcess aProcess);
+        void Start(ProcessToBeHookedOnStart aProcess, Action<IRunningProcess> onBeforeProcessStarts);
+        int HooksCountFor(IRunningProcess process, Module module);
+    }
+}

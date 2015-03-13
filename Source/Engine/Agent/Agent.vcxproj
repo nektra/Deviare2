@@ -1,0 +1,367 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{A09AC76F-D3F4-4592-BBFF-546371E585A3}</ProjectGuid>
+    <RootNamespace>Agent</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <PlatformToolset>v110_xp</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <PlatformToolset>v110_xp</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <PlatformToolset>v110_xp</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <PlatformToolset>v110_xp</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>11.0.61030.0</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>..\..\..\bin\</OutDir>
+    <IntDir>..\..\..\obj\$(Configuration)\$(Platform)\$(ProjectName)\</IntDir>
+    <LinkIncremental>true</LinkIncremental>
+    <TargetName>DvAgent</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>..\..\..\bin\</OutDir>
+    <IntDir>..\..\..\obj\$(Configuration)\$(Platform)\$(ProjectName)\</IntDir>
+    <LinkIncremental>true</LinkIncremental>
+    <TargetName>DvAgent64</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>..\..\..\bin\</OutDir>
+    <IntDir>..\..\..\obj\$(Configuration)\$(Platform)\$(ProjectName)\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+    <TargetName>DvAgent</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>..\..\..\bin\</OutDir>
+    <IntDir>..\..\..\obj\$(Configuration)\$(Platform)\$(ProjectName)\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+    <TargetName>DvAgent64</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <PreBuildEvent>
+      <Command />
+    </PreBuildEvent>
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>c:\Program Files\Microsoft SDKs\Windows\v7.1\Include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;AGENTDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <ModuleDefinitionFile>Agent.def</ModuleDefinitionFile>
+      <DelayLoadDLLs>user32.dll;oleaut32.dll;advapi32.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+    <PostBuildEvent>
+      <Message>Adding DeviareCOM manifes and signing executable...</Message>
+      <Command>MT.EXE -manifest "$(ProjectDir)..\DeviareCOM\RegFreeCOM_Manifest_Files\DeviareCOM.X.manifest" "-outputresource:$(TargetPath)%3b2"
+"$(ProjectDir)..\..\MiscUtils\Certificate\signfile.bat" "$(TargetPath)"
+</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <PreBuildEvent>
+      <Command />
+    </PreBuildEvent>
+    <Midl>
+      <TargetEnvironment>X64</TargetEnvironment>
+    </Midl>
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>c:\Program Files\Microsoft SDKs\Windows\v7.1\Include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;WIN64;_DEBUG;_WINDOWS;_USRDLL;AGENTDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <ModuleDefinitionFile />
+      <DelayLoadDLLs>user32.dll;oleaut32.dll;advapi32.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <TargetMachine>MachineX64</TargetMachine>
+    </Link>
+    <PostBuildEvent>
+      <Message>Adding DeviareCOM manifes and signing executable...</Message>
+      <Command>MT.EXE -manifest "$(ProjectDir)..\DeviareCOM\RegFreeCOM_Manifest_Files\DeviareCOM64.X.manifest" "-outputresource:$(TargetPath)%3b2"
+"$(ProjectDir)..\..\MiscUtils\Certificate\signfile.bat" "$(TargetPath)"
+</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <PreBuildEvent>
+      <Command />
+    </PreBuildEvent>
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>c:\Program Files\Microsoft SDKs\Windows\v7.1\Include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;AGENTDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <ModuleDefinitionFile>Agent.def</ModuleDefinitionFile>
+      <DelayLoadDLLs>user32.dll;oleaut32.dll;advapi32.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+    <PostBuildEvent>
+      <Message>Adding DeviareCOM manifes and signing executable...</Message>
+      <Command>MT.EXE -manifest "$(ProjectDir)..\DeviareCOM\RegFreeCOM_Manifest_Files\DeviareCOM.X.manifest" "-outputresource:$(TargetPath)%3b2"
+"$(ProjectDir)..\..\MiscUtils\Certificate\signfile.bat" "$(TargetPath)"
+</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <PreBuildEvent>
+      <Command />
+    </PreBuildEvent>
+    <Midl>
+      <TargetEnvironment>X64</TargetEnvironment>
+    </Midl>
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>c:\Program Files\Microsoft SDKs\Windows\v7.1\Include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;WIN64;NDEBUG;_WINDOWS;_USRDLL;AGENTDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <DelayLoadDLLs>user32.dll;oleaut32.dll;advapi32.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <TargetMachine>MachineX64</TargetMachine>
+    </Link>
+    <PostBuildEvent>
+      <Message>Adding DeviareCOM manifes and signing executable...</Message>
+      <Command>MT.EXE -manifest "$(ProjectDir)..\DeviareCOM\RegFreeCOM_Manifest_Files\DeviareCOM64.X.manifest" "-outputresource:$(TargetPath)%3b2"
+"$(ProjectDir)..\..\MiscUtils\Certificate\signfile.bat" "$(TargetPath)"
+</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="Agent.cpp" />
+    <ClCompile Include="AgentMgr.cpp" />
+    <ClCompile Include="DetectApp.cpp" />
+    <ClCompile Include="DevComActCtx.cpp" />
+    <ClCompile Include="HookCustomHandlerMgr.cpp" />
+    <ClCompile Include="HookEngine.cpp" />
+    <ClCompile Include="HookEngineCallDataEntry.cpp" />
+    <ClCompile Include="HookEngineHookEntry.cpp" />
+    <ClCompile Include="HookEngineMini.cpp" />
+    <ClCompile Include="HookEngineMiscHelpers.cpp" />
+    <ClCompile Include="HookEngineStackTrace.cpp" />
+    <ClCompile Include="ThreadSuspend.cpp" />
+    <ClCompile Include="TlsData.cpp" />
+    <ClCompile Include="TransportAgent.cpp" />
+    <ClCompile Include="..\..\Common\ComPtr.cpp" />
+    <ClCompile Include="..\..\Common\Database.cpp" />
+    <ClCompile Include="..\..\Common\DbObject.cpp" />
+    <ClCompile Include="..\..\Common\DbObjectBuildDefinition.cpp" />
+    <ClCompile Include="..\..\Common\Debug.cpp" />
+    <ClCompile Include="..\..\Common\DynamicAPIs.cpp" />
+    <ClCompile Include="..\..\Common\EngBaseObj.cpp" />
+    <ClCompile Include="..\..\Common\ExportedFunction.cpp" />
+    <ClCompile Include="..\..\Common\ExportedFunctionsEnum.cpp" />
+    <ClCompile Include="..\..\Common\FnvHash.cpp" />
+    <ClCompile Include="..\..\Common\FunctionParamsCache.cpp" />
+    <ClCompile Include="..\..\Common\MemoryManager.cpp" />
+    <ClCompile Include="..\..\Common\MemoryManagerPool.cpp" />
+    <ClCompile Include="..\..\Common\MemoryManagerTracker.cpp" />
+    <ClCompile Include="..\..\Common\Module.cpp" />
+    <ClCompile Include="..\..\Common\ModulesEnum.cpp" />
+    <ClCompile Include="..\..\Common\NtInternals.cpp" />
+    <ClCompile Include="..\..\Common\Param.cpp" />
+    <ClCompile Include="..\..\Common\ParamsEnum.cpp" />
+    <ClCompile Include="..\..\Common\Process.cpp" />
+    <ClCompile Include="..\..\Common\ProcessesEnum.cpp" />
+    <ClCompile Include="..\..\Common\ProcessHandle.cpp" />
+    <ClCompile Include="..\..\Common\ProcessMemory.cpp" />
+    <ClCompile Include="..\..\Common\RegistrySettings.cpp" />
+    <ClCompile Include="..\..\Common\ShutdownMutex.cpp" />
+    <ClCompile Include="..\..\Common\StringLiteW.cpp" />
+    <ClCompile Include="..\..\Common\Threads.cpp" />
+    <ClCompile Include="..\..\Common\Tools.cpp" />
+    <ClCompile Include="..\..\Common\TransportBigData.cpp" />
+    <ClCompile Include="..\..\Common\WaitableObjects.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Agent.def" />
+    <CustomBuild Include="HookSimple_x64.asm">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Compiling assembler code...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename).obj;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Compiling assembler code...</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">"$(VCInstallDir)\Bin\x86_amd64\ML64.EXE" /c /nologo /Fo"$(IntDir)%(Filename).obj" "%(FullPath)"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)%(Filename).obj;%(Outputs)</Outputs>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Compiling assembler code...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename).obj;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Compiling assembler code...</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(VCInstallDir)\Bin\x86_amd64\ML64.EXE" /c /nologo /Fo"$(IntDir)%(Filename).obj" "%(FullPath)"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)%(Filename).obj;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="HookSimple_x86.asm">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Compiling assembler code...</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(VCInstallDir)\Bin\ML.EXE" /c /nologo /safeseh /Fo"$(IntDir)%(Filename).obj" "%(FullPath)"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename).obj;%(Outputs)</Outputs>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Compiling assembler code...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)%(Filename).obj;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Compiling assembler code...</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(VCInstallDir)\Bin\ML.EXE" /c /nologo /safeseh /Fo"$(IntDir)%(Filename).obj" "%(FullPath)"
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename).obj;%(Outputs)</Outputs>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Compiling assembler code...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)%(Filename).obj;%(Outputs)</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Agent.h" />
+    <ClInclude Include="AgentMgr.h" />
+    <ClInclude Include="DetectApp.h" />
+    <ClInclude Include="DevComActCtx.h" />
+    <ClInclude Include="HookCustomHandlerMgr.h" />
+    <CustomBuild Include="HookEngine.h" />
+    <ClInclude Include="HookEngineCallDataEntry.h" />
+    <ClInclude Include="HookEngineInternals.h" />
+    <ClInclude Include="HookEngineMiscHelpers.h" />
+    <ClInclude Include="ThreadSuspend.h" />
+    <ClInclude Include="TlsData.h" />
+    <ClInclude Include="TransportAgent.h" />
+    <ClInclude Include="..\..\Common\AgentCommon.h" />
+    <ClInclude Include="..\..\Common\ArrayList.h" />
+    <ClInclude Include="..\..\Common\ComPtr.h" />
+    <ClInclude Include="..\..\Common\Database.h" />
+    <ClInclude Include="..\..\Common\DbObject.h" />
+    <ClInclude Include="..\..\Common\Debug.h" />
+    <ClInclude Include="..\..\Common\DynamicAPIs.h" />
+    <ClInclude Include="..\..\Common\EngBaseObj.h" />
+    <ClInclude Include="..\..\Common\EngDefines.h" />
+    <ClInclude Include="..\..\Common\EngErrorCodes.h" />
+    <ClInclude Include="..\..\Common\EnumeratorBase.h" />
+    <ClInclude Include="..\..\Common\ExportedFunction.h" />
+    <ClInclude Include="..\..\Common\ExportedFunctionsEnum.h" />
+    <ClInclude Include="..\..\Common\FnvHash.h" />
+    <ClInclude Include="..\..\Common\FunctionParamsCache.h" />
+    <ClInclude Include="..\..\Common\LinkedList.h" />
+    <ClInclude Include="..\..\Common\MemoryManager.h" />
+    <ClInclude Include="..\..\Common\MemoryManagerPool.h" />
+    <ClInclude Include="..\..\Common\MemoryManagerTracker.h" />
+    <ClInclude Include="..\..\Common\MiscEnums.h" />
+    <ClInclude Include="..\..\Common\Module.h" />
+    <ClInclude Include="..\..\Common\ModulesEnum.h" />
+    <ClInclude Include="..\..\Common\NtInternals.h" />
+    <ClInclude Include="..\..\Common\ObjectEnums.h" />
+    <ClInclude Include="..\..\Common\Param.h" />
+    <ClInclude Include="..\..\Common\ParamsEnum.h" />
+    <ClInclude Include="..\..\Common\Process.h" />
+    <ClInclude Include="..\..\Common\ProcessesEnum.h" />
+    <ClInclude Include="..\..\Common\ProcessHandle.h" />
+    <ClInclude Include="..\..\Common\ProcessMemory.h" />
+    <ClInclude Include="..\..\Common\RegistrySettings.h" />
+    <ClInclude Include="..\..\Common\ShutdownMutex.h" />
+    <ClInclude Include="..\..\Common\StringLiteW.h" />
+    <ClInclude Include="..\..\Common\Threads.h" />
+    <ClInclude Include="..\..\Common\Tools.h" />
+    <ClInclude Include="..\..\Common\TransportBigData.h" />
+    <ClInclude Include="..\..\Common\TransportCommon.h" />
+    <ClInclude Include="..\..\Common\WaitableObjects.h" />
+    <ClInclude Include="resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Agent.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\SupportLibs\Lz4\Lz4Lib.vcxproj">
+      <Project>{bf4ba8be-12dc-4d9f-9939-1505a451e293}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\SupportLibs\UDis86\UDis86Lib.vcxproj">
+      <Project>{0014c72e-342c-4406-80b7-2a009a5c1649}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

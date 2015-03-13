@@ -1,0 +1,383 @@
+<?xml version="1.0" ?>
+<config>
+	<!--
+		Copyright (C) 2010-2015 Nektra S.A., Buenos Aires, Argentina.
+		All rights reserved. Contact: http://www.nektra.com
+
+
+		This file is part of Deviare
+
+
+		Commercial License Usage
+		------------------------
+		Licensees holding valid commercial Deviare licenses may use this file
+		in accordance with the commercial license agreement provided with the
+		Software or, alternatively, in accordance with the terms contained in
+		a written agreement between you and Nektra.  For licensing terms and
+		conditions see http://www.nektra.com/licensing/. Use the contact form
+		at http://www.nektra.com/contact/ for further information.
+
+
+		GNU General Public License Usage
+		--------------------------------
+		Alternatively, this file may be used under the terms of the GNU General
+		Public License version 3.0 as published by the Free Software Foundation
+		and appearing in the file LICENSE.GPL included in the packaging of this
+		file.  Please visit http://www.gnu.org/copyleft/gpl.html and review the
+		information to ensure the GNU General Public License version 3.0
+		requirements will be met.
+	-->
+	<!-- DLL Modules to search -->
+	<modules>
+		<module>ntdll.dll</module>
+		<!--
+		<module>%ProgramFiles%\Windows Live\Contacts\conproxy.dll</module>
+		<module>%ProgramFiles%\Windows Live\Contacts\contact.dll</module>
+		<module>%ProgramFiles%\Windows Live\Mail\wabapi.dll</module>
+		<module>%ProgramFiles%\Windows Live\Mail\uxcontacts.dll</module>
+		-->
+		<module>AclUI.dll</module>
+		<module>ActiveDS.dll</module>
+		<module>Ad1.dll</module>
+		<module>ADSIid.dll</module>
+		<module>AdvAPI32.dll</module>
+		<module>advpack.dll</module>
+		<module>ahadmin.dll</module>
+		<module>amstrmid.dll</module>
+		<module>ASycFilt.dll</module>
+		<module>AuthZ.dll</module>
+		<module>aux_ulib.dll</module>
+		<module>avifil32.dll</module>
+		<module>avrt.dll</module>
+		<module>bcrypt.dll</module>
+		<module>bhsupp.dll</module>
+		<module>Bits.dll</module>
+		<module>bthprops.dll</module>
+		<module>Cabinet.dll</module>
+		<module>Cap.dll</module>
+		<module>certadm.dll</module>
+		<module>certidl.dll</module>
+		<module>CertPolEng.dll</module>
+		<module>CiUuid.dll</module>
+		<module>clfsmgmt.dll</module>
+		<module>clfsw32.dll</module>
+		<module>ClusApi.dll</module>
+		<module>ComCtl32.dll</module>
+		<module>ComDlg32.dll</module>
+		<module>ComSvcs.dll</module>
+		<module>corguids.dll</module>
+		<module>corrEngine.dll</module>
+		<module>credui.dll</module>
+		<module>Crypt32.dll</module>
+		<module>CryptNet.dll</module>
+		<module>cryptui.dll</module>
+		<module>cryptxml.dll</module>
+		<module>cscapi.dll</module>
+		<module>d2d1.dll</module>
+		<module>d3d10.dll</module>
+		<module>d3d10_1.dll</module>
+		<module>d3d11.dll</module>
+		<module>d3d8thk.dll</module>
+		<module>d3d9.dll</module>
+		<module>daouuid.dll</module>
+		<module>davclnt.dll</module>
+		<module>DbgEng.dll</module>
+		<module>DbgHelp.dll</module>
+		<module>dciman32.dll</module>
+		<module>ddao35.dll</module>
+		<module>ddao35d.dll</module>
+		<module>ddao35u.dll</module>
+		<module>ddao35ud.dll</module>
+		<module>DhcpCSvc.dll</module>
+		<module>dhcpcsvc6.dll</module>
+		<module>dhcpsapi.dll</module>
+		<module>dinput8.dll</module>
+		<module>dmoguids.dll</module>
+		<module>DnsAPI.dll</module>
+		<module>dpx.dll</module>
+		<module>drt.dll</module>
+		<module>drtprov.dll</module>
+		<module>drttransport.dll</module>
+		<module>dsound.dll</module>
+		<module>DSProp.dll</module>
+		<module>DSUIExt.dll</module>
+		<module>DtcHelp.dll</module>
+		<module>dwmapi.dll</module>
+		<module>dwrite.dll</module>
+		<module>dxgi.dll</module>
+		<module>dxva2.dll</module>
+		<module>eappcfg.dll</module>
+		<module>eappprxy.dll</module>
+		<module>ehstorguids.dll</module>
+		<module>ElsCore.dll</module>
+		<module>encapi.dll</module>
+		<module>esent.dll</module>
+		<module>evr.dll</module>
+		<module>evr_vista.dll</module>
+		<module>FaultRep.dll</module>
+		<module>FCachDll.dll</module>
+		<module>Fci.dll</module>
+		<module>Fdi.dll</module>
+		<module>fileextd.dll</module>
+		<module>fontsub.dll</module>
+		<module>format.dll</module>
+		<module>FrameDyD.dll</module>
+		<module>FrameDyn.dll</module>
+		<module>fwpuclnt.dll</module>
+		<module>fxsutility.dll</module>
+		<module>Gdi32.dll</module>
+		<module>GdiPlus.dll</module>
+		<module>GlU32.dll</module>
+		<module>GPEdit.dll</module>
+		<module>gpmuuid.dll</module>
+		<module>HLink.dll</module>
+		<module>Htmlhelp.dll</module>
+		<module>httpapi.dll</module>
+		<module>Icm32.dll</module>
+		<module>Icmui.dll</module>
+		<module>iepmapi.dll</module>
+		<module>ImageHlp.dll</module>
+		<module>imgutil.dll</module>
+		<module>Imm32.dll</module>
+		<module>infocardapi.dll</module>
+		<module>IPHlpApi.dll</module>
+		<module>Iprop.dll</module>
+		<module>irprops.dll</module>
+		<module>iscsidsc.dll</module>
+		<module>Kernel32.dll</module>
+		<module>KernelBase.dll</module>
+		<module>KSGuid.dll</module>
+		<module>KSProxy.dll</module>
+		<module>ksuser.dll</module>
+		<module>ktmw32.dll</module>
+		<module>LoadPerf.dll</module>
+		<module>locationapi.dll</module>
+		<module>Lz32.dll</module>
+		<module>magnification.dll</module>
+		<module>MAPI.dll</module>
+		<module>MAPI32.dll</module>
+		<module>mbnapi_uuid.dll</module>
+		<module>Mf.dll</module>
+		<module>Mfplat.dll</module>
+		<module>Mfplat_vista.dll</module>
+		<module>mfplay.dll</module>
+		<module>mfreadwrite.dll</module>
+		<module>mfuuid.dll</module>
+		<module>Mf_vista.dll</module>
+		<module>MgmtAPI.dll</module>
+		<module>MiniDump.dll</module>
+		<module>MMC.dll</module>
+		<module>Mpr.dll</module>
+		<module>Mprapi.dll</module>
+		<module>MqOA.dll</module>
+		<module>MqRt.dll</module>
+		<module>MSAcm32.dll</module>
+		<module>Mscms.dll</module>
+		<module>mscoree.dll</module>
+		<module>mscorsn.dll</module>
+		<module>msctfmonitor.dll</module>
+		<module>msdasc.dll</module>
+		<module>msdelta.dll</module>
+		<module>msdmo.dll</module>
+		<module>msdrm.dll</module>
+		<module>Msi.dll</module>
+		<module>MSImg32.dll</module>
+		<module>MsPatchC.dll</module>
+		<module>MSRating.dll</module>
+		<module>MSTask.dll</module>
+		<module>msvfw32.dll</module>
+		<module>MsWSock.dll</module>
+		<module>MsXml2.dll</module>
+		<module>msxml6.dll</module>
+		<module>Mtx.dll</module>
+		<module>mtxdm.dll</module>
+		<module>muiload.dll</module>
+		<module>ncrypt.dll</module>
+		<module>ndfapi.dll</module>
+		<module>ndproxystub.dll</module>
+		<module>NetAPI32.dll</module>
+		<module>NetSh.dll</module>
+		<module>newdev.dll</module>
+		<module>nmapi.dll</module>
+		<module>NMSupp.dll</module>
+		<module>normaliz.dll</module>
+		<module>NtDsAPI.dll</module>
+		<module>NTMSAPI.dll</module>
+		<module>NtQuery.dll</module>
+		<module>odbc32.dll</module>
+		<module>odbcbcp.dll</module>
+		<module>odbccp32.dll</module>
+		<module>Ole32.dll</module>
+		<module>OleAcc.dll</module>
+		<module>OleAut32.dll</module>
+		<module>oledb.dll</module>
+		<module>OleDlg.dll</module>
+		<module>OlePro32.dll</module>
+		<module>OpenGL32.dll</module>
+		<module>osptk.dll</module>
+		<module>p2p.dll</module>
+		<module>p2pgraph.dll</module>
+		<module>parser.dll</module>
+		<module>patchwiz.dll</module>
+		<module>Pdh.dll</module>
+		<module>PEnter.dll</module>
+		<module>PhotoAcquireUID.dll</module>
+		<module>PortableDeviceGuids.dll</module>
+		<module>powrprof.dll</module>
+		<module>prntvpt.dll</module>
+		<module>propsys.dll</module>
+		<module>Psapi.dll</module>
+		<module>quartz.dll</module>
+		<module>qutil.dll</module>
+		<module>qwave.dll</module>
+		<module>RASAPI32.dll</module>
+		<module>RASDlg.dll</module>
+		<module>ResUtils.dll</module>
+		<module>RichEd20.dll</module>
+		<module>Rpcns4.dll</module>
+		<module>RpcRT4.dll</module>
+		<module>rstrtmgr.dll</module>
+		<module>Rtm.dll</module>
+		<module>Rtutils.dll</module>
+		<module>sapi.dll</module>
+		<module>sas.dll</module>
+		<module>sbtsv.dll</module>
+		<module>SCardDlg.dll</module>
+		<module>ScrnSave.dll</module>
+		<module>ScrnSavW.dll</module>
+		<module>SearchSDK.dll</module>
+		<module>Secur32.dll</module>
+		<module>SensAPI.dll</module>
+		<module>sensorsapi.dll</module>
+		<module>SetupAPI.dll</module>
+		<module>Sfc.dll</module>
+		<module>shdocvw.dll</module>
+		<module>shell32.dll</module>
+		<module>ShFolder.dll</module>
+		<module>ShLwApi.dll</module>
+		<module>sisbkup.dll</module>
+		<module>slc.dll</module>
+		<module>slcext.dll</module>
+		<module>slwga.dll</module>
+		<module>SnmpAPI.dll</module>
+		<module>SpOrder.dll</module>
+		<module>SrClient.dll</module>
+		<module>Sti.dll</module>
+		<module>strmiids.dll</module>
+		<module>strsafe.dll</module>
+		<module>structuredquery.dll</module>
+		<module>Svcguid.dll</module>
+		<module>t2embed.dll</module>
+		<module>Tapi32.dll</module>
+		<module>taskschd.dll</module>
+		<module>tbs.dll</module>
+		<module>tdh.dll</module>
+		<module>Thunk32.dll</module>
+		<module>tlbref.dll</module>
+		<module>Traffic.dll</module>
+		<module>TranscodeImageUID.dll</module>
+		<module>tspubplugincom.dll</module>
+		<module>txfw32.dll</module>
+		<module>UIAutomationCore.dll</module>
+		<module>unicows.dll</module>
+		<module>Url.dll</module>
+		<module>Urlmon.dll</module>
+		<module>User32.dll</module>
+		<module>UserEnv.dll</module>
+		<module>USP10.dll</module>
+		<module>Uuid.dll</module>
+		<module>Uxtheme.dll</module>
+		<module>VdmDbg.dll</module>
+		<module>vds_uuid.dll</module>
+		<module>Version.dll</module>
+		<module>Vfw32.dll</module>
+		<module>virtdisk.dll</module>
+		<module>vpccominterfaces.dll</module>
+		<module>vssapi.dll</module>
+		<module>vss_uuid.dll</module>
+		<module>vstorinterface.dll</module>
+		<module>WbemUuid.dll</module>
+		<module>wcmguid.dll</module>
+		<module>wdsbp.dll</module>
+		<module>WdsClientApi.dll</module>
+		<module>wdsmc.dll</module>
+		<module>wdspxe.dll</module>
+		<module>wdstptc.dll</module>
+		<module>WebPost.dll</module>
+		<module>WebServices.dll</module>
+		<module>wecapi.dll</module>
+		<module>WER.dll</module>
+		<module>wevtapi.dll</module>
+		<module>WiaGuid.dll</module>
+		<module>WinBio.dll</module>
+		<module>windowscodecs.dll</module>
+		<module>WindowsSideShowGuids.dll</module>
+		<module>WinFax.dll</module>
+		<module>winhttp.dll</module>
+		<module>WinInet.dll</module>
+		<module>WinMM.dll</module>
+		<module>winsatapi.dll</module>
+		<module>WinSCard.dll</module>
+		<module>WinSpool.dll</module>
+		<module>WinStrm.dll</module>
+		<module>WinTrust.dll</module>
+		<module>wlanapi.dll</module>
+		<module>wlanui.dll</module>
+		<module>Wldap32.dll</module>
+		<module>wmcodecdspuuid.dll</module>
+		<module>wmdrmsdk.dll</module>
+		<module>wmiutils.dll</module>
+		<module>wmvcore.dll</module>
+		<module>workspaceax.dll</module>
+		<module>Wow32.dll</module>
+		<module>WS2_32.dll</module>
+		<module>wsbapp_uuid.dll</module>
+		<module>wscapi.dll</module>
+		<module>wsdapi.dll</module>
+		<module>wsmsvc.dll</module>
+		<module>WSnmp32.dll</module>
+		<module>WSock32.dll</module>
+		<module>Wst.dll</module>
+		<module>WtsApi32.dll</module>
+		<module>wuguid.dll</module>
+		<module>xaSwitch.dll</module>
+		<module>Xinput.dll</module>
+		<module>xmllite.dll</module>
+		<module>xoleHlp.dll</module>
+		<module>xpsprint.dll</module>
+	</modules>
+	<!-- Basic type that will not expand -->
+	<basicTypes>
+		<type target="size_t">HWND</type>
+		<type target="size_t">HINSTANCE</type>
+		<type target="size_t">HMODULE</type>
+		<type target="size_t">HDC</type>
+		<type target="size_t">HBRUSH</type>
+		<type target="size_t">HFONT</type>
+		<type target="size_t">HHOOK</type>
+		<type target="size_t">HEVENT</type>
+		<type target="size_t">HGDIOBJ</type>
+		<type target="size_t">HKEY</type>
+		<type target="size_t">HACCEL</type>
+		<type target="size_t">HBITMAP</type>
+		<type target="size_t">HCOLORSPACE</type>
+		<type target="size_t">HGLRC</type>
+		<type target="size_t">HDESK</type>
+		<type target="size_t">HENHMETAFILE</type>
+		<type target="size_t">HICON</type>
+		<type target="size_t">HMENU</type>
+		<type target="size_t">HMETAFILE</type>
+		<type target="size_t">HPALETTE</type>
+		<type target="size_t">HPEN</type>
+		<type target="size_t">HRGN</type>
+		<type target="size_t">HRSRC</type>
+		<type target="size_t">HSPRITE</type>
+		<type target="size_t">HSTR</type>
+		<type target="size_t">HTASK</type>
+		<type target="size_t">HKL</type>
+		<type target="size_t">HWINEVENTHOOK</type>
+		<type target="size_t">HMONITOR</type>
+		<type target="size_t">HUMPD</type>
+		<type target="size_t">HCURSOR</type>
+	</basicTypes>
+</config>
