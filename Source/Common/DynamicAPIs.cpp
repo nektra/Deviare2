@@ -1798,7 +1798,7 @@ static LPVOID BuildOriginalNtCall(__in LPBYTE lpFileFuncAddr, __in PRTL_OSVERSIO
       nSrcOfs += nInstrLen;
       nCurrSize += nInstrLen;
     }
-    NKT_ASSERT(i == nCurrSize);
+    NKT_ASSERT(nMainCodeSize == nCurrSize);
   }
   return lpStub;
 }
