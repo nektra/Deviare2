@@ -4,6 +4,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Database Generator", "Datab
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Engine", "Engine", "{02D11E86-6B69-449C-9F6C-617B9F94548C}"
 	ProjectSection(SolutionItems) = preProject
+		..\CHANGELOG = ..\CHANGELOG
 		version.ver = version.ver
 	EndProjectSection
 EndProject

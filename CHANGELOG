@@ -5,6 +5,10 @@
 * Plugins may not work in IE8 unless executed with elevated privileges because of COM security model used by the app.
   (Resolved in 2.7.2)
 
+Version 2.7.5
+=============
+-Fixed compatibility issue with Windows 10 Preview
+
 Version 2.7.4
 =============
 -Fixed an api not found bug in CallCustomApi when the call succeeded.

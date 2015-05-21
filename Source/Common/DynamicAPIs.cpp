@@ -53,7 +53,8 @@
 
 #ifdef AGENTDLL
 static HRESULT BuildOriginalNtCalls();
-static LPVOID BuildOriginalNtCall(__in LPBYTE lpFileFuncAddr);
+static LPVOID BuildOriginalNtCall(__in LPBYTE lpFileFuncAddr, __in PRTL_OSVERSIONINFOW lpOsVerInfoW,
+                                  __in LPBYTE lpData, __in IMAGE_SECTION_HEADER *lpFileImgSect, __in SIZE_T nSecCount);
 static DWORD HelperConvertVAToRaw(__in DWORD dwVirtAddr, __in IMAGE_SECTION_HEADER *lpImgSect, __in SIZE_T nSecCount);
 #endif //AGENTDLL
 
@@ -164,6 +165,7 @@ typedef NTSTATUS (NTAPI *lpfnNtDuplicateObject)(__in HANDLE SourceProcessHandle,
                                                 __in HANDLE TargetProcessHandle, __out PHANDLE TargetHandle,
                                                 __in ACCESS_MASK DesiredAccess, __in ULONG HandleAttributes,
                                                 __in ULONG Options);
+typedef NTSTATUS (NTAPI *lpfnRtlGetVersion)(__out PRTL_OSVERSIONINFOW lpVersionInformation);
 
 //-----------------------------------------------------------
 
@@ -220,6 +222,7 @@ static lpfnNtOpenThread fnNtOpenThread = NULL;
 static lpfnNtGetContextThread fnNtGetContextThread = NULL;
 static lpfnNtDelayExecution fnNtDelayExecution = NULL;
 static lpfnNtDuplicateObject fnNtDuplicateObject = NULL;
+static lpfnRtlGetVersion fnRtlGetVersion = NULL;
 static SYSTEM_INFO sSi = { 0 };
 
 //-----------------------------------------------------------
@@ -639,8 +642,8 @@ HRESULT nktDvDynApis_GetProcessId(__in HANDLE hProcess, __out LPDWORD lpdwPid)
 }
 
 HRESULT nktDvDynApis_NtQueryVirtualMemory(__in HANDLE ProcessHandle, __in PVOID BaseAddress,
-                                    __in int MemoryInformationClass, __out PVOID MemoryInformation,
-                                    __in SIZE_T MemoryInformationLength, __out_opt PSIZE_T ReturnLength)
+                                          __in int MemoryInformationClass, __out PVOID MemoryInformation,
+                                          __in SIZE_T MemoryInformationLength, __out_opt PSIZE_T ReturnLength)
 {
   LONG nNtStatus;
 
@@ -1313,6 +1316,7 @@ static HRESULT InitializeInternals()
     hNtDll = ::LoadLibraryW(L"ntdll.dll");
     if (hNtDll != NULL)
     {
+      fnRtlGetVersion = (lpfnRtlGetVersion)::GetProcAddress(hNtDll, "RtlGetVersion");
 #ifdef AGENTDLL
       BuildOriginalNtCalls();
 #endif //AGENTDLL
@@ -1482,13 +1486,19 @@ static HRESULT BuildOriginalNtCalls()
   LPBYTE lpData, lpFileNtHdrAddr, lpFileFuncAddr;
   SIZE_T nSecCount;
   IMAGE_SECTION_HEADER *lpFileImgSect;
-  IMAGE_DATA_DIRECTORY *lpFileExportsDir;
+  IMAGE_DATA_DIRECTORY *lpFileExportsDir, *lpBaseRelocDir;
   IMAGE_EXPORT_DIRECTORY *lpExpDir;
   DWORD i, j, dwRawAddr, *lpdwAddressOfFunctions, *lpdwAddressOfNames;
   WORD wOrd, *lpwAddressOfNameOrdinals;
   LPSTR sA;
+  RTL_OSVERSIONINFOW sOsVerInfoW;
   HRESULT hRes;
 
+  nktMemSet(&sOsVerInfoW, 0, sizeof(sOsVerInfoW));
+  sOsVerInfoW.dwOSVersionInfoSize = sizeof(sOsVerInfoW);
+  if (fnRtlGetVersion != NULL)
+    fnRtlGetVersion(&sOsVerInfoW);
+  //----
   hFile = hFileMap = NULL;
   lpData = NULL;
   ::GetModuleFileNameW(hNtDll, szBufW, (DWORD)NKT_DV_ARRAYLEN(szBufW));
@@ -1515,12 +1525,14 @@ static HRESULT BuildOriginalNtCalls()
         nSecCount = (SIZE_T)(sFileNtHdr.u32.FileHeader.NumberOfSections);
         lpFileImgSect = (IMAGE_SECTION_HEADER*)(lpFileNtHdrAddr + sizeof(sFileNtHdr.u32));
         lpFileExportsDir = &(sFileNtHdr.u32.OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_EXPORT]);
+        lpBaseRelocDir = &(sFileNtHdr.u32.OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_BASERELOC]);
         break;
 #elif defined _M_X64
       case 64:
         nSecCount = (SIZE_T)(sFileNtHdr.u64.FileHeader.NumberOfSections);
         lpFileImgSect = (IMAGE_SECTION_HEADER*)(lpFileNtHdrAddr + sizeof(sFileNtHdr.u64));
         lpFileExportsDir = &(sFileNtHdr.u64.OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_EXPORT]);
+        lpBaseRelocDir = &(sFileNtHdr.u64.OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_BASERELOC]);
         break;
 #endif
       default:
@@ -1569,7 +1581,8 @@ static HRESULT BuildOriginalNtCalls()
                 lpFileFuncAddr < (LPBYTE)lpExpDir+(SIZE_T)(lpFileExportsDir->Size))
               continue;//a forwarded function => ignore
             //create new stub
-            *(aToCheckApis[j].lpAddr) = BuildOriginalNtCall(lpFileFuncAddr);
+            *(aToCheckApis[j].lpAddr) = BuildOriginalNtCall(lpFileFuncAddr, &sOsVerInfoW, lpData, lpFileImgSect,
+                                                            nSecCount);
           }
         }
       }
@@ -1584,29 +1597,69 @@ static HRESULT BuildOriginalNtCalls()
   return hRes;
 }
 
-static LPVOID BuildOriginalNtCall(__in LPBYTE lpFileFuncAddr)
+static LPVOID BuildOriginalNtCall(__in LPBYTE lpFileFuncAddr, __in PRTL_OSVERSIONINFOW lpOsVerInfoW,
+                                  __in LPBYTE lpData, __in IMAGE_SECTION_HEADER *lpFileImgSect, __in SIZE_T nSecCount)
 {
-  SIZE_T i, k, nInstrLen, nCurrSize, nExtraSize;
+  SIZE_T k, nSrcOfs, nInstrLen, nCurrSize, nExtraSize, nDestSize, nMainCodeSize;
+  DWORD dwRawAddr;
   LPBYTE lpSrc, lpDest, lpStub;
 
   //stage 1: scan for a return
-  nCurrSize = nExtraSize = 0;
+  nSrcOfs = nCurrSize = nExtraSize = 0;
   while (nCurrSize < 128)
   {
-    if (lpFileFuncAddr[nCurrSize] == 0xC2)
+    if (lpFileFuncAddr[nSrcOfs] == 0xC2)
     {
+      nSrcOfs += 3;
       nCurrSize += 3;
       break;
     }
-    if (lpFileFuncAddr[nCurrSize] == 0xC3)
+    if (lpFileFuncAddr[nSrcOfs] == 0xC3)
     {
+      nSrcOfs++;
       nCurrSize++;
       break;
     }
-    if (lpFileFuncAddr[nCurrSize] == 0xE8)
+#if defined _M_IX86
+    //handle special case for Windows 10 x86
+    if (lpOsVerInfoW->dwMajorVersion >= 10 && lpFileFuncAddr[nSrcOfs] == 0xBA &&
+        lpFileFuncAddr[nSrcOfs+5] == 0xFF && lpFileFuncAddr[nSrcOfs+6] == 0xD2)
+    {
+      //call edx
+      dwRawAddr = HelperConvertVAToRaw(*((ULONG NKT_UNALIGNED*)(lpFileFuncAddr+nSrcOfs+1)), lpFileImgSect, nSecCount);
+      lpSrc = lpData + dwRawAddr;
+      nSrcOfs += 7;
+      nCurrSize += 5;
+      k = nDestSize = 0;
+      while (nDestSize < 128)
+      {
+        if (lpSrc[k] == 0xFF && lpSrc[k] == 0xE2)
+        {
+          nDestSize += 2;
+          break;
+        }
+        if (lpSrc[k] == 0xEA && lpSrc[k+5] == 0x33 && lpSrc[k+6] == 0x00)
+        {
+          k += 7;
+          nDestSize += 12;
+          continue;
+        }
+        nInstrLen = GetInstructionLength(lpSrc+k, 128, sizeof(SIZE_T)<<3, NULL);
+        k += nInstrLen;
+        nDestSize += nInstrLen;
+      }
+      //add to extra size
+      if (nDestSize >= 128)
+        return NULL; //unsupported size
+      nExtraSize += nDestSize;
+      continue;
+    }
+#endif
+    if (lpFileFuncAddr[nSrcOfs] == 0xE8)
     {
       //near call found, calculate size too
-      lpSrc = lpFileFuncAddr+nCurrSize+5 + (SSIZE_T) *((LONG NKT_UNALIGNED*)(lpFileFuncAddr+nCurrSize+1));
+      lpSrc = lpFileFuncAddr+nSrcOfs+5 + (SSIZE_T) *((LONG NKT_UNALIGNED*)(lpFileFuncAddr+nSrcOfs+1));
+      nSrcOfs += 5;
       nCurrSize += 5;
       k = 0;
       while (k < 128)
@@ -1628,43 +1681,93 @@ static LPVOID BuildOriginalNtCall(__in LPBYTE lpFileFuncAddr)
       if (k >= 128)
         return NULL; //unsupported size
       nExtraSize += k;
+      continue;
     }
-    else
-    {
-      nInstrLen = GetInstructionLength(lpFileFuncAddr+nCurrSize, 128, sizeof(SIZE_T)<<3, NULL);
-      nCurrSize += nInstrLen;
-    }
+    //no special behavior
+    nInstrLen = GetInstructionLength(lpFileFuncAddr+nSrcOfs, 128, sizeof(SIZE_T)<<3, NULL);
+    nSrcOfs += nInstrLen;
+    nCurrSize += nInstrLen;
   }
   if (nCurrSize >= 128)
     return NULL; //unsupported size
+  nMainCodeSize = nCurrSize;
   //allocate memory
   lpStub = (LPBYTE)::VirtualAlloc(NULL, nCurrSize+nExtraSize, MEM_RESERVE|MEM_COMMIT, PAGE_EXECUTE_READWRITE);
   if (lpStub != NULL)
   {
     //stage 2: copy
-    i = nExtraSize = 0;
-    while (i < 128)
+    nSrcOfs = nCurrSize = nExtraSize = 0;
+    while (nCurrSize < 128)
     {
-      if (lpFileFuncAddr[i] == 0xC2)
+      if (lpFileFuncAddr[nSrcOfs] == 0xC2)
       {
-        memcpy(lpStub+i, lpFileFuncAddr+i, 3);
-        i += 3;
+        memcpy(lpStub+nCurrSize, lpFileFuncAddr+nSrcOfs, 3);
+        nSrcOfs += 3;
+        nCurrSize += 3;
         break;
       }
-      if (lpFileFuncAddr[i] == 0xC3)
+      if (lpFileFuncAddr[nSrcOfs] == 0xC3)
       {
-        lpStub[i] = lpFileFuncAddr[i];
-        i++;
+        lpStub[nCurrSize] = lpFileFuncAddr[nSrcOfs];
+        nSrcOfs++;
+        nCurrSize++;
         break;
       }
-      if (lpFileFuncAddr[i] == 0xE8)
+#if defined _M_IX86
+      //handle special case for Windows 10 x86
+      if (lpOsVerInfoW->dwMajorVersion >= 10 && lpFileFuncAddr[nSrcOfs] == 0xBA &&
+          lpFileFuncAddr[nSrcOfs+5] == 0xFF && lpFileFuncAddr[nSrcOfs+6] == 0xD2)
+      {
+        //call edx
+        dwRawAddr = HelperConvertVAToRaw(*((ULONG NKT_UNALIGNED*)(lpFileFuncAddr+nSrcOfs+1)), lpFileImgSect, nSecCount);
+        lpStub[nCurrSize] = 0xE8;
+        *((ULONG NKT_UNALIGNED*)(lpStub+nCurrSize+1)) = (ULONG)(nMainCodeSize+nExtraSize - (nCurrSize+5));
+        lpSrc = lpData + dwRawAddr;
+        nSrcOfs += 7;
+        nCurrSize += 5;
+        lpDest = lpStub+nMainCodeSize+nExtraSize;
+        k = nDestSize = 0;
+        while (nDestSize < 128)
+        {
+          if (lpSrc[k] == 0xFF && lpSrc[k] == 0xE2)
+          {
+            memcpy(lpDest+nDestSize, lpSrc+k, 2);
+            nDestSize += 2;
+            break;
+          }
+          if (lpSrc[k] == 0xEA && lpSrc[k+5] == 0x33 && lpSrc[k+6] == 0x00)
+          {
+            lpDest[nDestSize] = 0x6A; lpDest[nDestSize+1] = 0x33;                     //push 0x0033
+            lpDest[nDestSize+2] = 0xE8;                                               //call +0
+            lpDest[nDestSize+3] = lpDest[nDestSize+4] =
+                lpDest[nDestSize+5] = lpDest[nDestSize+6] = 0x00;
+            lpDest[nDestSize+7] = 0x83;  lpDest[nDestSize+8] = 0x05;                  //add DWORD PTR [esp], 5
+            lpDest[nDestSize+9] = 0x24;  lpDest[nDestSize+10] = 0x04;
+            lpDest[nDestSize+11] = 0xCB;                                              //retf
+            k += 7;
+            nDestSize += 12;
+            continue;
+          }
+          nInstrLen = GetInstructionLength(lpSrc+k, 128, sizeof(SIZE_T)<<3, NULL);
+          memcpy(lpDest+nDestSize, lpSrc+k, nInstrLen);
+          k += nInstrLen;
+          nDestSize += nInstrLen;
+        }
+        //add to extra size
+        NKT_ASSERT(nDestSize < 128);
+        nExtraSize += nDestSize;
+        continue;
+      }
+#endif
+      if (lpFileFuncAddr[nSrcOfs] == 0xE8)
       {
         //near call found, relocate
-        lpStub[i] = 0xE8;
-        *((ULONG NKT_UNALIGNED*)(lpStub+i+1)) = (ULONG)(nCurrSize+nExtraSize - (i+5));
-        lpSrc = lpFileFuncAddr+i+5 + (SSIZE_T) *((LONG NKT_UNALIGNED*)(lpFileFuncAddr+i+1));
-        i += 5;
-        lpDest = lpStub+nCurrSize+nExtraSize;
+        lpStub[nCurrSize] = 0xE8;
+        *((ULONG NKT_UNALIGNED*)(lpStub+nCurrSize+1)) = (ULONG)(nMainCodeSize+nExtraSize - (nCurrSize+5));
+        lpSrc = lpFileFuncAddr+nSrcOfs+5 + (SSIZE_T) *((LONG NKT_UNALIGNED*)(lpFileFuncAddr+nSrcOfs+1));
+        nSrcOfs += 5;
+        nCurrSize += 5;
+        lpDest = lpStub+nMainCodeSize+nExtraSize;
         k = 0;
         while (k < 128)
         {
@@ -1687,13 +1790,13 @@ static LPVOID BuildOriginalNtCall(__in LPBYTE lpFileFuncAddr)
         //add to extra size
         NKT_ASSERT(k < 128);
         nExtraSize += k;
+        continue;
       }
-      else
-      {
-        nInstrLen = GetInstructionLength(lpFileFuncAddr+i, 128, sizeof(SIZE_T)<<3, NULL);
-        memcpy(lpStub+i, lpFileFuncAddr+i, nInstrLen);
-        i += nInstrLen;
-      }
+      //no special behavior
+      nInstrLen = GetInstructionLength(lpFileFuncAddr+nSrcOfs, 128, sizeof(SIZE_T)<<3, NULL);
+      memcpy(lpStub+nCurrSize, lpFileFuncAddr+nSrcOfs, nInstrLen);
+      nSrcOfs += nInstrLen;
+      nCurrSize += nInstrLen;
     }
     NKT_ASSERT(i == nCurrSize);
   }
