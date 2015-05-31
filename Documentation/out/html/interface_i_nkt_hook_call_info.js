@@ -1,0 +1,28 @@
+var interface_i_nkt_hook_call_info =
+[
+    [ "ChainDepth", "interface_i_nkt_hook_call_info.html#ad2ee208e5c1f06a8ebac192b33259f0e", null ],
+    [ "ChildsElapsedTimeMs", "interface_i_nkt_hook_call_info.html#aa25af1ae901a62e11979c5160fc7f46a", null ],
+    [ "Cookie", "interface_i_nkt_hook_call_info.html#a590a73ddfdbd81d877da19a689b1fb20", null ],
+    [ "CpuClockCycles", "interface_i_nkt_hook_call_info.html#a2e170b85a81756a393f5dde2e8879a7c", null ],
+    [ "CurrentTimeMs", "interface_i_nkt_hook_call_info.html#a73261f3a0db93c9a7e25b84aa09391b8", null ],
+    [ "CustomParams", "interface_i_nkt_hook_call_info.html#aefe704b121d4954ded3723aaa5502d51", null ],
+    [ "ElapsedTimeMs", "interface_i_nkt_hook_call_info.html#a9d2770ff81da3878cdb9673d7748bb0f", null ],
+    [ "FloatingRegister", "interface_i_nkt_hook_call_info.html#af96806fb0b5dc7bf76d8d75b814c4de4", null ],
+    [ "FloatingRegister", "interface_i_nkt_hook_call_info.html#a46a4817b1f9ce3c8267269e13b833998", null ],
+    [ "Hook", "interface_i_nkt_hook_call_info.html#a261d64cc120814c09ca7f1cbaf0c52c2", null ],
+    [ "IsPreCall", "interface_i_nkt_hook_call_info.html#a3ca35257406990492b87a4e482272426", null ],
+    [ "KernelModeTimeMs", "interface_i_nkt_hook_call_info.html#abd4cfac1a89716ed35c1a70db873e756", null ],
+    [ "LastError", "interface_i_nkt_hook_call_info.html#a6e0259784b16e800a2e79ae2464613e4", null ],
+    [ "LastError", "interface_i_nkt_hook_call_info.html#a15a2497f4e857cbfb5c6bfc209b02e5b", null ],
+    [ "Params", "interface_i_nkt_hook_call_info.html#a734bcd1c088e8c12555b48ce636bbe9b", null ],
+    [ "Process", "interface_i_nkt_hook_call_info.html#af585f2e339a7b008345ed1adfa515e7f", null ],
+    [ "ReadIntercallData", "interface_i_nkt_hook_call_info.html#a8fd636f155145e02fd22ceb52d8409be", null ],
+    [ "Register", "interface_i_nkt_hook_call_info.html#a188507442c87adbaf896aef1e0bd24aa", null ],
+    [ "Register", "interface_i_nkt_hook_call_info.html#a6fefebf56bbf45256d611816fc47a987", null ],
+    [ "Result", "interface_i_nkt_hook_call_info.html#af735cdb29bb183bca660b4cb569cc857", null ],
+    [ "SkipCall", "interface_i_nkt_hook_call_info.html#afb4cf509d71ccb05d0a4cdba8147e6c2", null ],
+    [ "StackTrace", "interface_i_nkt_hook_call_info.html#a10dc51f28364c13d0b858a88656be09c", null ],
+    [ "ThreadId", "interface_i_nkt_hook_call_info.html#a656383371a8c7fd9bd38aea631d778ed", null ],
+    [ "UserModeTimeMs", "interface_i_nkt_hook_call_info.html#a3b6aad78757f7ecd5699f3a4395a08de", null ],
+    [ "WriteIntercallData", "interface_i_nkt_hook_call_info.html#a82ca1ca0aa24306a677e26c39abadba6", null ]
+];

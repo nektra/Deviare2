@@ -1,0 +1,20 @@
+var searchData=
+[
+  ['erralreadyexists',['errAlreadyExists',['../_deviare_c_o_m_8idl.html#a4d8d1b2990b1191c7315527ce1a82872a7ff648c228c86278d0ff79e85705b45c',1,'DeviareCOM.idl']]],
+  ['erralreadyinitialized',['errAlreadyInitialized',['../_deviare_c_o_m_8idl.html#a4d8d1b2990b1191c7315527ce1a82872aa738477ccb3249a2389015aed0456b14',1,'DeviareCOM.idl']]],
+  ['errarithmeticoverflow',['errArithmeticOverflow',['../_deviare_c_o_m_8idl.html#a4d8d1b2990b1191c7315527ce1a82872a5f8e54bfdc5a3ddbb6c101a107a8546e',1,'DeviareCOM.idl']]],
+  ['errcancelled',['errCancelled',['../_deviare_c_o_m_8idl.html#a4d8d1b2990b1191c7315527ce1a82872aee4a1e1843f5d9145e4de0386ef283b0',1,'DeviareCOM.idl']]],
+  ['errcannotloaddatabase',['errCannotLoadDatabase',['../_deviare_c_o_m_8idl.html#a4d8d1b2990b1191c7315527ce1a82872af2ca369d8b9b931a373a6559f1bff372',1,'DeviareCOM.idl']]],
+  ['errexceptionraised',['errExceptionRaised',['../_deviare_c_o_m_8idl.html#a4d8d1b2990b1191c7315527ce1a82872a65f1ae7134e0891e2f84674a5875be1a',1,'DeviareCOM.idl']]],
+  ['errfail',['errFail',['../_deviare_c_o_m_8idl.html#a4d8d1b2990b1191c7315527ce1a82872abe4ee28a1eeccf90580cd2484ab6375d',1,'DeviareCOM.idl']]],
+  ['errhookisinactive',['errHookIsInactive',['../_deviare_c_o_m_8idl.html#a4d8d1b2990b1191c7315527ce1a82872adcb4460c522b03c516f9810c424a62f5',1,'DeviareCOM.idl']]],
+  ['errinvalidarg',['errInvalidArg',['../_deviare_c_o_m_8idl.html#a4d8d1b2990b1191c7315527ce1a82872aa15ffd31179953d94bd47fd34e67eb7c',1,'DeviareCOM.idl']]],
+  ['errinvalidtransportdata',['errInvalidTransportData',['../_deviare_c_o_m_8idl.html#a4d8d1b2990b1191c7315527ce1a82872a6c06440cd92418137810457f58eef303',1,'DeviareCOM.idl']]],
+  ['errnotfound',['errNotFound',['../_deviare_c_o_m_8idl.html#a4d8d1b2990b1191c7315527ce1a82872aa134bd296e6216a8f440045b6bfb7a41',1,'DeviareCOM.idl']]],
+  ['errnotimpl',['errNotImpl',['../_deviare_c_o_m_8idl.html#a4d8d1b2990b1191c7315527ce1a82872a7ec6fc066b338fece5696827cc39b9b5',1,'DeviareCOM.idl']]],
+  ['erronlyoneinstance',['errOnlyOneInstance',['../_deviare_c_o_m_8idl.html#a4d8d1b2990b1191c7315527ce1a82872a4b3c1220ac0d9b788059313c55106d33',1,'DeviareCOM.idl']]],
+  ['erroutofmemory',['errOutOfMemory',['../_deviare_c_o_m_8idl.html#a4d8d1b2990b1191c7315527ce1a82872ab4fdadbfa4306c5e125188ba0e108763',1,'DeviareCOM.idl']]],
+  ['errpartialcopy',['errPartialCopy',['../_deviare_c_o_m_8idl.html#a4d8d1b2990b1191c7315527ce1a82872ac2e1543e825473170142276b77598337',1,'DeviareCOM.idl']]],
+  ['errpointer',['errPointer',['../_deviare_c_o_m_8idl.html#a4d8d1b2990b1191c7315527ce1a82872ab1067a0d21ebd0429c0233ff6834a0d4',1,'DeviareCOM.idl']]],
+  ['errprotocolversionmismatch',['errProtocolVersionMismatch',['../_deviare_c_o_m_8idl.html#a4d8d1b2990b1191c7315527ce1a82872a5317082a02c9f05b72af0608238d21f5',1,'DeviareCOM.idl']]]
+];

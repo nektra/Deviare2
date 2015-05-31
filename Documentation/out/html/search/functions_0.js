@@ -1,0 +1,4 @@
+var searchData=
+[
+  ['_5fnewenum',['_NewEnum',['../interface_i_nkt_processes_enum.html#a6d33aa39c02d21b6ef0a96122c0556c1',1,'INktProcessesEnum::_NewEnum()'],['../interface_i_nkt_modules_enum.html#ac49a37d4b51453d6ea59f9d20123479b',1,'INktModulesEnum::_NewEnum()'],['../interface_i_nkt_exported_functions_enum.html#a02675802a9d7b631a6a84f729306b5b9',1,'INktExportedFunctionsEnum::_NewEnum()'],['../interface_i_nkt_hooks_enum.html#a45e4ed87305a2dcce74e1f2ca42c53ec',1,'INktHooksEnum::_NewEnum()'],['../interface_i_nkt_params_enum.html#a62999b0fcd09ce1321b8051f00db3d7f',1,'INktParamsEnum::_NewEnum()'],['../interface_i_nkt_db_objects_enum.html#ad4bde390400fce6668bdd1d05c7bed2c',1,'INktDbObjectsEnum::_NewEnum()'],['../interface_i_nkt_db_modules_enum.html#acc5ab4bb08d4a5a7be766220bbd02d8e',1,'INktDbModulesEnum::_NewEnum()']]]
+];

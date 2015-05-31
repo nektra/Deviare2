@@ -11,7 +11,8 @@
 Bin/*.lib
 Libs/*.idb
 obj/
-Documentation/
+Documentation/bin/*.exe
+Documentation/bin/*.cgi
 Source/MiscUtils/Certificate/nektra/
 Samples/CSharp/COMHookingBasis/obj/
 Samples/CSharp/Console/Aga.Controls/obj/

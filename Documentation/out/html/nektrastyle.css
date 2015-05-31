@@ -1,0 +1,70 @@
+body, table, div, p, dl {
+font: 400 14px/22px segoe ui, verdana, arial, sans-serif;;
+}
+
+.title {
+	font: 400 14px/28px segoe ui, verdana, arial, sans-serif;
+}
+
+#titlearea 
+{ 
+	background-color: #1F8292;
+		background: rgba(48,162,198,1);
+background: -moz-linear-gradient(top, rgba(48,162,198,1) 0%, rgba(32,135,154,1) 100%);
+background: -webkit-gradient(left top, left bottom, color-stop(0%, rgba(48,162,198,1)), color-stop(100%, rgba(32,135,154,1)));
+background: -webkit-linear-gradient(top, rgba(48,162,198,1) 0%, rgba(32,135,154,1) 100%);
+background: -o-linear-gradient(top, rgba(48,162,198,1) 0%, rgba(32,135,154,1) 100%);
+background: -ms-linear-gradient(top, rgba(48,162,198,1) 0%, rgba(32,135,154,1) 100%);
+background: linear-gradient(to bottom, rgba(48,162,198,1) 0%, rgba(32,135,154,1) 100%);
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#30a2c6', endColorstr='#20879a', GradientType=0 );
+	
+}
+
+#projectname
+{
+	font: 300% segoe ui, verdana, arial, sans-serif;
+	color: white;
+	
+	background: rgba(48,162,198,1);
+background: -moz-linear-gradient(top, rgba(48,162,198,1) 0%, rgba(32,135,154,1) 100%);
+background: -webkit-gradient(left top, left bottom, color-stop(0%, rgba(48,162,198,1)), color-stop(100%, rgba(32,135,154,1)));
+background: -webkit-linear-gradient(top, rgba(48,162,198,1) 0%, rgba(32,135,154,1) 100%);
+background: -o-linear-gradient(top, rgba(48,162,198,1) 0%, rgba(32,135,154,1) 100%);
+background: -ms-linear-gradient(top, rgba(48,162,198,1) 0%, rgba(32,135,154,1) 100%);
+background: linear-gradient(to bottom, rgba(48,162,198,1) 0%, rgba(32,135,154,1) 100%);
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#30a2c6', endColorstr='#20879a', GradientType=0 );
+}
+
+#nav-tree a {
+font-family:  segoe ui, verdana, arial, sans-serif;
+}
+
+.memname {
+	font-size: large;
+}
+
+.memproto, dl.reflist dt
+{
+	border: none;
+	text-shadow: none;
+	background-image: none;
+	background-color: #DEEEF1;
+	box-shadow: none;
+	-webkit-box-shadow: none;
+	
+}
+
+.memdoc, dl.reflist dd 
+{
+	border: none;
+	background-image: none;
+	box-shadow: none;
+	-webkit-box-shadow: none;
+}
+
+div.contents
+{
+	margin-top: 0px;
+	margin-left: 0px;
+	margin-right: 0px;
+}

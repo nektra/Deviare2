@@ -1,0 +1,25 @@
+var searchData=
+[
+  ['machine',['Machine',['../interface_i_nkt_struct_p_e_file_header.html#aa250a7ad95d13c85331506da3fe9a1b4',1,'INktStructPEFileHeader']]],
+  ['magic',['Magic',['../interface_i_nkt_struct_p_e_optional_header.html#af6f185dc1d31f25204a3d3190b5cba9d',1,'INktStructPEOptionalHeader']]],
+  ['majorimageversion',['MajorImageVersion',['../interface_i_nkt_struct_p_e_optional_header.html#ae2135a6888d7eebcaeda82ce82374f41',1,'INktStructPEOptionalHeader']]],
+  ['majorlinkerversion',['MajorLinkerVersion',['../interface_i_nkt_struct_p_e_optional_header.html#a8bff04d3b5b4373df860dd4a9b0ed467',1,'INktStructPEOptionalHeader']]],
+  ['majoroperatingsystemversion',['MajorOperatingSystemVersion',['../interface_i_nkt_struct_p_e_optional_header.html#a826c959dde12bd96c58aa1443436997a',1,'INktStructPEOptionalHeader']]],
+  ['majorsubsystemversion',['MajorSubsystemVersion',['../interface_i_nkt_struct_p_e_optional_header.html#abc29eccc66effe6684a9e3dfc4043010',1,'INktStructPEOptionalHeader']]],
+  ['memory',['Memory',['../interface_i_nkt_process.html#a8d228a7f797fe6e24e18c4cdd6f75c66',1,'INktProcess::Memory()'],['../interface_i_nkt_param.html#a24a70a27e371406bdcde188e93e5a9c0',1,'INktParam::Memory()']]],
+  ['minorimageversion',['MinorImageVersion',['../interface_i_nkt_struct_p_e_optional_header.html#a5bd5f617610bb8fd7caa25bc9b28b9c8',1,'INktStructPEOptionalHeader']]],
+  ['minorlinkerversion',['MinorLinkerVersion',['../interface_i_nkt_struct_p_e_optional_header.html#a9d65665d64e0432d196c20bd3ba01ed4',1,'INktStructPEOptionalHeader']]],
+  ['minoroperatingsystemversion',['MinorOperatingSystemVersion',['../interface_i_nkt_struct_p_e_optional_header.html#a43c13e72abe9aa2f8ad05f2f1822d7af',1,'INktStructPEOptionalHeader']]],
+  ['minorsubsystemversion',['MinorSubsystemVersion',['../interface_i_nkt_struct_p_e_optional_header.html#ab91790241dcc2f02b6533e9bc1c54be3',1,'INktStructPEOptionalHeader']]],
+  ['module',['Module',['../interface_i_nkt_stack_trace.html#ae11c8915511b34d8b5c97116dfd42b5a',1,'INktStackTrace']]],
+  ['modulebyaddress',['ModuleByAddress',['../interface_i_nkt_process.html#aa721240dd794de2256c9d7aaaa21fd83',1,'INktProcess']]],
+  ['modulebyname',['ModuleByName',['../interface_i_nkt_process.html#aef2dcd91ead6b0ffd889b299e25769d8',1,'INktProcess']]],
+  ['modulename',['ModuleName',['../interface_i_nkt_exported_function.html#a008a984d96f263c5d4b89c896920d90f',1,'INktExportedFunction::ModuleName()'],['../interface_i_nkt_pdb_function_symbol.html#aedbb172c6d2872c33c58b3d7a37e6be5',1,'INktPdbFunctionSymbol::ModuleName()']]],
+  ['modules',['Modules',['../interface_i_nkt_process.html#a0d61347c9cefdb1c2c5e31c49e64d647',1,'INktProcess']]],
+  ['mtna',['mtNA',['../_deviare_c_o_m_8idl.html#ad571bdfd8f93e93c7148a8bb7a834537abde0ce45733152fd73ae1b93b5d894bb',1,'DeviareCOM.idl']]],
+  ['mtprivate',['mtPrivate',['../_deviare_c_o_m_8idl.html#ad571bdfd8f93e93c7148a8bb7a834537a4d1529e1ebedd3c8e5b92be2c8bbf868',1,'DeviareCOM.idl']]],
+  ['mtprotected',['mtProtected',['../_deviare_c_o_m_8idl.html#ad571bdfd8f93e93c7148a8bb7a834537a677242924c2aa18cc6901113acf9aa9b',1,'DeviareCOM.idl']]],
+  ['mtpublic',['mtPublic',['../_deviare_c_o_m_8idl.html#ad571bdfd8f93e93c7148a8bb7a834537adad643d4493729ba9c58b1bcb806adfc',1,'DeviareCOM.idl']]],
+  ['my_5fvariant_5ffalse',['MY_VARIANT_FALSE',['../_deviare_c_o_m_8idl.html#aa653314cc120a0d2157582fc6311ecd8',1,'DeviareCOM.idl']]],
+  ['my_5fvariant_5ftrue',['MY_VARIANT_TRUE',['../_deviare_c_o_m_8idl.html#ac82a9cd23697dce53b75650d565d08c5',1,'DeviareCOM.idl']]]
+];
