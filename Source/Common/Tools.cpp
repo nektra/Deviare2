@@ -958,9 +958,9 @@ HRESULT CNktDvTools::SuspendAfterCreateProcessW(__out LPHANDLE lphReadyExecution
   hKernel32DLL = ::GetModuleHandleW(L"kernel32.dll");
   if (hKernel32DLL == NULL)
     return E_FAIL;
-  nSetEventAddr = (SIZE_T)::GetProcAddress(hKernel32DLL, "SetEvent");
-  nWaitMultObjAddr = (SIZE_T)::GetProcAddress(hKernel32DLL, "WaitForMultipleObjects");
-  nCloseHandleAddr = (SIZE_T)::GetProcAddress(hKernel32DLL, "CloseHandle");
+  nSetEventAddr = (SIZE_T)GetApiAddress(hKernel32DLL, "SetEvent", TRUE);
+  nWaitMultObjAddr = (SIZE_T)GetApiAddress(hKernel32DLL, "WaitForMultipleObjects", TRUE);
+  nCloseHandleAddr = (SIZE_T)GetApiAddress(hKernel32DLL, "CloseHandle", TRUE);
   if (nSetEventAddr == 0 || nWaitMultObjAddr == 0 || nCloseHandleAddr == 0)
     return E_FAIL;
 #elif defined _M_X64
@@ -1092,9 +1092,9 @@ HRESULT CNktDvTools::SuspendAfterCreateProcessW(__out LPHANDLE lphReadyExecution
     hKernel32DLL = ::GetModuleHandleW(L"kernel32.dll");
     if (hKernel32DLL == NULL)
       return E_FAIL;
-    nSetEventAddr = (SIZE_T)::GetProcAddress(hKernel32DLL, "SetEvent");
-    nWaitMultObjAddr = (SIZE_T)::GetProcAddress(hKernel32DLL, "WaitForMultipleObjects");
-    nCloseHandleAddr = (SIZE_T)::GetProcAddress(hKernel32DLL, "CloseHandle");
+    nSetEventAddr = (SIZE_T)GetApiAddress(hKernel32DLL, "SetEvent", TRUE);
+    nWaitMultObjAddr = (SIZE_T)GetApiAddress(hKernel32DLL, "WaitForMultipleObjects", TRUE);
+    nCloseHandleAddr = (SIZE_T)GetApiAddress(hKernel32DLL, "CloseHandle", TRUE);
     if (nSetEventAddr == 0 || nWaitMultObjAddr == 0 || nCloseHandleAddr == 0)
       return E_FAIL;
   }
