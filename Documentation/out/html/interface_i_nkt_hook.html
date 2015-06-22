@@ -110,13 +110,13 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a1fd202208416f40ca2a0c58939c7e39a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the hook id.  <a href="#a1fd202208416f40ca2a0c58939c7e39a">More...</a><br /></td></tr>
 <tr class="separator:a1fd202208416f40ca2a0c58939c7e39a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a977e306de17f060c74e49d3654d8ed48"><td class="memItemLeft" align="right" valign="top">HRESULT&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="interface_i_nkt_hook.html#a977e306de17f060c74e49d3654d8ed48">Destroy</a> ()</td></tr>
-<tr class="memdesc:a977e306de17f060c74e49d3654d8ed48"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destroys the hook and detachs from processes.  <a href="#a977e306de17f060c74e49d3654d8ed48">More...</a><br /></td></tr>
+<tr class="memdesc:a977e306de17f060c74e49d3654d8ed48"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destroys the hook and detaches from processes.  <a href="#a977e306de17f060c74e49d3654d8ed48">More...</a><br /></td></tr>
 <tr class="separator:a977e306de17f060c74e49d3654d8ed48"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8cd97424ff6f5e3045ce6fd19ed003e3"><td class="memItemLeft" align="right" valign="top">HRESULT&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="interface_i_nkt_hook.html#a8cd97424ff6f5e3045ce6fd19ed003e3">Attach</a> ([in] VARIANT procOrId, [in, defaultvalue(<a class="el" href="_deviare_c_o_m_8idl.html#aa653314cc120a0d2157582fc6311ecd8">MY_VARIANT_FALSE</a>)] VARIANT_BOOL sync)</td></tr>
-<tr class="memdesc:a8cd97424ff6f5e3045ce6fd19ed003e3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Attachs hook to a process.  <a href="#a8cd97424ff6f5e3045ce6fd19ed003e3">More...</a><br /></td></tr>
+<tr class="memdesc:a8cd97424ff6f5e3045ce6fd19ed003e3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Attaches hook to a process.  <a href="#a8cd97424ff6f5e3045ce6fd19ed003e3">More...</a><br /></td></tr>
 <tr class="separator:a8cd97424ff6f5e3045ce6fd19ed003e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0c5c82d2e6f835b8fe80663153f1072f"><td class="memItemLeft" align="right" valign="top">HRESULT&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="interface_i_nkt_hook.html#a0c5c82d2e6f835b8fe80663153f1072f">Detach</a> ([in] VARIANT procOrId, [in, defaultvalue(<a class="el" href="_deviare_c_o_m_8idl.html#aa653314cc120a0d2157582fc6311ecd8">MY_VARIANT_FALSE</a>)] VARIANT_BOOL sync)</td></tr>
-<tr class="memdesc:a0c5c82d2e6f835b8fe80663153f1072f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Detachs hook from process.  <a href="#a0c5c82d2e6f835b8fe80663153f1072f">More...</a><br /></td></tr>
+<tr class="memdesc:a0c5c82d2e6f835b8fe80663153f1072f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Detaches hook from process.  <a href="#a0c5c82d2e6f835b8fe80663153f1072f">More...</a><br /></td></tr>
 <tr class="separator:a0c5c82d2e6f835b8fe80663153f1072f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6a62ada5961270473fab8d7d8d20529a"><td class="memItemLeft" align="right" valign="top">HRESULT&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="interface_i_nkt_hook.html#a6a62ada5961270473fab8d7d8d20529a">Enable</a> ([in] VARIANT procOrId, [in, defaultvalue(<a class="el" href="_deviare_c_o_m_8idl.html#aa653314cc120a0d2157582fc6311ecd8">MY_VARIANT_FALSE</a>)] VARIANT_BOOL enable, [in, defaultvalue(<a class="el" href="_deviare_c_o_m_8idl.html#aa653314cc120a0d2157582fc6311ecd8">MY_VARIANT_FALSE</a>)] VARIANT_BOOL sync)</td></tr>
 <tr class="memdesc:a6a62ada5961270473fab8d7d8d20529a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enables or disables an attached process.  <a href="#a6a62ada5961270473fab8d7d8d20529a">More...</a><br /></td></tr>
@@ -248,7 +248,7 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Attachs hook to a process. </p>
+<p>Attaches hook to a process. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">procOrId</td><td>Variant specifying to which process to attach. Can be either <a class="el" href="interface_i_nkt_process.html" title="Exposes methods for accessing system processes. ">INktProcess</a> pointer or numeric PID value. </td></tr>
@@ -281,7 +281,7 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Destroys the hook and detachs from processes. </p>
+<p>Destroys the hook and detaches from processes. </p>
 <dl class="section return"><dt>Returns</dt><dd><code>S_OK</code> on success. </dd></dl>
 
 </div>
@@ -310,7 +310,7 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Detachs hook from process. </p>
+<p>Detaches hook from process. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">procOrId</td><td>Variant specifying to which process to attach. Can be either <a class="el" href="interface_i_nkt_process.html" title="Exposes methods for accessing system processes. ">INktProcess</a> pointer or numeric PID value. </td></tr>

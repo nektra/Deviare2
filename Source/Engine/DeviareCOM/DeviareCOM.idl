@@ -1117,7 +1117,7 @@ interface INktProcess : INktObject
   /**
    * \fn	HRESULT INktProcess::Memory([out, retval] INktProcessMemory **ppProcMem);
    *
-   * \brief	Get a interface to access the process memory.
+   * \brief	Get an interface to access the process memory.
    *
    * \param [in,out]	ppProcMem	A pointer to store the INktProcessMemory interface.
    *
@@ -2336,7 +2336,7 @@ interface INktHook : INktObject
   /**
    * \fn	HRESULT INktHook::Destroy();
    *
-   * \brief	Destroys the hook and detachs from processes.
+   * \brief	Destroys the hook and detaches from processes.
    *
    * \return \c S_OK on success.
    */
@@ -2349,7 +2349,7 @@ interface INktHook : INktObject
    * \fn	HRESULT INktHook::Attach([in] VARIANT procOrId, [in,
    * 		defaultvalue(MY_VARIANT_FALSE)] VARIANT_BOOL sync);
    *
-   * \brief	Attachs hook to a process. 
+   * \brief	Attaches hook to a process. 
    *
    * \param	procOrId	Variant specifying to which process to attach. Can be either ::INktProcess pointer or numeric PID value.
    * \param	sync		If \c TRUE, this call waits for operation completion before returning.
@@ -2361,7 +2361,7 @@ interface INktHook : INktObject
    * \return \c E_FAIL on general error.
    */
 
-  [helpstring("Attachs a process to the hook. Can be a used with process object or process id"),
+  [helpstring("Attaches a process to the hook. Can be a used with process object or process id"),
    id(dispidNktHookAttach)]
   HRESULT Attach([in] VARIANT procOrId, [in, defaultvalue(MY_VARIANT_FALSE)] VARIANT_BOOL sync);
 
@@ -2369,7 +2369,7 @@ interface INktHook : INktObject
    * \fn	HRESULT INktHook::Detach([in] VARIANT procOrId, [in,
    * 		defaultvalue(MY_VARIANT_FALSE)] VARIANT_BOOL sync);
    *
-   * \brief	Detachs hook from process.
+   * \brief	Detaches hook from process.
    *
    * \param	procOrId	Variant specifying to which process to attach. Can be either ::INktProcess pointer or numeric PID value.
    * \param	sync		If \c TRUE, this call waits for operation completion before returning.
@@ -2382,7 +2382,7 @@ interface INktHook : INktObject
    * \return \c E_FAIL on general error.
    */
 
-  [helpstring("Detachs a process to the hook. Can be a used with process object or process id"),
+  [helpstring("Detaches a process to the hook. Can be a used with process object or process id"),
    id(dispidNktHookDetach)]
   HRESULT Detach([in] VARIANT procOrId, [in, defaultvalue(MY_VARIANT_FALSE)] VARIANT_BOOL sync);
 
@@ -4784,7 +4784,7 @@ interface INktHookCallInfo : INktObject
   /**
   * \fn ReadIntercallData([in] my_ssize_t destAddr, [in] my_ssize_t offset, [in] my_ssize_t bytes);
   *
-  * \brief Retrieves user-defined data that is mantained between and post call stages. Use WriteIntercallData to store this data.
+  * \brief Retrieves user-defined data that is mantained between pre and post call stages. Use WriteIntercallData to store this data.
   * \sa WriteIntercallData
   *
   * \param destAddr Pointer-sized variable indicating address to store retrieved data.
@@ -4807,7 +4807,7 @@ interface INktHookCallInfo : INktObject
   /**
   * \fn WriteIntercallData([in] my_ssize_t destAddr, [in] my_ssize_t offset, [in] my_ssize_t bytes);
   *
-  * \brief Stores user-defined data that is mantained between and post call stages. Use ReadIntercallData to read this data.
+  * \brief Stores user-defined data that is mantained between pre and post call stages. Use ReadIntercallData to read this data.
   * \sa ReadIntercallData
   *
   * \param destAddr Pointer-sized variable indicating address containing data to store.
@@ -5971,7 +5971,7 @@ interface INktSpyMgr : INktObject
   /**
    * \fn	HRESULT INktSpyMgr::CreateHooksCollection([out, retval] INktHooksEnum **ppHooksEnum);
    *
-   * \brief	Creates a hook collection object.   Hooks collections are a convenience feature for grouping several hooks in one manageable interface. 
+   * \brief	Creates a hook collection object.   Collections of hooks are a convenience feature for grouping several hooks in one manageable interface. 
    *
    *
    * \param [in,out]	ppHooksEnum	A pointer to receive the INktHooksEnum  enumerator interface. 
@@ -6012,7 +6012,7 @@ interface INktSpyMgr : INktObject
    * \fn	HRESULT INktSpyMgr::CreateHookForAddress([in] my_ssize_t addr, [in] BSTR functionName,
    * 		[in] LONG hookFlags, [out, retval] INktHook **ppHook);
    *
-   * \brief	Creates a hook to intercept a function specified by it's memory address.
+   * \brief	Creates a hook to intercept a function specified by its memory address.
    *
    * \param	addr			  	The memory address related to the function to intercept. 
    * \param	functionName			  	An optional function name to associate to this hook.
@@ -7127,7 +7127,7 @@ interface INktHookCallInfoPlugin : IDispatch
   /**
   * \fn ReadIntercallData([in] my_ssize_t destAddr, [in] my_ssize_t offset, [in] my_ssize_t bytes);
   *
-  * \brief Retrieves user-defined data that is mantained between and post call stages. Use WriteIntercallData to store this data.
+  * \brief Retrieves user-defined data that is mantained between pre and post call stages. Use WriteIntercallData to store this data.
   * \sa WriteIntercallData
   *
   * \param destAddr Pointer-sized variable indicating address to store retrieved data.
@@ -7151,7 +7151,7 @@ interface INktHookCallInfoPlugin : IDispatch
   /**
   * \fn WriteIntercallData([in] my_ssize_t destAddr, [in] my_ssize_t offset, [in] my_ssize_t bytes);
   *
-  * \brief Stores user-defined data that is mantained between and post call stages. Use ReadIntercallData to read this data.
+  * \brief Stores user-defined data that is mantained between pre and post call stages. Use ReadIntercallData to read this data.
   * \sa ReadIntercallData
   *
   * \param destAddr Pointer-sized variable indicating address containing data to store.
