@@ -128,13 +128,13 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a00ad3139833d3e91774475a20b0466a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves a hook enumerator object representing the existent hooks on this engine instance.  <a href="#a00ad3139833d3e91774475a20b0466a3">More...</a><br /></td></tr>
 <tr class="separator:a00ad3139833d3e91774475a20b0466a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaa9b037c2fe58be5ab48bcd0ffd5e7e8"><td class="memItemLeft" align="right" valign="top">HRESULT&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="interface_i_nkt_spy_mgr.html#aaa9b037c2fe58be5ab48bcd0ffd5e7e8">CreateHooksCollection</a> ([out, retval] <a class="el" href="interface_i_nkt_hooks_enum.html">INktHooksEnum</a> **ppHooksColl)</td></tr>
-<tr class="memdesc:aaa9b037c2fe58be5ab48bcd0ffd5e7e8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a hook collection object. Hooks collections are a convenience feature for grouping several hooks in one manageable interface.  <a href="#aaa9b037c2fe58be5ab48bcd0ffd5e7e8">More...</a><br /></td></tr>
+<tr class="memdesc:aaa9b037c2fe58be5ab48bcd0ffd5e7e8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a hook collection object. Collections of hooks are a convenience feature for grouping several hooks in one manageable interface.  <a href="#aaa9b037c2fe58be5ab48bcd0ffd5e7e8">More...</a><br /></td></tr>
 <tr class="separator:aaa9b037c2fe58be5ab48bcd0ffd5e7e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4566f4a2e83409be783658eb2fa68de7"><td class="memItemLeft" align="right" valign="top">HRESULT&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="interface_i_nkt_spy_mgr.html#a4566f4a2e83409be783658eb2fa68de7">CreateHook</a> ([in] VARIANT func, [in] LONG hookFlags, [out, retval] <a class="el" href="interface_i_nkt_hook.html">INktHook</a> **ppHook)</td></tr>
 <tr class="memdesc:a4566f4a2e83409be783658eb2fa68de7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a hook to intercept the provided function name or an <a class="el" href="interface_i_nkt_exported_function.html" title="Exposes methods for accessing exported functions. ">INktExportedFunction</a> compatible object.  <a href="#a4566f4a2e83409be783658eb2fa68de7">More...</a><br /></td></tr>
 <tr class="separator:a4566f4a2e83409be783658eb2fa68de7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aceba92965a3615860fe674b6c8be47ad"><td class="memItemLeft" align="right" valign="top">HRESULT&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="interface_i_nkt_spy_mgr.html#aceba92965a3615860fe674b6c8be47ad">CreateHookForAddress</a> ([in] my_ssize_t addr, [in] BSTR functionName, [in] LONG hookFlags, [out, retval] <a class="el" href="interface_i_nkt_hook.html">INktHook</a> **ppHook)</td></tr>
-<tr class="memdesc:aceba92965a3615860fe674b6c8be47ad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a hook to intercept a function specified by it's memory address.  <a href="#aceba92965a3615860fe674b6c8be47ad">More...</a><br /></td></tr>
+<tr class="memdesc:aceba92965a3615860fe674b6c8be47ad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a hook to intercept a function specified by its memory address.  <a href="#aceba92965a3615860fe674b6c8be47ad">More...</a><br /></td></tr>
 <tr class="separator:aceba92965a3615860fe674b6c8be47ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6b47205814f75e7bfae6b88dd518caa3"><td class="memItemLeft" align="right" valign="top">HRESULT&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="interface_i_nkt_spy_mgr.html#a6b47205814f75e7bfae6b88dd518caa3">DestroyHook</a> ([in] <a class="el" href="interface_i_nkt_hook.html">INktHook</a> *hook)</td></tr>
 <tr class="memdesc:a6b47205814f75e7bfae6b88dd518caa3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destroys a hook.  <a href="#a6b47205814f75e7bfae6b88dd518caa3">More...</a><br /></td></tr>
@@ -461,7 +461,7 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Creates a hook to intercept a function specified by it's memory address. </p>
+<p>Creates a hook to intercept a function specified by its memory address. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir"></td><td class="paramname">addr</td><td>The memory address related to the function to intercept. </td></tr>
@@ -495,7 +495,7 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Creates a hook collection object. Hooks collections are a convenience feature for grouping several hooks in one manageable interface. </p>
+<p>Creates a hook collection object. Collections of hooks are a convenience feature for grouping several hooks in one manageable interface. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in,out]</td><td class="paramname">ppHooksEnum</td><td>A pointer to receive the <a class="el" href="interface_i_nkt_hooks_enum.html" title="Exposes methods for enumerating INktHook based collections. ">INktHooksEnum</a> enumerator interface.</td></tr>
