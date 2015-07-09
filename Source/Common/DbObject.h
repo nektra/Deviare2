@@ -181,10 +181,7 @@ private:
     ULONG nNameOffset;
     ULONG nSize, nAlign;
     ULONG nArraySizeHint;
-    union {
-      ULONG nStructUnionFlags;
-      ULONG nFunctionFlags;
-    };
+    ULONG nStructUnionFunctionFlags;
     ULONG nNamespaceOffset;
     ULONGLONG nHashValue;
   } STORED_DATA, *LPSTORED_DATA;
@@ -260,7 +257,7 @@ private:
 
   struct tagCreationHelpers {
     ULONG nId, nClass, nFundamentalType, nSize, nAlign;
-    ULONG nArraySizeHint, nStructUnionFlags, nFunctionFlags;
+    ULONG nArraySizeHint, nStructUnionFunctionFlags;
     ULONG nStructOffset, nStructBits, nEnumValue, nFlags;
     LPWSTR szNameW;
     LPWSTR szNamespaceW;

@@ -6,7 +6,7 @@
 
 
  /* File created by MIDL compiler version 7.00.0555 */
-/* at Tue Jun 16 15:10:38 2015
+/* at Thu Jul 09 10:57:24 2015
  */
 /* Compiler settings for DeviareCOM.idl:
     Os, W1, Zp8, env=Win64 (32b run), target_arch=AMD64 7.00.0555 

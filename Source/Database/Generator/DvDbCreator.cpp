@@ -472,7 +472,7 @@ VOID CDvDbCreator::BuildHashes_GetObjectHash(SIZE_T nIndex, SIZE_T nDepth, Fnv64
   nTemp32 = aObjectsList[nIndex]->sCreationHelpers.nArraySizeHint;
   nHashValue = fnv_64a_buf(&nTemp32, sizeof(nTemp32), nHashValue);
   //----
-  nTemp32 = aObjectsList[nIndex]->sCreationHelpers.nStructUnionFlags;
+  nTemp32 = aObjectsList[nIndex]->sCreationHelpers.nStructUnionFunctionFlags;
   nHashValue = fnv_64a_buf(&nTemp32, sizeof(nTemp32), nHashValue);
   //----
   nChildsCount = aObjectsList[nIndex]->sCreationHelpers.aChildsList.GetCount();
@@ -596,7 +596,7 @@ sd_err_cantwritedb:
     sDboData.nSize = aObjectsList[i]->sCreationHelpers.nSize;
     sDboData.nAlign = aObjectsList[i]->sCreationHelpers.nAlign;
     sDboData.nArraySizeHint = aObjectsList[i]->sCreationHelpers.nArraySizeHint;
-    sDboData.nStructUnionFlags = aObjectsList[i]->sCreationHelpers.nStructUnionFlags;
+    sDboData.nStructUnionFunctionFlags = aObjectsList[i]->sCreationHelpers.nStructUnionFunctionFlags;
     sDboData.nHashValue = aObjectsList[i]->sCreationHelpers.nHashValue;
     //store data
     if (AddDbData(&sDboData, sizeof(sDboData), &(sDest.lpPtr), &(sDest.nLen), &(sDest.nSize)) == FALSE)
@@ -1362,13 +1362,13 @@ bopf_err_nomem:
 VOID CDvDbCreator::MapStructUnionFlags(CNktDvDbObject *lpDbObj, ULONG nFlags)
 {
   if ((nFlags & NKT_DBOBJFLAG_HasConstructor) != 0)
-    lpDbObj->sCreationHelpers.nStructUnionFlags |= CNktDvDbObject::suflgHasConstructor;
+    lpDbObj->sCreationHelpers.nStructUnionFunctionFlags |= CNktDvDbObject::suflgHasConstructor;
   if ((nFlags & NKT_DBOBJFLAG_HasDestructor) != 0)
-    lpDbObj->sCreationHelpers.nStructUnionFlags |= CNktDvDbObject::suflgHasDestructor;
+    lpDbObj->sCreationHelpers.nStructUnionFunctionFlags |= CNktDvDbObject::suflgHasDestructor;
   if ((nFlags & NKT_DBOBJFLAG_HasVirtual) != 0)
-    lpDbObj->sCreationHelpers.nStructUnionFlags |= CNktDvDbObject::suflgHasVirtual;
+    lpDbObj->sCreationHelpers.nStructUnionFunctionFlags |= CNktDvDbObject::suflgHasVirtual;
   if ((nFlags & NKT_DBOBJFLAG_HasInheritance) != 0)
-    lpDbObj->sCreationHelpers.nStructUnionFlags |= CNktDvDbObject::suflgHasInheritance;
+    lpDbObj->sCreationHelpers.nStructUnionFunctionFlags |= CNktDvDbObject::suflgHasInheritance;
   return;
 }
 
@@ -1376,41 +1376,41 @@ VOID CDvDbCreator::MapFunctionFlags(CNktDvDbObject *lpDbObj, ULONG nFlags)
 {
   switch (nFlags & NKT_DBOBJFLAG_CALLINGTYPE_MASK) {
     case NKT_DBOBJFLAG_CDecl:
-      lpDbObj->sCreationHelpers.nFunctionFlags |= CNktDvDbObjectNoRef::ccCDecl;
+      lpDbObj->sCreationHelpers.nStructUnionFunctionFlags |= CNktDvDbObjectNoRef::ccCDecl;
       break;
     case NKT_DBOBJFLAG_FastCall:
-      lpDbObj->sCreationHelpers.nFunctionFlags |= CNktDvDbObjectNoRef::ccFastCall;
+      lpDbObj->sCreationHelpers.nStructUnionFunctionFlags |= CNktDvDbObjectNoRef::ccFastCall;
       break;
     case NKT_DBOBJFLAG_ThisCall:
-      lpDbObj->sCreationHelpers.nFunctionFlags |= CNktDvDbObjectNoRef::ccThisCall;
+      lpDbObj->sCreationHelpers.nStructUnionFunctionFlags |= CNktDvDbObjectNoRef::ccThisCall;
       break;
     default:
-      lpDbObj->sCreationHelpers.nFunctionFlags |= CNktDvDbObjectNoRef::ccStdCall;
+      lpDbObj->sCreationHelpers.nStructUnionFunctionFlags |= CNktDvDbObjectNoRef::ccStdCall;
       break;
   }
   if ((nFlags & NKT_DBOBJFLAG_IsExternal) != 0)
-    lpDbObj->sCreationHelpers.nFunctionFlags |= CNktDvDbObject::fflgIsExternal;
+    lpDbObj->sCreationHelpers.nStructUnionFunctionFlags |= CNktDvDbObject::fflgIsExternal;
   if ((nFlags & NKT_DBOBJFLAG_IsDllImport) != 0)
-    lpDbObj->sCreationHelpers.nFunctionFlags |= CNktDvDbObject::fflgIsDllImport;
+    lpDbObj->sCreationHelpers.nStructUnionFunctionFlags |= CNktDvDbObject::fflgIsDllImport;
   if ((nFlags & NKT_DBOBJFLAG_IsPure) != 0)
-    lpDbObj->sCreationHelpers.nFunctionFlags |= CNktDvDbObject::fflgIsPure;
+    lpDbObj->sCreationHelpers.nStructUnionFunctionFlags |= CNktDvDbObject::fflgIsPure;
   if ((nFlags & NKT_DBOBJFLAG_Throw) != 0)
-    lpDbObj->sCreationHelpers.nFunctionFlags |= CNktDvDbObject::fflgIsThrow;
+    lpDbObj->sCreationHelpers.nStructUnionFunctionFlags |= CNktDvDbObject::fflgIsThrow;
   if ((nFlags & NKT_DBOBJFLAG_NoThrow) != 0)
-    lpDbObj->sCreationHelpers.nFunctionFlags |= CNktDvDbObject::fflgIsNoThrow;
+    lpDbObj->sCreationHelpers.nStructUnionFunctionFlags |= CNktDvDbObject::fflgIsNoThrow;
   if ((nFlags & NKT_DBOBJFLAG_NoReturn) != 0)
-    lpDbObj->sCreationHelpers.nFunctionFlags |= CNktDvDbObject::fflgIsNoReturn;
+    lpDbObj->sCreationHelpers.nStructUnionFunctionFlags |= CNktDvDbObject::fflgIsNoReturn;
   if ((nFlags & NKT_DBOBJFLAG_IsConst) != 0)
-    lpDbObj->sCreationHelpers.nFunctionFlags |= CNktDvDbObject::fflgIsConst;
+    lpDbObj->sCreationHelpers.nStructUnionFunctionFlags |= CNktDvDbObject::fflgIsConst;
   if ((nFlags & NKT_DBOBJFLAG_Deprecated) != 0)
-    lpDbObj->sCreationHelpers.nFunctionFlags |= CNktDvDbObject::fflgIsDeprecated;
+    lpDbObj->sCreationHelpers.nStructUnionFunctionFlags |= CNktDvDbObject::fflgIsDeprecated;
   if ((nFlags & NKT_DBOBJFLAG_NonNull) != 0)
-    lpDbObj->sCreationHelpers.nFunctionFlags |= CNktDvDbObject::fflgIsNonNull;
+    lpDbObj->sCreationHelpers.nStructUnionFunctionFlags |= CNktDvDbObject::fflgIsNonNull;
   if ((nFlags & NKT_DBOBJFLAG_Malloc) != 0)
-    lpDbObj->sCreationHelpers.nFunctionFlags |= CNktDvDbObject::fflgIsMalloc;
+    lpDbObj->sCreationHelpers.nStructUnionFunctionFlags |= CNktDvDbObject::fflgIsMalloc;
   if ((nFlags & NKT_DBOBJFLAG_IsDllExport) != 0)
-    lpDbObj->sCreationHelpers.nFunctionFlags |= CNktDvDbObject::fflgIsMalloc;
+    lpDbObj->sCreationHelpers.nStructUnionFunctionFlags |= CNktDvDbObject::fflgIsMalloc;
   if ((nFlags & NKT_DBOBJFLAG_Format) != 0)
-    lpDbObj->sCreationHelpers.nFunctionFlags |= CNktDvDbObject::fflgIsFormat;
+    lpDbObj->sCreationHelpers.nStructUnionFunctionFlags |= CNktDvDbObject::fflgIsFormat;
   return;
 }

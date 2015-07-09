@@ -325,27 +325,61 @@ CNktDvDbObjectNoRef* CNktDvEngDatabase::GetFundamental(__in CNktDvDbObjectNoRef:
 
 ULONG CNktDvEngDatabase::GetFunctionsCount() const
 {
-  return sDbObjectClassPos[(int)CNktDvDbObjectNoRef::clsFunction+1].nCount;
+  return sDbObjectClassPos[(int)CNktDvDbObjectNoRef::clsFunction           +1].nCount +
+         sDbObjectClassPos[(int)CNktDvDbObjectNoRef::clsClassConstructor   +1].nCount +
+         sDbObjectClassPos[(int)CNktDvDbObjectNoRef::clsClassDestructor    +1].nCount +
+         sDbObjectClassPos[(int)CNktDvDbObjectNoRef::clsClassOperatorMethod+1].nCount +
+         sDbObjectClassPos[(int)CNktDvDbObjectNoRef::clsClassMethod        +1].nCount +
+         sDbObjectClassPos[(int)CNktDvDbObjectNoRef::clsClassConverter     +1].nCount;
 }
 
 CNktDvDbObjectNoRef* CNktDvEngDatabase::GetFunction(__in ULONG nFuncId) const
 {
-  return const_cast<CNktDvEngDatabase*>(this)->FindObjectByClassAndIndex(CNktDvDbObjectNoRef::clsFunction,
-                                                                         nFuncId);
+  static CNktDvDbObjectNoRef::eClass aIndexes[6] = {
+    CNktDvDbObjectNoRef::clsFunction,
+    CNktDvDbObjectNoRef::clsClassConstructor,
+    CNktDvDbObjectNoRef::clsClassDestructor,
+    CNktDvDbObjectNoRef::clsClassOperatorMethod,
+    CNktDvDbObjectNoRef::clsClassMethod,
+    CNktDvDbObjectNoRef::clsClassConverter
+  };
+  SIZE_T i;
+
+  for (i=0; i<6; i++)
+  {
+    if (nFuncId < sDbObjectClassPos[(int)aIndexes[i]+1].nCount)
+    {
+      return const_cast<CNktDvEngDatabase*>(this)->FindObjectByClassAndIndex(aIndexes[i], nFuncId);
+    }
+    nFuncId -= sDbObjectClassPos[aIndexes[i]+1].nCount;
+  }
+  return NULL;
 }
 
 CNktDvDbObjectNoRef* CNktDvEngDatabase::FindFunctionByName(__in_nz_opt LPCWSTR szNameW,
                                                            __in SIZE_T nNameLen) const
 {
+  static CNktDvDbObjectNoRef::eClass aIndexes[6] = {
+    CNktDvDbObjectNoRef::clsFunction,
+    CNktDvDbObjectNoRef::clsClassConstructor,
+    CNktDvDbObjectNoRef::clsClassDestructor,
+    CNktDvDbObjectNoRef::clsClassOperatorMethod,
+    CNktDvDbObjectNoRef::clsClassMethod,
+    CNktDvDbObjectNoRef::clsClassConverter
+  };
   CNktDvDbObjectNoRef *lpDbObj, *lpDbObjTemp, *lpDbObjTempChild;
   CNktDvDbObjectNoRef::eClass nClass;
   SIZE_T i, k, nCount, nLastSep;
   LPWSTR sW;
 
-  lpDbObj = const_cast<CNktDvEngDatabase*>(this)->FindObjectByClassAndName(
-                                    CNktDvDbObjectNoRef::clsFunction, szNameW, nNameLen);
-  if (lpDbObj != NULL || szNameW == NULL)
-    return lpDbObj;
+  if (szNameW == NULL)
+    return NULL;
+  for (i=0; i<6; i++)
+  {
+    lpDbObj = const_cast<CNktDvEngDatabase*>(this)->FindObjectByClassAndName(aIndexes[i], szNameW, nNameLen);
+    if (lpDbObj != NULL)
+      return lpDbObj;
+  }
   //try to find an interface method
   if (nNameLen == NKT_SIZE_T_MAX)
     nNameLen = wcslen(szNameW);
@@ -994,18 +1028,16 @@ CNktDvDbObjectNoRef* CNktDvEngDatabase::FindObjectByClassAndName(__in CNktDvDbOb
                                                                  __in SIZE_T nNameLen)
 {
   sSearchDbObjectByName_Ctx sCtx;
-  struct sSearchDbObjectByName_Ctx::tagParsedName sParsedName;
   ULONG *lpIdx, *lpStart;
   SIZE_T nCount;
 
   NKT_ASSERT(nClass>=CNktDvDbObjectNoRef::clsNull && nClass<=CNktDvDbObjectNoRef::clsMAX);
-  sParsedName.szNameW = szNameW;
-  sParsedName.nNameLen = nNameLen;
-  if (FAILED(ParseNamespaceAndName(sParsedName.szNamespaceW, sParsedName.nNamespaceLen,
-                                   sParsedName.szNameW, sParsedName.nNameLen)))
+  sCtx.sParsedName.szNameW = szNameW;
+  sCtx.sParsedName.nNameLen = nNameLen;
+  if (FAILED(ParseNamespaceAndName(sCtx.sParsedName.szNamespaceW, sCtx.sParsedName.nNamespaceLen,
+                                   sCtx.sParsedName.szNameW, sCtx.sParsedName.nNameLen)))
     return NULL;
   sCtx.lpDbObjectsList = lpDbObjectsList;
-  sCtx.sParsedName = sParsedName;
   if (nClass == CNktDvDbObjectNoRef::clsMAX)
   {
     lpStart = cDbObjectNameIndex.Get();
@@ -1013,8 +1045,7 @@ CNktDvDbObjectNoRef* CNktDvEngDatabase::FindObjectByClassAndName(__in CNktDvDbOb
   }
   else
   {
-    lpStart = cDbObjectClassAndNameIndex.Get() +
-              (SIZE_T)(sDbObjectClassPos[(int)nClass+1].nStart);
+    lpStart = cDbObjectClassAndNameIndex.Get() + (SIZE_T)(sDbObjectClassPos[(int)nClass+1].nStart);
     nCount = (SIZE_T)(sDbObjectClassPos[(int)nClass+1].nCount);
   }
 fobcan_restart:
@@ -1023,7 +1054,7 @@ fobcan_restart:
   //on fail...
   if (lpIdx == NULL)
   {
-    if (sParsedName.nNamespaceLen == 0)
+    if (sCtx.sParsedName.nNamespaceLen == 0)
     {
       //...no namespace was specified to find the first item with any namespace
       sCtx.sParsedName.nNamespaceLen = NKT_SIZE_T_MAX;
@@ -1044,10 +1075,10 @@ fobcan_restart:
     {
       //...a namespace was provided but may be part of the name and not a namespace
       //so rebuild parsed name data and retry with the full name
-      sParsedName.nNameLen += (SIZE_T)(sParsedName.szNameW-sParsedName.szNamespaceW);
-      sParsedName.szNameW = sParsedName.szNamespaceW;
-      sParsedName.szNamespaceW = L"";
-      sParsedName.nNamespaceLen = 0;
+      sCtx.sParsedName.nNameLen += (SIZE_T)(sCtx.sParsedName.szNameW - sCtx.sParsedName.szNamespaceW);
+      sCtx.sParsedName.szNameW = sCtx.sParsedName.szNamespaceW;
+      sCtx.sParsedName.szNamespaceW = L"";
+      sCtx.sParsedName.nNamespaceLen = 0;
       goto fobcan_restart;
     }
   }
@@ -1058,7 +1089,7 @@ HRESULT CNktDvEngDatabase::ParseNamespaceAndName(__out LPCWSTR &szNamespaceW, __
                                                  __inout LPCWSTR &szNameW, __inout SIZE_T &nNameLen)
 {
   LPCWSTR szSrcNameW;
-  SIZE_T nSrcNameLen;
+  SIZE_T nSrcNameLen, k, k2;
 
   szSrcNameW = szNameW;
   nSrcNameLen = nNameLen;
@@ -1069,11 +1100,13 @@ HRESULT CNktDvEngDatabase::ParseNamespaceAndName(__out LPCWSTR &szNamespaceW, __
   if (nSrcNameLen == NKT_SIZE_T_MAX)
     nSrcNameLen = wcslen(szSrcNameW);
   //find namespace separator
-  while (nSrcNameLen > 0 && szSrcNameW[0] == L' ')
-  {
-    szSrcNameW++;
-    nSrcNameLen--;
-  }
+  //first skip return values at beginning
+  //look for arguments start if any
+  for (k=0; k<nSrcNameLen && szSrcNameW[k] != L'('; k++);
+  for (k2=k; k2>0 && szSrcNameW[k2-1]!=L' '; k2--);
+  //k2 points to the first character after last space (after return value)
+  szSrcNameW += k2;
+  nSrcNameLen -= k2;
   szNamespaceW = szSrcNameW;
   //find and check for a valid namespace
   while (nSrcNameLen > 0 && szSrcNameW[0] == L'_')
@@ -1098,8 +1131,8 @@ nan_not_a_namespace:
     if (nSrcNameLen > 1 && szSrcNameW[0] == L':' && szSrcNameW[1] == L':')
       break;
     if (!((szSrcNameW[0] >= L'A' && szSrcNameW[0] <= L'Z') ||
-      (szSrcNameW[0] >= L'a' && szSrcNameW[0] <= L'z') ||
-      (szSrcNameW[0] >= L'0' && szSrcNameW[0] <= L'9')))
+          (szSrcNameW[0] >= L'a' && szSrcNameW[0] <= L'z') ||
+          (szSrcNameW[0] >= L'0' && szSrcNameW[0] <= L'9')))
       goto nan_not_a_namespace;
     if (nNamespaceLen >= 32)
       goto nan_not_a_namespace;

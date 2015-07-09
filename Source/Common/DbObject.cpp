@@ -83,8 +83,8 @@ CNktDvDbObjectNoRef::CNktDvDbObjectNoRef() : CNktMemMgrObj()
 #ifdef NKT_DV_DBGENERATOR
   sCreationHelpers.nId = sCreationHelpers.nClass = sCreationHelpers.nFundamentalType = 0;
   sCreationHelpers.nSize = sCreationHelpers.nAlign = 0;
-  sCreationHelpers.nArraySizeHint = sCreationHelpers.nStructUnionFlags = 0;
-  sCreationHelpers.nFunctionFlags = sCreationHelpers.nStructOffset = sCreationHelpers.nStructBits = 0;
+  sCreationHelpers.nArraySizeHint = sCreationHelpers.nStructUnionFunctionFlags = 0;
+  sCreationHelpers.nStructOffset = sCreationHelpers.nStructBits = 0;
   sCreationHelpers.nEnumValue = sCreationHelpers.nFlags = 0;
   sCreationHelpers.szNameW = sCreationHelpers.szNamespaceW = NULL;
   sCreationHelpers.nHashValue = 0;
@@ -248,10 +248,14 @@ int CNktDvDbObjectNoRef::GetFlags() const
   {
     case CNktDvDbObjectNoRef::clsFunction:
     case CNktDvDbObjectNoRef::clsFunctionType:
-      return (int)(lpStoredData->nFunctionFlags & 0x7FFFFFF0);
     case CNktDvDbObjectNoRef::clsStruct:
     case CNktDvDbObjectNoRef::clsUnion:
-      return (int)(lpStoredData->nStructUnionFlags & 0x7FFFFFF0);
+    case CNktDvDbObjectNoRef::clsClassConstructor:
+    case CNktDvDbObjectNoRef::clsClassDestructor:
+    case CNktDvDbObjectNoRef::clsClassOperatorMethod:
+    case CNktDvDbObjectNoRef::clsClassMethod:
+    case CNktDvDbObjectNoRef::clsClassConverter:
+      return (int)(lpStoredData->nStructUnionFunctionFlags & 0x7FFFFFF0);
   }
   return 0;
 }
@@ -265,6 +269,11 @@ SIZE_T CNktDvDbObjectNoRef::GetItemsCount() const
   {
     case CNktDvDbObjectNoRef::clsFunction:
     case CNktDvDbObjectNoRef::clsFunctionType:
+    case CNktDvDbObjectNoRef::clsClassConstructor:
+    case CNktDvDbObjectNoRef::clsClassDestructor:
+    case CNktDvDbObjectNoRef::clsClassOperatorMethod:
+    case CNktDvDbObjectNoRef::clsClassMethod:
+    case CNktDvDbObjectNoRef::clsClassConverter:
       nCount--;
   }
   return nCount;
@@ -379,12 +388,17 @@ CNktDvDbObjectNoRef::eCallingConvention CNktDvDbObjectNoRef::GetFuncCallingConve
   {
     case CNktDvDbObjectNoRef::clsFunction:
     case CNktDvDbObjectNoRef::clsFunctionType:
-      switch (lpStoredData->nFunctionFlags & 0x0F)
+    case CNktDvDbObjectNoRef::clsClassConstructor:
+    case CNktDvDbObjectNoRef::clsClassDestructor:
+    case CNktDvDbObjectNoRef::clsClassOperatorMethod:
+    case CNktDvDbObjectNoRef::clsClassMethod:
+    case CNktDvDbObjectNoRef::clsClassConverter:
+      switch (lpStoredData->nStructUnionFunctionFlags & 0x0F)
       {
         case CNktDvDbObjectNoRef::ccCDecl:
         case CNktDvDbObjectNoRef::ccFastCall:
         case CNktDvDbObjectNoRef::ccThisCall:
-          return (CNktDvDbObjectNoRef::eCallingConvention)(lpStoredData->nFunctionFlags & 0x0F);
+          return (CNktDvDbObjectNoRef::eCallingConvention)(lpStoredData->nStructUnionFunctionFlags & 0x0F);
       }
       return CNktDvDbObjectNoRef::ccStdCall;
   }
@@ -397,6 +411,11 @@ CNktDvDbObjectNoRef* CNktDvDbObjectNoRef::GetFunctionReturn() const
   {
     case CNktDvDbObjectNoRef::clsFunction:
     case CNktDvDbObjectNoRef::clsFunctionType:
+    case CNktDvDbObjectNoRef::clsClassConstructor:
+    case CNktDvDbObjectNoRef::clsClassDestructor:
+    case CNktDvDbObjectNoRef::clsClassOperatorMethod:
+    case CNktDvDbObjectNoRef::clsClassMethod:
+    case CNktDvDbObjectNoRef::clsClassConverter:
       return lpFirstChild[nChildsCount-1].lpObject;
   }
   return NULL;
@@ -408,6 +427,11 @@ int CNktDvDbObjectNoRef::GetFunctionReturnFlags() const
   {
     case CNktDvDbObjectNoRef::clsFunction:
     case CNktDvDbObjectNoRef::clsFunctionType:
+    case CNktDvDbObjectNoRef::clsClassConstructor:
+    case CNktDvDbObjectNoRef::clsClassDestructor:
+    case CNktDvDbObjectNoRef::clsClassOperatorMethod:
+    case CNktDvDbObjectNoRef::clsClassMethod:
+    case CNktDvDbObjectNoRef::clsClassConverter:
       return (int)(lpFirstChild[nChildsCount-1].lpStoredChildItem->nFlags & 0x0F);
   }
   return 0;
@@ -421,6 +445,11 @@ LPWSTR CNktDvDbObjectNoRef::GetFunctionReturnDeclaration() const
   {
     case CNktDvDbObjectNoRef::clsFunction:
     case CNktDvDbObjectNoRef::clsFunctionType:
+    case CNktDvDbObjectNoRef::clsClassConstructor:
+    case CNktDvDbObjectNoRef::clsClassDestructor:
+    case CNktDvDbObjectNoRef::clsClassOperatorMethod:
+    case CNktDvDbObjectNoRef::clsClassMethod:
+    case CNktDvDbObjectNoRef::clsClassConverter:
       nIndex = nChildsCount - 1;
       if (lpFirstChild[nIndex].szDeclarationW == NULL) {
         (const_cast<CNktDvDbObjectNoRef*>(this))->BuildItemDeclaration(nIndex);
@@ -608,7 +637,6 @@ HRESULT CNktDvDbObjectsEnumerator::GetItemByName(__deref_out CNktDvDbObject** lp
                                                  __in_nz_opt LPCWSTR szNameW, __in SIZE_T nNameLen)
 {
   sSearchDbObjectsEnumByName_Ctx sCtx;
-  struct sSearchDbObjectsEnumByName_Ctx::tagParsedName sParsedName;
   SIZE_T nCount;
   ULONG *lpIdx, *lpStart;
   HRESULT hRes;
@@ -616,14 +644,13 @@ HRESULT CNktDvDbObjectsEnumerator::GetItemByName(__deref_out CNktDvDbObject** lp
   if (lplpDbObj == NULL)
     return E_POINTER;
   *lplpDbObj = NULL;
-  sParsedName.szNameW = szNameW;
-  sParsedName.nNameLen = nNameLen;
-  hRes = CNktDvEngDatabase::ParseNamespaceAndName(sParsedName.szNamespaceW, sParsedName.nNamespaceLen,
-                                                  sParsedName.szNameW, sParsedName.nNameLen);
+  sCtx.sParsedName.szNameW = szNameW;
+  sCtx.sParsedName.nNameLen = nNameLen;
+  hRes = CNktDvEngDatabase::ParseNamespaceAndName(sCtx.sParsedName.szNamespaceW, sCtx.sParsedName.nNamespaceLen,
+                                                  sCtx.sParsedName.szNameW, sCtx.sParsedName.nNameLen);
   if (FAILED(hRes))
     return hRes;
   sCtx.lpBuffer = aObjectsList.GetBuffer();
-  sCtx.sParsedName = sParsedName;
   lpStart = cNameIndexList.Get();
   nCount = GetCount();
 fobcan_restart:
@@ -632,7 +659,7 @@ fobcan_restart:
   //on fail...
   if (lpIdx == NULL)
   {
-    if (sParsedName.nNamespaceLen == 0)
+    if (sCtx.sParsedName.nNamespaceLen == 0)
     {
       //...no namespace was specified to find the first item with any namespace
       sCtx.sParsedName.nNamespaceLen = NKT_SIZE_T_MAX;
@@ -653,10 +680,10 @@ fobcan_restart:
     {
       //...a namespace was provided but may be part of the name and not a namespace
       //so rebuild parsed name data and retry with the full name
-      sParsedName.nNameLen += (SIZE_T)(sParsedName.szNameW-sParsedName.szNamespaceW);
-      sParsedName.szNameW = sParsedName.szNamespaceW;
-      sParsedName.szNamespaceW = L"";
-      sParsedName.nNamespaceLen = 0;
+      sCtx.sParsedName.nNameLen += (SIZE_T)(sCtx.sParsedName.szNameW - sCtx.sParsedName.szNamespaceW);
+      sCtx.sParsedName.szNameW = sCtx.sParsedName.szNamespaceW;
+      sCtx.sParsedName.szNamespaceW = L"";
+      sCtx.sParsedName.nNamespaceLen = 0;
       goto fobcan_restart;
     }
   }

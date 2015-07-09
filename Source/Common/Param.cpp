@@ -406,6 +406,11 @@ SIZE_T CNktDvParam::GetFieldsCount() const
     {
       case CNktDvDbObjectNoRef::clsFunction:
       case CNktDvDbObjectNoRef::clsFunctionType:
+      case CNktDvDbObjectNoRef::clsClassConstructor:
+      case CNktDvDbObjectNoRef::clsClassDestructor:
+      case CNktDvDbObjectNoRef::clsClassOperatorMethod:
+      case CNktDvDbObjectNoRef::clsClassMethod:
+      case CNktDvDbObjectNoRef::clsClassConverter:
       case CNktDvDbObjectNoRef::clsStruct:
       case CNktDvDbObjectNoRef::clsUnion:
         return lpDbObj->GetItemsCount();

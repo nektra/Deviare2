@@ -61,6 +61,11 @@ HRESULT CNktDvDbObjectNoRef::BuildDefinitionString(__inout CNktStringW &cStrDecl
       break;
     case CNktDvDbObjectNoRef::clsFunction:
     case CNktDvDbObjectNoRef::clsFunctionType:
+    case CNktDvDbObjectNoRef::clsClassConstructor:
+    case CNktDvDbObjectNoRef::clsClassDestructor:
+    case CNktDvDbObjectNoRef::clsClassOperatorMethod:
+    case CNktDvDbObjectNoRef::clsClassMethod:
+    case CNktDvDbObjectNoRef::clsClassConverter:
       hRes = BuilldFunctionDefStr(cStrDeclW, lpDbObj);
       break;
     case CNktDvDbObjectNoRef::clsEnumeration:
@@ -106,6 +111,11 @@ HRESULT CNktDvDbObjectNoRef::BuildChildDefinitionString(__inout CNktStringW &cSt
       break;
     case CNktDvDbObjectNoRef::clsFunction:
     case CNktDvDbObjectNoRef::clsFunctionType:
+    case CNktDvDbObjectNoRef::clsClassConstructor:
+    case CNktDvDbObjectNoRef::clsClassDestructor:
+    case CNktDvDbObjectNoRef::clsClassOperatorMethod:
+    case CNktDvDbObjectNoRef::clsClassMethod:
+    case CNktDvDbObjectNoRef::clsClassConverter:
       hRes = BuilldFunctionChildDefStr(cStrDeclW, nIndex);
       break;
     case CNktDvDbObjectNoRef::clsEnumeration:

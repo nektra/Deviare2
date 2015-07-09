@@ -74,7 +74,12 @@ HRESULT CNktDvFunctionParamsCache::Initialize(__in CNktDvDbObjectNoRef *lpDbObjF
   if (lpDbObjFunc != NULL)
   {
     NKT_ASSERT(lpDbObjFunc->GetClass() == CNktDvDbObjectNoRef::clsFunction ||
-               lpDbObjFunc->GetClass() == CNktDvDbObjectNoRef::clsFunctionType);
+               lpDbObjFunc->GetClass() == CNktDvDbObjectNoRef::clsFunctionType ||
+               lpDbObjFunc->GetClass() == CNktDvDbObjectNoRef::clsClassConstructor ||
+               lpDbObjFunc->GetClass() == CNktDvDbObjectNoRef::clsClassDestructor ||
+               lpDbObjFunc->GetClass() == CNktDvDbObjectNoRef::clsClassOperatorMethod ||
+               lpDbObjFunc->GetClass() == CNktDvDbObjectNoRef::clsClassMethod ||
+               lpDbObjFunc->GetClass() == CNktDvDbObjectNoRef::clsClassConverter);
     NKT_ASSERT(lpProcMem != NULL);
     //process function parameters
     nCount = lpDbObjFunc->GetItemsCount();
@@ -143,7 +148,12 @@ SIZE_T CNktDvFunctionParamsCache::GetStackUsage(__in CNktDvDbObjectNoRef *lpDbOb
 
   NKT_ASSERT(lpDbObjFunc != NULL);
   NKT_ASSERT(lpDbObjFunc->GetClass() == CNktDvDbObjectNoRef::clsFunction ||
-             lpDbObjFunc->GetClass() == CNktDvDbObjectNoRef::clsFunctionType);
+              lpDbObjFunc->GetClass() == CNktDvDbObjectNoRef::clsFunctionType ||
+              lpDbObjFunc->GetClass() == CNktDvDbObjectNoRef::clsClassConstructor ||
+              lpDbObjFunc->GetClass() == CNktDvDbObjectNoRef::clsClassDestructor ||
+              lpDbObjFunc->GetClass() == CNktDvDbObjectNoRef::clsClassOperatorMethod ||
+              lpDbObjFunc->GetClass() == CNktDvDbObjectNoRef::clsClassMethod ||
+              lpDbObjFunc->GetClass() == CNktDvDbObjectNoRef::clsClassConverter);
 #if defined _M_IX86
   nCallConv = lpDbObjFunc->GetFuncCallingConvention();
 #endif //_M_IX86
