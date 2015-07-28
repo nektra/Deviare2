@@ -89,7 +89,6 @@ namespace CSharpConsole.Views
                     jobsToPerformNow.ForEach(j => _jobs.Remove(j));
                     return jobsToPerformNow;
                 }
-                
             }
 
             return new UpdateUIJob[0];
@@ -97,7 +96,10 @@ namespace CSharpConsole.Views
 
         private void RefreshJobsExecutionOrderForNextUpdate()
         {
-            _jobs.Where(j => j.ExecutionOrder > 1).ForEach(j => j.ExecutionOrder--);
+            lock (_jobsLock) //Resolves issue #3
+            {
+                _jobs.Where(j => j.ExecutionOrder > 1).ForEach(j => j.ExecutionOrder--);
+            }
         }
 
         public void Add(UpdateUIJob aJob)

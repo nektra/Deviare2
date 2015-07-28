@@ -11,6 +11,7 @@
 Bin/*.lib
 Libs/*.idb
 obj/
+extras/
 Documentation/bin/*.exe
 Documentation/bin/*.cgi
 Source/MiscUtils/Certificate/nektra/
