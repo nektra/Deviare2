@@ -24,6 +24,9 @@ Code instrumentation is used in several other areas like: tracing and
 debugging, sandboxing and browser security, malware analysis, video
 conference recording, and gaming.
 
+Download the latests binaries and source code from
+[here](https://github.com/nektra/Deviare2/releases).
+
 
 ----------------------
 # MINIMUM REQUIREMENTS
