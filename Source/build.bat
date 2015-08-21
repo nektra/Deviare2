@@ -1,45 +1,50 @@
 @ECHO OFF
 SETLOCAL
-IF NOT "%VCINSTALLDIR%" == "" GOTO do_process
-IF "%VS110COMNTOOLS%" == "" GOTO show_err
+
+SET __Config=Release
+IF /I [%1] == [debug] (
+    SET __Config=Debug
+)
+IF "%VS110COMNTOOLS%" == "" (
+    ECHO Visual Studio 2012 not found on this computer
+    PAUSE
+    GOTO end
+)
 
 :do_process
+SETLOCAL
 CALL "%VS110COMNTOOLS%\..\..\VC\vcvarsall.bat" x86
-IF "%VS110COMNTOOLS%" == "" GOTO err_cantsetupvs_x86
-
-DEVENV DvEngine.sln /rebuild "Release|Win32"
-IF NOT %ERRORLEVEL% == 0 goto bad_compile
-
+IF "%VS110COMNTOOLS%" == "" (
+    ENDLOCAL
+    ECHO Cannot initialize Visual Studio x86 Command Prompt environment
+    PAUSE
+    GOTO end
+)
+DEVENV DvEngine.sln /rebuild "%__Config%|Win32"
+IF NOT %ERRORLEVEL% == 0 (
+    ENDLOCAL
+    ECHO Errors detected while compiling Deviare
+    PAUSE
+    GOTO end
+)
 ENDLOCAL
 
 SETLOCAL
 CALL "%VS110COMNTOOLS%\..\..\VC\vcvarsall.bat" x64
-IF "%VS110COMNTOOLS%" == "" GOTO err_cantsetupvs_x64
-
-DEVENV DvEngine.sln /rebuild "Release|x64"
-IF NOT %ERRORLEVEL% == 0 goto bad_compile
-
-GOTO end
-
-:show_err
-ECHO Please execute this batch file inside a Visual Studio Command Prompt
-PAUSE
-GOTO end
-
-:err_cantsetupvs_x86
-ECHO Cannot initialize Visual Studio x86 Command Prompt environment
-PAUSE
-GOTO end
-
-:err_cantsetupvs_x64
-ECHO Cannot initialize Visual Studio x64 Command Prompt environment
-PAUSE
-GOTO end
-
-:bad_compile
-ECHO Errors detected while compiling Deviare
-PAUSE
-GOTO end
+IF "%VS110COMNTOOLS%" == "" (
+    ENDLOCAL
+    ECHO Cannot initialize Visual Studio x64 Command Prompt environment
+    PAUSE
+    GOTO end
+)
+DEVENV DvEngine.sln /rebuild "%__Config%|x64"
+IF NOT %ERRORLEVEL% == 0 (
+    ENDLOCAL
+    ECHO Errors detected while compiling Deviare
+    PAUSE
+    GOTO end
+)
+ENDLOCAL
 
 :end
 ENDLOCAL

@@ -545,21 +545,24 @@ BOOL CNktThread::MsgCheckForAbort(__in DWORD dwTimeout, __in DWORD dwEventCount,
 
 VOID CNktThread::SetThreadName(__in DWORD dwThreadId, __in_z_opt LPCSTR szName)
 {
+  //NOTE: Temporary commented because registers are not saved correctly when called inside a C#/XAML application
+  /*
   THREADNAME_INFO sInfo;
 
-  if (szName == NULL)
-    szName = "";
   ::Sleep(10);
   sInfo.dwType = 0x1000;
-  sInfo.szName = szName;
+  sInfo.szName = (szName != NULL) ? szName : "";
   sInfo.dwThreadID = (DWORD)dwThreadId;
   sInfo.dwFlags = 0;
+#pragma warning(disable: 6312 6322)
   __try
   {
-    ::RaiseException(MS_VC_EXCEPTION, 0, sizeof(sInfo)/sizeof(ULONG_PTR), (ULONG_PTR*)&sInfo);
+    ::RaiseException(MS_VC_EXCEPTION, 0, sizeof(sInfo)/sizeof(DWORD), (ULONG_PTR*)&sInfo);
   }
-  __except(EXCEPTION_EXECUTE_HANDLER)
+  __except (EXCEPTION_CONTINUE_EXECUTION)
   { }
+#pragma warning(default: 6312 6322)
+  */
   return;
 }
 

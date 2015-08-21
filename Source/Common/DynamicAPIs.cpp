@@ -1600,8 +1600,11 @@ static HRESULT BuildOriginalNtCalls()
 static LPVOID BuildOriginalNtCall(__in LPBYTE lpFileFuncAddr, __in PRTL_OSVERSIONINFOW lpOsVerInfoW,
                                   __in LPBYTE lpData, __in IMAGE_SECTION_HEADER *lpFileImgSect, __in SIZE_T nSecCount)
 {
-  SIZE_T k, nSrcOfs, nInstrLen, nCurrSize, nExtraSize, nDestSize, nMainCodeSize;
+  SIZE_T k, nSrcOfs, nInstrLen, nCurrSize, nExtraSize, nMainCodeSize;
+#if defined _M_IX86
+  SIZE_T nDestSize;
   DWORD dwRawAddr;
+#endif //_M_IX86
   LPBYTE lpSrc, lpDest, lpStub;
 
   //stage 1: scan for a return

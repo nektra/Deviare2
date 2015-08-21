@@ -8,8 +8,8 @@
 *.log
 *.obj
 *.ilk
-Bin/*.lib
-Libs/*.idb
+bin/
+Libs/
 obj/
 extras/
 Documentation/bin/*.exe

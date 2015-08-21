@@ -1,13 +1,13 @@
 ﻿Known issues:
 ============
-* C# plugins may not work if RegisterClass is hooked because CoInitialize(Ex) calls RegisterClass on STA and, at this
-  point, COM initialization in not complete yet.
-* Plugins may not work in IE8 unless executed with elevated privileges because of COM security model used by the app.
-  (Resolved in 2.7.2)
+* C# plugins may not work if "RegisterClassA" or "RegisterClassW" Apis is hooked because CoInitialize(Ex) calls RegisterClass on STA and, at this point, COM initialization in not complete yet.
+
 
 Version 2.7.5
 =============
--Fixed compatibility issue with Windows 10 Preview
+-Fixed compatibility issue with Windows 10 Preview.
+-Removed call to SetThreadName because causing issues when Deviare is used while debugging a C#/Xaml application.
+
 
 Version 2.7.4
 =============
@@ -57,11 +57,9 @@ Version 2.6.8
 
 Version 2.6.7
 =============
--BREAKING CHANGE: INktSpyMgr::CreateProcess(WithLogon) will set continueEvent to NULL instead of 0 if 'suspended'
- parameter is FALSE or an error occurs.
--BREAKING CHANGE: OnLoadLibraryCall/OnFreeLibraryCall/OnCustomMessage events sends the direct VARIANT value instead
- of seding a ByRef/Variant that points to another variant. (Should not affect C# project because its 'object' handling).
--Fixed memory & handle leaks in some functions using the internal process handles manager.
+-BREAKING CHANGE: INktSpyMgr::CreateProcess(WithLogon) will set continueEvent to NULL instead of 0 if 'suspended' parameter is FALSE or an error occurs.
+-BREAKING CHANGE: OnLoadLibraryCall/OnFreeLibraryCall/OnCustomMessage events sends the direct VARIANT value instead of seding a ByRef/Variant that points to another variant. (Should not affect C# project because its 'object' handling).
+-Fixed memory and handle leaks in some functions using the internal process handles manager.
 -Fixed messages being sent between server/client before connection tasks were completed.
 -Updated to latest SQLite version.
 -Added configurable agent load timeout (default is 10 seconds).
@@ -94,8 +92,7 @@ Version 2.6.5
 -Added a new interface INktPdbFunctionSymbol to retrieve function address from pdb's symbols.
 -Changed INktSpyMgr::CreateHookForAddress method to mantain concistency with other hook creation methods.
 -Now plugins can send a custom message to the server when processing a function call.
--Added optional GetFunctionCallbackName method to plugins in order to reroute OnFunctionCall callback to
- different methods.
+-Added optional GetFunctionCallbackName method to plugins in order to reroute OnFunctionCall callback to different methods.
 -Fixed big packet message handling that caused overflows on certain situations.
 -Fixed memory leak on COM objects not being fully released when internal counterpart object is released.
 -INktParamsEnum now returns dummy params on invalid index.
@@ -117,15 +114,12 @@ Version 2.6.4
 
 Version 2.6.3
 =============
--Changed COM event firing implementation replacing ATL::IConnectionPointImpl to avoid rare deadlocks
- from appearing in STA threads.
+-Changed COM event firing implementation replacing ATL::IConnectionPointImpl to avoid rare deadlocks from appearing in STA threads.
 -Fixed deadlock on connection being shutdown because of an error.
 -Major change: stErrorNotEnoughMemory and stErrorNotFound redefined.
 -DeviareCOM & DeviareCOM64 manifest files are now embedded into dlls.
--If LoadLibrary/FreeLibrary ared called while hooking is in progress, notifications will be sent
- asynchronously to avoid deadlocks.
--Fixed an issue when a library is loaded/unloaded into the hooked process while a connection is being
- established.
+-If LoadLibrary/FreeLibrary ared called while hooking is in progress, notifications will be sent asynchronously to avoid deadlocks.
+-Fixed an issue when a library is loaded/unloaded into the hooked process while a connection is being established.
 -Fixed CreateProcess injection code to allow .NET processes to be hooked upon startup.
 
 Version 2.6.2
@@ -140,12 +134,10 @@ Version 2.6.2
 Version 2.6.1
 =============
 -Fixed minor issue in native custom plugins.
--Applied free thread marshalling to custom plugins to avoid invocation problems while inside
- a SendMessage (RPC_E_CANTCALLOUT_ININPUTSYNCCALL).
+-Applied free thread marshalling to custom plugins to avoid invocation problems while inside a SendMessage (RPC_E_CANTCALLOUT_ININPUTSYNCCALL).
 -Fixed integer parsing in C sample.
 -Added GetFileNameFromHandle to the INktTools interface. Remember INktTools may throw exceptions.
--Now, in custom handlers, the "64" suffix is added/removed from the dll filename if hooks are
- propagated from x64 processes to x86 and viceversa.
+-Now, in custom handlers, the "64" suffix is added/removed from the dll filename if hooks are propagated from x64 processes to x86 and viceversa.
 -Also, if a relative path is specified in custom handler dll, it will use agent dll path as the base.
 
 Version 2.6.0
@@ -163,10 +155,8 @@ Version 2.6.0
 Version 2.5.2
 =============
 -Memory management module completely rewritten to improve speed and balance comsumption.
--Added FilterSpyMgrEvent method to the INktHookCallInfoPlugin in order to let the plugin filter calls
- and prevent them from being sent to the Spy Manager object.
--Change: Hooks that are automatically installed when a dll or child process is loaded now they are
- installed synchronously.
+-Added FilterSpyMgrEvent method to the INktHookCallInfoPlugin in order to let the plugin filter calls and prevent them from being sent to the Spy Manager object.
+-Change: Hooks that are automatically installed when a dll or child process is loaded now they are installed synchronously.
 -Fixed PointerVal access in plugins.
 
 Version 2.5.1
@@ -179,14 +169,11 @@ Version 2.5.0
 =============
 -Improved message dispatcher (beta). Event delivery should be faster mainly in async ones.
 -New hook flags. Now you can specify if a hook/custom handler is called when the loader lock is active.
--Fixed a race condition caused by GetModuleFileName returning ERROR_INVALID_HANDLE if the module is
- being unloaded.
+-Fixed a race condition caused by GetModuleFileName returning ERROR_INVALID_HANDLE if the module is being unloaded.
 -Fixed a bug on exported function enumerator causing a later access fault.
 -IEnumVARIANT code rewritten.
--Code that links com objects and internal ones was rewritten to avoid some race conditions and circular
- references.
--INktSpy.ProcessHandle and INktProcess.Handle both returns duplicated handles that must be closed in
- order to mantain consistency between the two functions.
+-Code that links com objects and internal ones was rewritten to avoid some race conditions and circular references.
+-INktSpy.ProcessHandle and INktProcess.Handle both returns duplicated handles that must be closed in order to mantain consistency between the two functions.
 -Fixed an issue with target process' modules enumeration while the process is still initializing.
 -Fixed an issue when agent is loaded while target process is initializing.
 -Fixed a deadlock when SpyMgr process is shutting down.
@@ -199,8 +186,7 @@ Version 2.1.2
 =============
 -Fixed a security descriptor issue in W2K.
 -GetProcessHandle now accepts current ProcessId.
--Packets received by SpyMgr are delivered to a secondary thread pool to improve speed when multiple calls
- are made from different threads in hooked applications.
+-Packets received by SpyMgr are delivered to a secondary thread pool to improve speed when multiple calls are made from different threads in hooked applications.
 -Fixed some bugs in database generator application.
 -Fixed read/write of IntPtr/size_t parameters in some routines.
 
@@ -220,8 +206,7 @@ Version 2.1.0
 -Added interfaces that gives more process information.
 -Added full api namespace support. (still BETA)
 -Added multi-database merger application.
--Batch hooking and unhooking can be done with INktHooksEnumerator. This should be faster than individual
- hook/unhook.
+-Batch hooking and unhooking can be done with INktHooksEnumerator. This should be faster than individual hook/unhook.
 -Dynamic link libraries loaded as datafile now are listed in the modules enumerator.
 -Minor fixes applied.
 
@@ -232,8 +217,7 @@ Version 2.0.7
 -Added initial namespace support to database.
 -Changed internal "insertion point" algorithm.
 -Added initial multi-hook-at-once support.
--Added registry key entry to optionally display debug output.
-    [HKLM\\Software\\Nektra\\Deviare2 => DebugLevelMask (REG_DWORD)]
+-Added registry key entry to optionally display debug output. [HKLM\\Software\\Nektra\\Deviare2 => DebugLevelMask (REG_DWORD)]
 
 Version 2.0.6
 =============
