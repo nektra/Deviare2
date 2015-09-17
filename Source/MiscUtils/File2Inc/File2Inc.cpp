@@ -148,7 +148,9 @@ err_inv_varname:
       lpSectionHdr = (IMAGE_SECTION_HEADER*)(((char*)(lpFileHdr + 1)) + lpFileHdr->SizeOfOptionalHeader);
       for (wSectIdx=0; wSectIdx<lpFileHdr->NumberOfSections; wSectIdx++)
       {
-        if (strcmp((char*)(lpSectionHdr[wSectIdx].Name), ".text") == 0 &&
+        if (strncmp((char*)(lpSectionHdr[wSectIdx].Name), ".text", 5) == 0 &&
+            (lpSectionHdr[wSectIdx].Name[5] == 0 || lpSectionHdr[wSectIdx].Name[5] == '$' ||
+             lpSectionHdr[wSectIdx].Name[5] == '!') &&
             lpSectionHdr[wSectIdx].SizeOfRawData > 0)
           break;
       }
