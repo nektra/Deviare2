@@ -218,10 +218,10 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a210299f2d469991dc274b69cfae3fe03"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a double precision floating point value to the custom parameters.  <a href="#a210299f2d469991dc274b69cfae3fe03">More...</a><br /></td></tr>
 <tr class="separator:a210299f2d469991dc274b69cfae3fe03"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aae699807f9c02a38a28f77cac1f14fb3"><td class="memItemLeft" align="right" valign="top">HRESULT&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="interface_i_nkt_hook_call_info_plugin.html#aae699807f9c02a38a28f77cac1f14fb3">ReadIntercallData</a> ([in] my_ssize_t destAddr, [in] my_ssize_t offset, [in] my_ssize_t bytes)</td></tr>
-<tr class="memdesc:aae699807f9c02a38a28f77cac1f14fb3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves user-defined data that is mantained between pre and post call stages. Use WriteIntercallData to store this data.  <a href="#aae699807f9c02a38a28f77cac1f14fb3">More...</a><br /></td></tr>
+<tr class="memdesc:aae699807f9c02a38a28f77cac1f14fb3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves user-defined data that is maintained between pre and post call stages. Use WriteIntercallData to store this data.  <a href="#aae699807f9c02a38a28f77cac1f14fb3">More...</a><br /></td></tr>
 <tr class="separator:aae699807f9c02a38a28f77cac1f14fb3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a186653d8cf3e2e690833646c3815d10e"><td class="memItemLeft" align="right" valign="top">HRESULT&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="interface_i_nkt_hook_call_info_plugin.html#a186653d8cf3e2e690833646c3815d10e">WriteIntercallData</a> ([in] my_ssize_t srcAddr, [in] my_ssize_t offset, [in] my_ssize_t bytes)</td></tr>
-<tr class="memdesc:a186653d8cf3e2e690833646c3815d10e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stores user-defined data that is mantained between pre and post call stages. Use ReadIntercallData to read this data.  <a href="#a186653d8cf3e2e690833646c3815d10e">More...</a><br /></td></tr>
+<tr class="memdesc:a186653d8cf3e2e690833646c3815d10e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stores user-defined data that is maintained between pre and post call stages. Use ReadIntercallData to read this data.  <a href="#a186653d8cf3e2e690833646c3815d10e">More...</a><br /></td></tr>
 <tr class="separator:a186653d8cf3e2e690833646c3815d10e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
@@ -734,7 +734,7 @@ Public Member Functions</h2></td></tr>
 <p>Add an unsigned quadword to the custom parameters. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">name</td><td>The name of the unsigned quad-word parameter to add. </td></tr>
+    <tr><td class="paramname">name</td><td>The name of the unsigned quadword parameter to add. </td></tr>
     <tr><td class="paramname">value</td><td>The value.</td></tr>
   </table>
   </dd>
@@ -1237,7 +1237,7 @@ Public Member Functions</h2></td></tr>
 <p>Get the running time of the current thread in kernel mode in milliseconds. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">pVal</td><td>ointer to double-precision floating point value to get millisecond count.</td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">pVal</td><td>Pointer to double-precision floating point value to get millisecond count.</td></tr>
   </table>
   </dd>
 </dl>
@@ -1384,8 +1384,8 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Retrieves user-defined data that is mantained between pre and post call stages. Use WriteIntercallData to store this data. </p>
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="interface_i_nkt_hook_call_info_plugin.html#a186653d8cf3e2e690833646c3815d10e" title="Stores user-defined data that is mantained between pre and post call stages. Use ReadIntercallData to...">WriteIntercallData</a></dd></dl>
+<p>Retrieves user-defined data that is maintained between pre and post call stages. Use WriteIntercallData to store this data. </p>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="interface_i_nkt_hook_call_info_plugin.html#a186653d8cf3e2e690833646c3815d10e" title="Stores user-defined data that is maintained between pre and post call stages. Use ReadIntercallData t...">WriteIntercallData</a></dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">destAddr</td><td>Pointer-sized variable indicating address to store retrieved data. </td></tr>
@@ -1681,8 +1681,8 @@ E_FAIL if general failure. </dd></dl>
       </table>
 </div><div class="memdoc">
 
-<p>Stores user-defined data that is mantained between pre and post call stages. Use ReadIntercallData to read this data. </p>
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="interface_i_nkt_hook_call_info_plugin.html#aae699807f9c02a38a28f77cac1f14fb3" title="Retrieves user-defined data that is mantained between pre and post call stages. Use WriteIntercallDat...">ReadIntercallData</a></dd></dl>
+<p>Stores user-defined data that is maintained between pre and post call stages. Use ReadIntercallData to read this data. </p>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="interface_i_nkt_hook_call_info_plugin.html#aae699807f9c02a38a28f77cac1f14fb3" title="Retrieves user-defined data that is maintained between pre and post call stages. Use WriteIntercallDa...">ReadIntercallData</a></dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">destAddr</td><td>Pointer-sized variable indicating address containing data to store. </td></tr>

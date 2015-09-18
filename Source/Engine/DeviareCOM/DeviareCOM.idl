@@ -3088,7 +3088,7 @@ interface INktParam : INktObject
   /**
    * \fn	HRESULT INktParam::GuidString([out, retval] BSTR *pVal);
    *
-   * \brief	Cast this paramaeter as a GUID, IID, CLSID or UUID struct and retrieves its value.
+   * \brief	Cast this parameter as a GUID, IID, CLSID or UUID struct and retrieves its value.
    *
    * \param [in,out]	pVal	Pointer to string to receive GUID value.
    *
@@ -3951,10 +3951,10 @@ interface INktParam : INktObject
   /**
    * \fn	HRESULT INktParam::LongLongValAt([in] LONG index, [out, retval] __int64 *pVal);
    *
-   * \brief	Read parameter as a signed quad-word value from the specified array index.
+   * \brief	Read parameter as a signed quadword value from the specified array index.
    *
    * \param	index				Zero-based index.
-   * \param [in,out]	pVal	Pointer to  signed quad-word to receive parameter value.
+   * \param [in,out]	pVal	Pointer to  signed quadword to receive parameter value.
    *
    * \return S_OK on success.
    * \return E_POINTER of pVal pointer value is NULL.
@@ -3969,7 +3969,7 @@ interface INktParam : INktObject
   /**
    * \fn	HRESULT INktParam::LongLongValAt([in] LONG index, [in] __int64 newValue);
    *
-   * \brief	Write a  signed quad-word value at the specified array index.
+   * \brief	Write a  signed quadword value at the specified array index.
    *
    * \param	index   	Zero-based index.
    * \param	newValue	The new value.
@@ -3986,7 +3986,7 @@ interface INktParam : INktObject
    * \fn	HRESULT INktParam::ULongLongValAt([in] LONG index, [out,
    * 		retval] unsigned __int64 *pVal);
    *
-   * \brief	Read parameter as a unsigned quad-word value from the specified array index.
+   * \brief	Read parameter as a unsigned quadword value from the specified array index.
    *
    * \param	index				Zero-based index.
    * \param [in,out]	pVal	Pointer to <> to receive parameter value.
@@ -4004,7 +4004,7 @@ interface INktParam : INktObject
   /**
    * \fn	HRESULT INktParam::ULongLongValAt([in] LONG index, [in] unsigned __int64 newValue);
    *
-   * \brief	Write a unsigned quad-word value at the specified array index.
+   * \brief	Write a unsigned quadword value at the specified array index.
    *
    * \param	index   	Zero-based index.
    * \param	newValue	The new value.
@@ -4531,7 +4531,7 @@ interface INktHookCallInfo : INktObject
    *
    * \brief	Get the running time of the current thread in kernel mode in milliseconds.
    *
-   * \param [in,out]	pVal	ointer to double-precision floating point value to get millisecond count.
+   * \param [in,out]	pVal	Pointer to double-precision floating point value to get millisecond count.
    *
    * \return \c S_OK on success.
    * \return \c E_POINTER if pVal is NULL.
@@ -4784,7 +4784,7 @@ interface INktHookCallInfo : INktObject
   /**
   * \fn ReadIntercallData([in] my_ssize_t destAddr, [in] my_ssize_t offset, [in] my_ssize_t bytes);
   *
-  * \brief Retrieves user-defined data that is mantained between pre and post call stages. Use WriteIntercallData to store this data.
+  * \brief Retrieves user-defined data that is maintained between pre and post call stages. Use WriteIntercallData to store this data.
   * \sa WriteIntercallData
   *
   * \param destAddr Pointer-sized variable indicating address to store retrieved data.
@@ -4800,14 +4800,14 @@ interface INktHookCallInfo : INktObject
   *
   * 
   */
-  [helpstring("Retrieves data that is mantained between pre and post call"),
+  [helpstring("Retrieves data that is maintained between pre and post call"),
    id(dispidNktHookCallInfoReadIntercallData)]
   HRESULT ReadIntercallData([in] my_ssize_t destAddr, [in] my_ssize_t offset, [in] my_ssize_t bytes);
   
   /**
   * \fn WriteIntercallData([in] my_ssize_t destAddr, [in] my_ssize_t offset, [in] my_ssize_t bytes);
   *
-  * \brief Stores user-defined data that is mantained between pre and post call stages. Use ReadIntercallData to read this data.
+  * \brief Stores user-defined data that is maintained between pre and post call stages. Use ReadIntercallData to read this data.
   * \sa ReadIntercallData
   *
   * \param destAddr Pointer-sized variable indicating address containing data to store.
@@ -4823,7 +4823,7 @@ interface INktHookCallInfo : INktObject
   *
   * 
   */
-  [helpstring("Stores data that will be mantained between pre and post call"),
+  [helpstring("Stores data that will be maintained between pre and post call"),
    id(dispidNktHookCallInfoWriteIntercallData)]
   HRESULT WriteIntercallData([in] my_ssize_t srcAddr, [in] my_ssize_t offset, [in] my_ssize_t bytes);
 };
@@ -6639,7 +6639,7 @@ interface INktHookCallInfoPlugin : IDispatch
    *
    * \brief	Get the running time of the current thread in kernel mode in milliseconds.
    *
-   * \param [in,out]	pVal	ointer to double-precision floating point value to get millisecond count.
+   * \param [in,out]	pVal	Pointer to double-precision floating point value to get millisecond count.
    *
    * \return \c S_OK on success.
    * \return \c E_POINTER if pVal is NULL.
@@ -7044,7 +7044,7 @@ interface INktHookCallInfoPlugin : IDispatch
    *
    * \brief	Add an unsigned quadword to the custom parameters.
    *
-   * \param name	The name of the unsigned quad-word parameter to add.
+   * \param name	The name of the unsigned quadword parameter to add.
    * \param	value	The value.
    *
    * \return \c S_OK on success.
@@ -7127,7 +7127,7 @@ interface INktHookCallInfoPlugin : IDispatch
   /**
   * \fn ReadIntercallData([in] my_ssize_t destAddr, [in] my_ssize_t offset, [in] my_ssize_t bytes);
   *
-  * \brief Retrieves user-defined data that is mantained between pre and post call stages. Use WriteIntercallData to store this data.
+  * \brief Retrieves user-defined data that is maintained between pre and post call stages. Use WriteIntercallData to store this data.
   * \sa WriteIntercallData
   *
   * \param destAddr Pointer-sized variable indicating address to store retrieved data.
@@ -7143,7 +7143,7 @@ interface INktHookCallInfoPlugin : IDispatch
   *
   * 
   */
-  [helpstring("Retrieves data that is mantained between pre and post call"),
+  [helpstring("Retrieves data that is maintained between pre and post call"),
    id(dispidNktHookCallInfoPluginReadIntercallData)]
   HRESULT ReadIntercallData([in] my_ssize_t destAddr, [in] my_ssize_t offset, [in] my_ssize_t bytes);
 
@@ -7151,7 +7151,7 @@ interface INktHookCallInfoPlugin : IDispatch
   /**
   * \fn WriteIntercallData([in] my_ssize_t destAddr, [in] my_ssize_t offset, [in] my_ssize_t bytes);
   *
-  * \brief Stores user-defined data that is mantained between pre and post call stages. Use ReadIntercallData to read this data.
+  * \brief Stores user-defined data that is maintained between pre and post call stages. Use ReadIntercallData to read this data.
   * \sa ReadIntercallData
   *
   * \param destAddr Pointer-sized variable indicating address containing data to store.
@@ -7167,7 +7167,7 @@ interface INktHookCallInfoPlugin : IDispatch
   *
   * 
   */
-  [helpstring("Stores data that will be mantained between pre and post call"),
+  [helpstring("Stores data that will be maintained between pre and post call"),
    id(dispidNktHookCallInfoPluginWriteIntercallData)]
   HRESULT WriteIntercallData([in] my_ssize_t srcAddr, [in] my_ssize_t offset, [in] my_ssize_t bytes);
 };
@@ -7286,7 +7286,7 @@ interface INktHookInfo : IDispatch
    *
    * \brief	Adds or removes a thread from the global ignore list.
    *
-   * \details When a plugin DLL creates it's own threads, this
+   * \details When a plugin DLL creates its own threads, this
    * function can be used to force Deviare to ignore the API calls made
    * from those user threads.
    *
