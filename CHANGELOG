@@ -1,6 +1,6 @@
 ﻿Known issues:
 ============
-* C# plugins may not work if "RegisterClassA" or "RegisterClassW" Apis is hooked because CoInitialize(Ex) calls RegisterClass on STA and, at this point, COM initialization in not complete yet.
+* C# plugins may not work if "RegisterClassA" or "RegisterClassW" Apis is hooked because CoInitialize(Ex) calls RegisterClass on STA and, at this point, COM initialization is not complete yet.
 
 
 Version 2.7.5
@@ -20,7 +20,7 @@ Version 2.7.3
 -Fixed some api hook code generation.
 -Checked Deviare against Windows 10 preview with success.
 -Stack walk stops when the instruction pointer becomes invalid.
--Removed SendCustomMessage from INktHookCallInfoPlugin. Pluings should use the one from INktHookInfo.
+-Removed SendCustomMessage from INktHookCallInfoPlugin. Plugins should use the one from INktHookInfo.
 -Removed CoInitialize(Ex) calls from all threads and switched to the implicit MTA apartment type.
 
 Version 2.7.2
@@ -58,7 +58,7 @@ Version 2.6.8
 Version 2.6.7
 =============
 -BREAKING CHANGE: INktSpyMgr::CreateProcess(WithLogon) will set continueEvent to NULL instead of 0 if 'suspended' parameter is FALSE or an error occurs.
--BREAKING CHANGE: OnLoadLibraryCall/OnFreeLibraryCall/OnCustomMessage events sends the direct VARIANT value instead of seding a ByRef/Variant that points to another variant. (Should not affect C# project because its 'object' handling).
+-BREAKING CHANGE: OnLoadLibraryCall/OnFreeLibraryCall/OnCustomMessage events sends the direct VARIANT value instead of sending a ByRef/Variant that points to another variant. (Should not affect C# project because its 'object' handling).
 -Fixed memory and handle leaks in some functions using the internal process handles manager.
 -Fixed messages being sent between server/client before connection tasks were completed.
 -Updated to latest SQLite version.
@@ -156,7 +156,7 @@ Version 2.5.2
 =============
 -Memory management module completely rewritten to improve speed and balance comsumption.
 -Added FilterSpyMgrEvent method to the INktHookCallInfoPlugin in order to let the plugin filter calls and prevent them from being sent to the Spy Manager object.
--Change: Hooks that are automatically installed when a dll or child process is loaded now they are installed synchronously.
+-Change: Hooks that are automatically installed when a dll or child process is loaded now are installed synchronously.
 -Fixed PointerVal access in plugins.
 
 Version 2.5.1

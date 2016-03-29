@@ -1,5 +1,5 @@
 Deviare is a professional hooking engine for instrumenting arbitrary Win32
-functions, COM objects, and functions which symbols are located in program
+functions, COM objects, and functions whose symbols are located in program
 databases (PDBs). It can intercept unmanaged code in 32-bit and 64-bit
 applications. It is implemented as a COM component, so it can be integrated
 with all the programming languages which support COM, such as C/C++, VB, C#,
@@ -24,7 +24,7 @@ Code instrumentation is used in several other areas like: tracing and
 debugging, sandboxing and browser security, malware analysis, video
 conference recording, and gaming.
 
-Download the latests binaries and source code from
+Download the latest binaries and source code from
 [here](https://github.com/nektra/Deviare2/releases).
 
 
@@ -51,7 +51,7 @@ move them to the *BIN* folder.
 # BUG REPORTS
 
 If you experience something you think might be a bug in Deviare, please
-report it in GitHub repository or write us in <http://www.nektra.com/contact/>.
+report it in GitHub repository or write to us in <http://www.nektra.com/contact/>.
 
 Describe what you did, what happened, what kind of computer you have,
 which operating system you're using, and anything else you think might
