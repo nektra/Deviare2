@@ -28,6 +28,7 @@ Source/Engine/SpyMgr/Asm/Injector_x86.inl
 Source/MiscUtils/Certificate/nektra/
 Source/MiscUtils/File2Inc/bin/
 Samples/CSharp/COMHookingBasis/obj/
+Samples/CSharp/Console/Aga.Controls/bin/
 Samples/CSharp/Console/Aga.Controls/obj/
 Samples/CSharp/Console/obj/
 Samples/CSharp/FilePlugin/obj/
