@@ -709,7 +709,6 @@ HRESULT CNktDvProcess::CreateWithLogon(__deref_out CNktDvProcess **lplpProc, __i
     if (cPhMgr != NULL && bCloseProcessHandle == FALSE)
     {
       cPhMgr->RemoveHandle(sPi.dwProcessId);
-      bCloseProcessHandle = TRUE;
     }
   }
   if (sPi.hThread != NULL)
