@@ -919,10 +919,8 @@ HRESULT CNktDvTools::SuspendAfterCreateProcessW(__out LPHANDLE lphReadyExecution
 
   if (lphReadyExecutionEvent == NULL || lphContinueExecutionEvent == NULL)
     return E_POINTER;
-  if (lphReadyExecutionEvent != NULL)
-    *lphReadyExecutionEvent = NULL;
-  if (lphContinueExecutionEvent != NULL)
-    *lphContinueExecutionEvent = NULL;
+  *lphReadyExecutionEvent = NULL;
+  *lphContinueExecutionEvent = NULL;
   NKT_DEBUGPRINTLNA(Nektra::dlTools, ("%lu) Tools[SuspendAfterCreateProcessW]: ProcHnd=%08X, "
                                       "ThreadHnd=%08X",
                     ::GetTickCount(), hSuspendedProc, hSuspendedMainThread));

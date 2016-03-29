@@ -958,7 +958,7 @@ SIZE_T CNktDvHookEngine::PreCall(__in LPVOID lpHookEntryVoid, __inout CNktDvTlsD
     nRetCode = 0; //ignore this call
     goto pc_exit;
   }
-  //init last error and other suff
+  //init last error and other stuff
   lpCallDataEntry->lpHookEntry = lpHookEntry;
   while ((lpCallDataEntry->nCallDataItemId = NktInterlockedIncrement(&(lpHookEntry->nCallCounter))) == 0);
   lpCallDataEntry->sCallState.dwOsLastError = dwOsLastError;
@@ -969,7 +969,7 @@ SIZE_T CNktDvHookEngine::PreCall(__in LPVOID lpHookEntryVoid, __inout CNktDvTlsD
   //save return address
   lpCallDataEntry->nReturnAddr = nReturnAddr;
   lpCallDataEntry->nAfterCallAddr = (SIZE_T)(lpHookEntry->lpAfterCallMark);
-  //attach functions parameters
+  //attach function parameters
   lpCallDataEntry->cFuncParams = cFuncParams;
   while ((lpCallDataEntry->nCookie = NktInterlockedIncrement(&(nCallCounter))) == 0);
   //get stack info

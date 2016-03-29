@@ -213,7 +213,7 @@ hap_err1:
   {
     cHookItem = cHookItemsList[nHookIdx];
     if (cHookItem->nState != CNktDvHook::stInactive)
-      continue; //may be sended in another thread
+      continue; //may be sent in another thread
     cHook = cHookItem->cHook;
     nOldState = cHookItem->nState;
     dwHookId = cHookItem->dwHookId;

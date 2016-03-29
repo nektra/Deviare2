@@ -1,11 +1,11 @@
 @ECHO OFF
 SETLOCAL
 IF NOT "%VCINSTALLDIR%" == "" GOTO do_process
-IF "%VS110COMNTOOLS%" == "" GOTO show_err
+IF "%VS140COMNTOOLS%" == "" GOTO show_err
 
 :do_process
-CALL "%VS110COMNTOOLS%\..\..\VC\vcvarsall.bat" x86
-IF "%VS110COMNTOOLS%" == "" GOTO err_cantsetupvs_x86
+CALL "%VS140COMNTOOLS%\..\..\VC\vcvarsall.bat" x86
+IF "%VS140COMNTOOLS%" == "" GOTO err_cantsetupvs_x86
 
 DEVENV C\RegistryPlugin\RegistryPlugin.sln /rebuild "Release|Win32"
 IF NOT %ERRORLEVEL% == 0 goto bad_compile
@@ -31,8 +31,8 @@ IF NOT %ERRORLEVEL% == 0 goto bad_compile
 ENDLOCAL
 
 SETLOCAL
-CALL "%VS110COMNTOOLS%\..\..\VC\vcvarsall.bat" x64
-IF "%VS110COMNTOOLS%" == "" GOTO err_cantsetupvs_x64
+CALL "%VS140COMNTOOLS%\..\..\VC\vcvarsall.bat" x64
+IF "%VS140COMNTOOLS%" == "" GOTO err_cantsetupvs_x64
 
 DEVENV C\RegistryPlugin\RegistryPlugin.sln /rebuild "Release|x64"
 IF NOT %ERRORLEVEL% == 0 goto bad_compile
