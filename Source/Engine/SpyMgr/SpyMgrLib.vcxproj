@@ -306,6 +306,7 @@ EXIT 1
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="DriverInterface.h" />
     <ClInclude Include="Hook.h" />
     <ClInclude Include="InternalProcessesList.h" />
     <ClInclude Include="SpyMgr.h" />

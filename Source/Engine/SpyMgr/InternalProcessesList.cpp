@@ -31,6 +31,8 @@
 #include "..\..\Common\Tools.h"
 #include "..\..\Common\ProcessHandle.h"
 #include "..\..\Common\AutoPtr.h"
+#include "DriverInterface.h"
+#include <WinIoCtl.h>
 
 //-----------------------------------------------------------
 
@@ -48,6 +50,8 @@ CNktDvInternalProcessesList::CNktDvInternalProcessesList(CNktDvInternalProcesses
 {
   NKT_ASSERT(_lpCB != NULL);
   lpCallback = _lpCB;
+  eventCount = 0;
+  hDriver = hNotifEvent = INVALID_HANDLE_VALUE;
   return;
 }
 
@@ -68,6 +72,14 @@ HRESULT CNktDvInternalProcessesList::Initialize()
   //refresh
   if (SUCCEEDED(hRes))
     hRes = Refresh(FALSE);
+  if (InitializeDriver()) {
+    eventCount = 1;
+    updatePeriod = INFINITE;
+  }
+  else {
+    eventCount = 0;
+    updatePeriod = UPDATE_PERIOD_MS;
+  }
   //start background thread
   if (SUCCEEDED(hRes))
   {
@@ -96,6 +108,7 @@ VOID CNktDvInternalProcessesList::Finalize()
   {
     delete lpItem;
   }
+  FinalizeHandles();
   cShutdownMtx.Finalize();
   return;
 }
@@ -232,8 +245,12 @@ VOID CNktDvInternalProcessesList::ThreadProc()
 {
   lpCallback->IPL_WorkerThreadStarted();
   //----
-  while (CheckForAbort(UPDATE_PERIOD_MS) == FALSE)
+  DWORD hitEvent;
+  while (!CheckForAbort(updatePeriod, eventCount, &hNotifEvent, &hitEvent)) {
+    updatePeriod = (eventCount > 0 && hitEvent > 0) ? UPDATE_PERIOD_MS : INFINITE;
+    ::ResetEvent(hNotifEvent);
     Refresh(TRUE);
+  }
   //----
   lpCallback->IPL_WorkerThreadEnded();
   return;
@@ -315,4 +332,108 @@ VOID CNktDvInternalProcessesList::ExecNotification(__inout TNktLnkLst<CProcessIt
     lpCallback->IPL_OnProcessAdded(lpItem->cProc);
   }
   return;
+}
+
+BOOL CNktDvInternalProcessesList::InitializeDriver()
+{
+  DWORD dw;
+  //open driver
+  hDriver = ::CreateFileW(DEVIAREPD_DEVICE_NAME_STRING, GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING,
+    FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OVERLAPPED, NULL);
+  if (hDriver == INVALID_HANDLE_VALUE) {
+    DWORD dwOsErr = ::GetLastError();
+    if (dwOsErr != ERROR_FILE_NOT_FOUND)
+      return FALSE;
+    //start driver if not done yet
+    if (StartDriver() == FALSE)
+      return FALSE;
+    //try reopen
+    hDriver = ::CreateFileW(DEVIAREPD_DEVICE_NAME_STRING, GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING,
+                            FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OVERLAPPED, NULL);
+    dwOsErr = ::GetLastError();
+    if (hDriver == INVALID_HANDLE_VALUE)
+      return FALSE;
+    dwOsErr = ERROR_SUCCESS;
+  }
+  //...notification event
+  hNotifEvent = ::CreateEventW(NULL, TRUE, FALSE, NULL);
+  if (hNotifEvent == NULL) {
+    FinalizeHandles();
+    return FALSE;
+  }
+  if (::DeviceIoControl(hDriver, DEVIAREPD_IOCTL_SET_NOTIFICATION_EVENT, &hNotifEvent, (DWORD)sizeof(hNotifEvent),
+    NULL, 0, &dw, NULL) == FALSE) {
+    FinalizeHandles();
+    return FALSE;
+  }
+  return TRUE;
+}
+
+void CNktDvInternalProcessesList::FinalizeHandles() {
+  //close driver handle
+  if (hDriver != INVALID_HANDLE_VALUE)
+  {
+    ::CloseHandle(hDriver);
+    hDriver = INVALID_HANDLE_VALUE;
+  }
+  //close event handle
+  if (hNotifEvent != NULL)
+  {
+    ::CloseHandle(hNotifEvent);
+    hNotifEvent = NULL;
+  }
+}
+
+BOOL CNktDvInternalProcessesList::StartDriver()
+{
+  SC_HANDLE hScMgr, hServ;
+  SERVICE_STATUS sSvcStatus;
+  DWORD dwOsErr;
+
+  hScMgr = ::OpenSCManagerW(NULL, NULL, SC_MANAGER_CONNECT);
+  if (hScMgr == NULL)
+    return FALSE;
+  hServ = ::OpenServiceW(hScMgr, DEVIAREPD_SERVICE_NAME, SERVICE_START | SERVICE_QUERY_STATUS);
+  if (hServ == NULL)
+  {
+    dwOsErr = ::GetLastError();
+    ::CloseServiceHandle(hScMgr);
+    ::SetLastError(dwOsErr);
+    return FALSE;
+  }
+  //start driver
+  if (::StartServiceW(hServ, 0, NULL) == FALSE)
+  {
+    dwOsErr = ::GetLastError();
+    if (dwOsErr != ERROR_SERVICE_ALREADY_RUNNING)
+    {
+      ::CloseServiceHandle(hServ);
+      ::CloseServiceHandle(hScMgr);
+      ::SetLastError(dwOsErr);
+      return FALSE;
+    }
+  }
+  //wait until service is running
+  while (1)
+  {
+    nktMemSet(&sSvcStatus, 0, sizeof(sSvcStatus));
+    if (::QueryServiceStatus(hServ, &sSvcStatus) == FALSE)
+      break;
+    if (sSvcStatus.dwCurrentState == SERVICE_RUNNING)
+      break;
+    if (sSvcStatus.dwCurrentState != SERVICE_START_PENDING)
+    {
+      ::CloseServiceHandle(hServ);
+      ::CloseServiceHandle(hScMgr);
+      ::SetLastError(ERROR_SERVICE_REQUEST_TIMEOUT);
+      return FALSE;
+    }
+    ::Sleep(50);
+  }
+  //close handles
+  ::CloseServiceHandle(hServ);
+  ::CloseServiceHandle(hScMgr);
+  //done
+  ::SetLastError(ERROR_SUCCESS);
+  return TRUE;
 }

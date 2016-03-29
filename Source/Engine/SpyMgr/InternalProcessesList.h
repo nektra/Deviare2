@@ -74,11 +74,21 @@ private:
   virtual HRESULT AddItem(__inout TNktLnkLst<CProcessItem> &cNewProcList, __in LPPROCESSENTRY32W lpEntryW);
   virtual VOID ExecNotification(__inout TNktLnkLst<CProcessItem> &cAddedProcList,
                                 __inout TNktLnkLst<CProcessItem> &cRemovedProcList);
+  void FinalizeHandles();
 
   TNktLnkLst<CProcessItem> cProcessList;
   //----
   CNktDvLightShutdownMutex cShutdownMtx;
   CNktDvInternalProcessesListCallback *lpCallback;
+  //----
+
+  static BOOL StartDriver();
+  BOOL InitializeDriver();
+
+  DWORD eventCount;
+  HANDLE hDriver;
+  HANDLE hNotifEvent;
+  DWORD updatePeriod;
 };
 
 //-----------------------------------------------------------
