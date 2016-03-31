@@ -2,6 +2,10 @@
 ============
 * C# plugins may not work if "RegisterClassA" or "RegisterClassW" Apis is hooked because CoInitialize(Ex) calls RegisterClass on STA and, at this point, COM initialization is not complete yet.
 
+Version 2.7.6
+=============
+-Fixed a bug that caused an injected application to crash when an internal error triggered an engine cleanup.
+-Fixed build system for VC++ 2013+ compilers.
 
 Version 2.7.5
 =============
