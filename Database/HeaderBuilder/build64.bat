@@ -14,11 +14,11 @@ SET __HeaderFile=dummy.h
 :aftervars
 
 IF NOT "%VCINSTALLDIR%" == "" GOTO do_process
-IF "%VS110COMNTOOLS%" == "" GOTO show_err
+IF "%VS140COMNTOOLS%" == "" GOTO show_err
 
 ECHO Setting up a Visual Studio x64 Command Prompt environment... 
-CALL "%VS110COMNTOOLS%\..\..\VC\vcvarsall.bat" x86_amd64
-IF "%VS110COMNTOOLS%" == "" GOTO err_cantsetupvs
+CALL "%VS140COMNTOOLS%\..\..\VC\vcvarsall.bat" x86_amd64
+IF "%VS140COMNTOOLS%" == "" GOTO err_cantsetupvs
 
 :do_process
 ECHO Compiling headers...

@@ -56,14 +56,14 @@ void* __cdecl _nktMemMallocWithTrack(__in size_t nSize, __in_z_opt const char *s
 {
   LPBYTE p;
 
-#ifndef NKT_ENABLE_MEMORY_TRACKING_ONY_POINTERS
+#ifndef NKT_ENABLE_MEMORY_TRACKING_ONLY_POINTERS
   if (nktMemTracker() == NULL)
     return NULL;
   nSize = ((nSize+sizeof(SIZE_T)-1) & (~(sizeof(SIZE_T)-1))) + NKT_MEMORY_TRACKING_BLOCK_SIZE +
           sizeof(SIZE_T);
-#else //NKT_ENABLE_MEMORY_TRACKING_ONY_POINTERS
+#else //NKT_ENABLE_MEMORY_TRACKING_ONLY_POINTERS
   nSize += 2*sizeof(SIZE_T);
-#endif //NKT_ENABLE_MEMORY_TRACKING_ONY_POINTERS
+#endif //NKT_ENABLE_MEMORY_TRACKING_ONLY_POINTERS
   //allocate memory
   p = (LPBYTE)(memmgrpool::Malloc(nSize));
   if (p != NULL)
@@ -72,21 +72,21 @@ void* __cdecl _nktMemMallocWithTrack(__in size_t nSize, __in_z_opt const char *s
     nSize = memmgrpool::BlockSize(p);
   }
   //tracking
-#ifndef NKT_ENABLE_MEMORY_TRACKING_ONY_POINTERS
+#ifndef NKT_ENABLE_MEMORY_TRACKING_ONLY_POINTERS
   if (p != NULL)
   {
     nktMemTracker()->AddTrace(p, nSize-(NKT_MEMORY_TRACKING_BLOCK_SIZE+sizeof(SIZE_T)), szFileName,
                               nLineNumber);
     p += NKT_MEMORY_TRACKING_BLOCK_SIZE;
   }
-#else //NKT_ENABLE_MEMORY_TRACKING_ONY_POINTERS
+#else //NKT_ENABLE_MEMORY_TRACKING_ONLY_POINTERS
   if (p != NULL)
   {
     ((SIZE_T*)p)[0] = (SIZE_T)szFileName;
     ((SIZE_T*)p)[1] = (SIZE_T)nLineNumber;
     p += 2*sizeof(SIZE_T);
   }
-#endif //NKT_ENABLE_MEMORY_TRACKING_ONY_POINTERS
+#endif //NKT_ENABLE_MEMORY_TRACKING_ONLY_POINTERS
   return p;
 }
 
@@ -102,7 +102,7 @@ void* __cdecl _nktMemReallocWithTrack(__in void *lpMemory, __in size_t nNewSize,
   }
   lpOld = (LPBYTE)lpMemory;
   //tracking
-#ifndef NKT_ENABLE_MEMORY_TRACKING_ONY_POINTERS
+#ifndef NKT_ENABLE_MEMORY_TRACKING_ONLY_POINTERS
   if (nktMemTracker() == NULL)
     return NULL;
   nNewSize = ((nNewSize+sizeof(SIZE_T)-1) & (~(sizeof(SIZE_T)-1))) + NKT_MEMORY_TRACKING_BLOCK_SIZE +
@@ -112,11 +112,11 @@ void* __cdecl _nktMemReallocWithTrack(__in void *lpMemory, __in size_t nNewSize,
     lpOld -= NKT_MEMORY_TRACKING_BLOCK_SIZE;
     nktMemTracker()->RemoveTrace(lpOld);
   }
-#else //NKT_ENABLE_MEMORY_TRACKING_ONY_POINTERS
+#else //NKT_ENABLE_MEMORY_TRACKING_ONLY_POINTERS
   nNewSize += 2*sizeof(SIZE_T);
   if (lpOld != NULL)
     lpOld -= 2*sizeof(SIZE_T);
-#endif //NKT_ENABLE_MEMORY_TRACKING_ONY_POINTERS
+#endif //NKT_ENABLE_MEMORY_TRACKING_ONLY_POINTERS
   //reallocate memory
   p = (LPBYTE)memmgrpool::Realloc(lpOld, nNewSize);
   if (p != NULL)
@@ -125,7 +125,7 @@ void* __cdecl _nktMemReallocWithTrack(__in void *lpMemory, __in size_t nNewSize,
     nNewSize = memmgrpool::BlockSize(p);
   }
   //tracking
-#ifndef NKT_ENABLE_MEMORY_TRACKING_ONY_POINTERS
+#ifndef NKT_ENABLE_MEMORY_TRACKING_ONLY_POINTERS
   if (p != NULL)
   {
     nktMemTracker()->AddTrace(p, nNewSize-(NKT_MEMORY_TRACKING_BLOCK_SIZE+sizeof(SIZE_T)), szFileName,
@@ -138,14 +138,14 @@ void* __cdecl _nktMemReallocWithTrack(__in void *lpMemory, __in size_t nNewSize,
                               ((CNktMemMgrTracker::LPMEMTRACE_BLOCK)lpOld)->szFileName,
                               (int)((CNktMemMgrTracker::LPMEMTRACE_BLOCK)lpOld)->nLineNumber);
   }
-#else //NKT_ENABLE_MEMORY_TRACKING_ONY_POINTERS
+#else //NKT_ENABLE_MEMORY_TRACKING_ONLY_POINTERS
   if (p != NULL)
   {
     ((SIZE_T*)p)[0] = (SIZE_T)szFileName;
     ((SIZE_T*)p)[1] = (SIZE_T)nLineNumber;
     p += 2*sizeof(SIZE_T);
   }
-#endif //NKT_ENABLE_MEMORY_TRACKING_ONY_POINTERS
+#endif //NKT_ENABLE_MEMORY_TRACKING_ONLY_POINTERS
   return p;
 }
 
@@ -157,13 +157,13 @@ void __cdecl _nktMemFreeWithTrack(__inout void *lpMemory)
     return;
   p = (LPBYTE)lpMemory;
   //tracking
-#ifndef NKT_ENABLE_MEMORY_TRACKING_ONY_POINTERS
+#ifndef NKT_ENABLE_MEMORY_TRACKING_ONLY_POINTERS
   p -= NKT_MEMORY_TRACKING_BLOCK_SIZE;
   if (nktMemTrackerNoCreate() != NULL)
     nktMemTracker()->RemoveTrace(p);
-#else //NKT_ENABLE_MEMORY_TRACKING_ONY_POINTERS
+#else //NKT_ENABLE_MEMORY_TRACKING_ONLY_POINTERS
   p -= 2*sizeof(SIZE_T);
-#endif //NKT_ENABLE_MEMORY_TRACKING_ONY_POINTERS
+#endif //NKT_ENABLE_MEMORY_TRACKING_ONLY_POINTERS
   //free memory
   memmgrpool::Free(p);
   return;
@@ -178,19 +178,19 @@ size_t _nktMemSizeWithTrack(__in void *lpMemory)
     return 0;
   p = (LPBYTE)lpMemory;
   //tracking
-#ifndef NKT_ENABLE_MEMORY_TRACKING_ONY_POINTERS
+#ifndef NKT_ENABLE_MEMORY_TRACKING_ONLY_POINTERS
   p -= NKT_MEMORY_TRACKING_BLOCK_SIZE;
-#else //NKT_ENABLE_MEMORY_TRACKING_ONY_POINTERS
+#else //NKT_ENABLE_MEMORY_TRACKING_ONLY_POINTERS
   p -= 2*sizeof(SIZE_T);
-#endif //NKT_ENABLE_MEMORY_TRACKING_ONY_POINTERS
+#endif //NKT_ENABLE_MEMORY_TRACKING_ONLY_POINTERS
   //get memory size
   nSize = memmgrpool::BlockSize(p);
   //tracking
-#ifndef NKT_ENABLE_MEMORY_TRACKING_ONY_POINTERS
+#ifndef NKT_ENABLE_MEMORY_TRACKING_ONLY_POINTERS
   nSize = (nSize >= NKT_MEMORY_TRACKING_BLOCK_SIZE) ? (nSize-NKT_MEMORY_TRACKING_BLOCK_SIZE) : 0;
-#else //NKT_ENABLE_MEMORY_TRACKING_ONY_POINTERS
+#else //NKT_ENABLE_MEMORY_TRACKING_ONLY_POINTERS
   nSize = (nSize >= (2*sizeof(SIZE_T))) ? (nSize-(2*sizeof(SIZE_T))) : 0;
-#endif //NKT_ENABLE_MEMORY_TRACKING_ONY_POINTERS
+#endif //NKT_ENABLE_MEMORY_TRACKING_ONLY_POINTERS
   return nSize;
 }
 

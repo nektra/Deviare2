@@ -37,7 +37,7 @@
 #include "MemoryManager.h"
 
 #if (defined(NKT_ENABLE_MEMORY_TRACKING)) &&          \
-    (!defined(NKT_ENABLE_MEMORY_TRACKING_ONY_POINTERS))
+    (!defined(NKT_ENABLE_MEMORY_TRACKING_ONLY_POINTERS))
 
 #include "WaitableObjects.h"
 #include <imagehlp.h>
@@ -110,6 +110,6 @@ private:
 
 //-----------------------------------------------------------
 
-#endif //NKT_ENABLE_MEMORY_TRACKING && !NKT_ENABLE_MEMORY_TRACKING_ONY_POINTERS
+#endif //NKT_ENABLE_MEMORY_TRACKING && !NKT_ENABLE_MEMORY_TRACKING_ONLY_POINTERS
 
 #endif //_NKT_MEMORYMANAGER_TRACKER_H

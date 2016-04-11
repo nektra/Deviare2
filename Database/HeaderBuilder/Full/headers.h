@@ -1625,7 +1625,7 @@ interface IISApplicationPool;
 #include <WSnetbs.h>
 #include <WSNwLink.h>
 #include <WSPiApi.h>
-#include <wsrm.h>
+//#include <wsrm.h>
 #include <WSvns.h>
 #include <WtsApi32.h>
 #include <wtsdefs.h>
