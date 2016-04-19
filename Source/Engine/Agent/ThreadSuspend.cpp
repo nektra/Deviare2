@@ -289,6 +289,7 @@ HRESULT CNktDvThreadSuspend::EnumProcessThreads(__out SIZE_T *lpnEnumMethod, __o
   nRealSize = 0;
   //gather information using three methods
   lpSysProcInfo = NULL;
+  lpCurrProc = NULL;
   for ((*lpnEnumMethod)=0; (*lpnEnumMethod)<3; (*lpnEnumMethod)++)
   {
     if ((*lpnEnumMethod) == 1)
@@ -349,8 +350,10 @@ HRESULT CNktDvThreadSuspend::EnumProcessThreads(__out SIZE_T *lpnEnumMethod, __o
     MemFree(lpSysProcInfo);
   }
   //current process not found (?), may be thin app hook of NtQuerySystemInformation
-  if (lpCurrProc == NULL)
-    return E_FAIL;
+  //We return a successful HRESULT to account for uninitialized low integrity processes in windows 8.1+
+  if (lpCurrProc == NULL) {
+    return S_OK;
+  }
   if (lpCurrProc != NULL && lpCurrProc->NumberOfThreads > 0)
   {
     if (lplpdwTids != NULL)
