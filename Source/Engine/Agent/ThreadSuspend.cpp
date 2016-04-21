@@ -30,6 +30,7 @@
 #include "ThreadSuspend.h"
 #include "..\..\Common\DynamicAPIs.h"
 #include "..\..\Common\NtInternals.h"
+#include "..\..\Common\Tools.h"
 
 //-----------------------------------------------------------
 
@@ -350,9 +351,12 @@ HRESULT CNktDvThreadSuspend::EnumProcessThreads(__out SIZE_T *lpnEnumMethod, __o
     MemFree(lpSysProcInfo);
   }
   //current process not found (?), may be thin app hook of NtQuerySystemInformation
-  //We return a successful HRESULT to account for uninitialized low integrity processes in windows 8.1+
   if (lpCurrProc == NULL) {
-    return S_OK;
+    MANDATORY_LEVEL level = CNktDvTools::GetProcessIntegrityLevel(dwCurrPid);
+    //We return a successful HRESULT to account for uninitialized low integrity processes in windows 8.1+
+    if (level < MandatoryLevelMedium)
+      return S_OK;
+    return E_FAIL;
   }
   if (lpCurrProc != NULL && lpCurrProc->NumberOfThreads > 0)
   {

@@ -76,6 +76,8 @@ typedef LONG (WINAPI *lpfnNtQueryInformationProcess)(__in HANDLE ProcessHandle,
 //      similar to this: http://www.nynaeve.net/Code/GetThreadWow64Context.cpp
 typedef BOOL (WINAPI *lpfnWow64GetThreadContext)(__in HANDLE hThread, __inout PWOW64_CONTEXT lpContext);
 typedef BOOL (WINAPI *lpfnWow64SetThreadContext)(__in HANDLE hThread, __in CONST WOW64_CONTEXT *lpContext);
+typedef DWORD (WINAPI *lpfnGetModuleFileNameW)(__in_opt HMODULE hModule, __out_ecount(nSize) LPWSTR lpFilename,
+                                               __in DWORD nSize);
 typedef DWORD (WINAPI *lpfnGetModuleFileNameExW)(__in HANDLE hProcess, __in_opt HMODULE hModule,
                                                  __out_ecount(nSize) LPWSTR lpFilename, __in DWORD nSize);
 typedef LONG (WINAPI *lpfnNtQueryInformationThread)(__in HANDLE ThreadHandle, __in int ThreadInformationClass,
@@ -181,6 +183,7 @@ static lpfnGetNativeSystemInfo fnGetNativeSystemInfo = NULL;
 static lpfnNtQueryInformationProcess fnNtQueryInformationProcess = NULL;
 static lpfnWow64GetThreadContext fnWow64GetThreadContext = NULL;
 static lpfnWow64SetThreadContext fnWow64SetThreadContext = NULL;
+static lpfnGetModuleFileNameW fnGetModuleFileNameW = NULL;
 static lpfnGetModuleFileNameExW fnGetModuleFileNameExW = NULL;
 static lpfnNtQueryInformationThread fnNtQueryInformationThread = NULL;
 static lpfnNtSetInformationThread fnNtSetInformationThread = NULL;
@@ -400,6 +403,32 @@ HRESULT nktDvDynApis_NtQueryInformationProcess(__in HANDLE ProcessHandle, __in i
                                           ProcessInformationLength, ReturnLength);
   if (nNtStatus < 0)
     return HRESULT_FROM_NT(nNtStatus);
+  return S_OK;
+}
+
+HRESULT nktDvDynApis_GetModuleFileNameW(__in_opt HMODULE hModule, __out_ecount(dwBufSize) LPWSTR lpFilename,
+                                        __in DWORD dwBufSize)
+{
+  DWORD dwLen;
+  HRESULT hRes;
+
+  if (nInitialized == 0)
+  {
+    HRESULT hRes = InitializeInternals();
+    if (FAILED(hRes))
+      return hRes;
+  }
+  //----
+  if (fnGetModuleFileNameW == NULL)
+    return E_NOTIMPL;
+  ::SetLastError(NOERROR);
+  dwLen = fnGetModuleFileNameW(hModule, lpFilename, dwBufSize);
+  hRes = NKT_HRESULT_FROM_LASTERROR();
+  if (dwLen >= dwBufSize && SUCCEEDED(hRes))
+    hRes = NKT_HRESULT_FROM_WIN32(ERROR_INSUFFICIENT_BUFFER);
+  if (FAILED(hRes))
+    return hRes;
+  lpFilename[dwLen] = 0;
   return S_OK;
 }
 
@@ -1403,6 +1432,7 @@ static HRESULT InitializeInternals()
     {
       fnQueryFullProcessImageNameW = (lpfnQueryFullProcessImageNameW)::GetProcAddress(hkernel32Dll,
                                           "QueryFullProcessImageNameW");
+      fnGetModuleFileNameW = (lpfnGetModuleFileNameW)::GetProcAddress(hkernel32Dll, "GetModuleFileNameW");
       fnGetNativeSystemInfo = (lpfnGetNativeSystemInfo)::GetProcAddress(hkernel32Dll, "GetNativeSystemInfo");
       fnIsWow64Process = (lpfnIsWow64Process)::GetProcAddress(hkernel32Dll, "IsWow64Process");
       fnWow64GetThreadContext = (lpfnWow64GetThreadContext)::GetProcAddress(hkernel32Dll, "Wow64GetThreadContext");
@@ -1424,13 +1454,10 @@ static HRESULT InitializeInternals()
     hPsApiDll = ::LoadLibraryW(L"psapi.dll");
     if (hPsApiDll != NULL)
     {
-      fnGetProcessImageFileNameW = (lpfnGetProcessImageFileNameW)::GetProcAddress(hPsApiDll,
-                                        "GetProcessImageFileNameW");
-      fnGetModuleFileNameExW = (lpfnGetModuleFileNameExW)::GetProcAddress(hPsApiDll,
-                                        "GetModuleFileNameExW");
+      fnGetProcessImageFileNameW = (lpfnGetProcessImageFileNameW)::GetProcAddress(hPsApiDll, "GetProcessImageFileNameW");
+      fnGetModuleFileNameExW = (lpfnGetModuleFileNameExW)::GetProcAddress(hPsApiDll, "GetModuleFileNameExW");
       fnEnumProcessModules = (lpfnEnumProcessModules)::GetProcAddress(hPsApiDll, "EnumProcessModules");
-      fnEnumProcessModulesEx = (lpfnEnumProcessModulesEx)::GetProcAddress(hPsApiDll,
-                                        "EnumProcessModulesEx");
+      fnEnumProcessModulesEx = (lpfnEnumProcessModulesEx)::GetProcAddress(hPsApiDll, "EnumProcessModulesEx");
     }
     //----
     if (sSi.wProcessorArchitecture == 0)

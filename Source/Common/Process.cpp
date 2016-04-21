@@ -276,21 +276,39 @@ HRESULT CNktDvProcess::CreateFromPID(__deref_out CNktDvProcess **lplpProc, __in 
   }
   while (SUCCEEDED(hRes));
   ::CloseHandle(hSnapshot);
-  if (sPe32_W.th32ProcessID == 0)
+  DWORD currPid = ::GetCurrentProcessId();
+  MANDATORY_LEVEL level = CNktDvTools::GetProcessIntegrityLevel(currPid);
+  if (sPe32_W.th32ProcessID == 0 && (level >= MandatoryLevelMedium || currPid != dwPid))
     return NKT_DVERR_NotFound; //process not found
   cProc.Attach(NKT_MEMMGR_NEW CNktDvProcess);
   if (cProc == NULL)
     return E_OUTOFMEMORY;
-  cProc->dwProcessID = sPe32_W.th32ProcessID;
-  cProc->dwParentProcessID = sPe32_W.th32ParentProcessID;
-  cProc->nThreadsCount = (SIZE_T)(sPe32_W.cntThreads);
-  cProc->nCpuUsage = (SIZE_T)(sPe32_W.cntUsage);
-  cProc->nPriClassBase = sPe32_W.pcPriClassBase;
+  if (sPe32_W.th32ProcessID == 0 && level < MandatoryLevelMedium && currPid == dwPid) {
+    cProc->dwProcessID = currPid;
+    cProc->dwParentProcessID = 0;
+    cProc->nThreadsCount = 1;
+    cProc->nCpuUsage = 0;
+    cProc->nPriClassBase = 0;
+  }
+  else {
+    cProc->dwProcessID = sPe32_W.th32ProcessID;
+    cProc->dwParentProcessID = sPe32_W.th32ParentProcessID;
+    cProc->nThreadsCount = (SIZE_T)(sPe32_W.cntThreads);
+    cProc->nCpuUsage = (SIZE_T)(sPe32_W.cntUsage);
+    cProc->nPriClassBase = sPe32_W.pcPriClassBase;
+  }
   //----
   hRes = CNktDvProcessHandlesMgr::Get(&cPhMgr);
   hProc = (SUCCEEDED(hRes)) ? (cPhMgr->GetHandle(dwPid, PROCESS_QUERY_INFORMATION)) : NULL;
   //if hProc is null only the 'szExeFileW' field will be set
   hRes = cProc->InitInfo(hProc, sPe32_W.szExeFile);
+  if (sPe32_W.th32ProcessID == 0 && level < MandatoryLevelMedium && currPid == dwPid) {
+#if defined _M_IX86
+    cProc->nPlatformBits = 32;
+#elif defined _M_X64
+    cProc->nPlatformBits = 64;
+#endif
+  }
   if (hProc != NULL)
     ::CloseHandle(hProc);
   if (SUCCEEDED(hRes))

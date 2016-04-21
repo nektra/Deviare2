@@ -395,7 +395,8 @@ HRESULT CNktDvTools::GetExecutableFileName(__inout CNktStringW &cStrDestW, __in 
           hRes = Device2DosForm(cStrDestW);
         else
           hRes = E_OUTOFMEMORY;
-        break;
+        if (SUCCEEDED(hRes))
+          break;
       }
       //second try
       hRes = nktDvDynApis_QueryFullProcessImageName(hProcess, u.sW, dwBufSize/sizeof(WCHAR));
@@ -405,7 +406,8 @@ HRESULT CNktDvTools::GetExecutableFileName(__inout CNktStringW &cStrDestW, __in 
       {
         if (cStrDestW.Copy(u.sW) == FALSE)
           hRes = E_OUTOFMEMORY;
-        break;
+        else
+          break;
       }
       //third try
       hRes = nktDvDynApis_GetProcessImageFileNameW(hProcess, u.sW, dwBufSize/sizeof(WCHAR));
@@ -417,10 +419,11 @@ HRESULT CNktDvTools::GetExecutableFileName(__inout CNktStringW &cStrDestW, __in 
           hRes = Device2DosForm(cStrDestW);
         else
           hRes = E_OUTOFMEMORY;
-        break;
+        if (SUCCEEDED(hRes))
+          break;
       }
     }
-    //try another methods for modules
+    //try another method for modules
     if (hModule != NULL)
     {
       hRes = nktDvDynApis_NtQueryVirtualMemory(hProcess, (PVOID)hModule, NKT_DV_MemorySectionName,
@@ -433,18 +436,32 @@ HRESULT CNktDvTools::GetExecutableFileName(__inout CNktStringW &cStrDestW, __in 
           hRes = Device2DosForm(cStrDestW);
         else
           hRes = E_OUTOFMEMORY;
-        break;
+        if (SUCCEEDED(hRes))
+          break;
       }
     }
     //another one
-    hRes = nktDvDynApis_GetModuleFileNameExW(hProcess, hModule, u.sW, dwBufSize/sizeof(WCHAR));
-    if (IsBufferSmallError(hRes) != FALSE)
-      continue;
-    if (SUCCEEDED(hRes))
-    {
-      if (cStrDestW.Copy(u.sW) == FALSE)
-        hRes = E_OUTOFMEMORY;
-      break;
+    if (hProcess == ::GetCurrentProcess()) {
+      hRes = nktDvDynApis_GetModuleFileNameW(hModule, u.sW, dwBufSize / sizeof(WCHAR));
+      if (IsBufferSmallError(hRes) != FALSE)
+        continue;
+      if (SUCCEEDED(hRes))
+      {
+        if (cStrDestW.Copy(u.sW) == FALSE)
+          hRes = E_OUTOFMEMORY;
+        break;
+      }
+    }
+    else {
+      hRes = nktDvDynApis_GetModuleFileNameExW(hProcess, hModule, u.sW, dwBufSize / sizeof(WCHAR));
+      if (IsBufferSmallError(hRes) != FALSE)
+        continue;
+      if (SUCCEEDED(hRes))
+      {
+        if (cStrDestW.Copy(u.sW) == FALSE)
+          hRes = E_OUTOFMEMORY;
+        break;
+      }
     }
     //no more
     break;
@@ -497,6 +514,9 @@ HRESULT CNktDvTools::Device2DosForm(__inout CNktStringW &cStrPathW)
             hRes = E_OUTOFMEMORY;
           break;
         }
+      }
+      else {
+        hRes = NKT_HRESULT_FROM_LASTERROR();
       }
     }
   }

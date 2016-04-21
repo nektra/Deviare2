@@ -34,7 +34,7 @@ _TEXT SEGMENT
 ;---------------------------------------------------------------------------------
 
 GetDataPtr MACRO register:REQ, symbol:REQ
-    DB   0E8h, 0, 0, 0, 0 ;call 0
+    DB   0E8h, 0, 0, 0, 0 ;call relative +0
     pop  register
     add  register, OFFSET symbol - $ + 1
 ENDM

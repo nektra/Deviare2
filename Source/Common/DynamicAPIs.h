@@ -55,6 +55,8 @@ HRESULT nktDvDynApis_NtQueryInformationProcess(__in HANDLE ProcessHandle, __in i
                                                __out LPVOID ProcessInformation,
                                                __in ULONG ProcessInformationLength,
                                                __out_opt PULONG ReturnLength);
+HRESULT nktDvDynApis_GetModuleFileNameW(__in_opt HMODULE hModule, __out_ecount(nSize) LPWSTR lpFilename,
+                                        __in DWORD nSize);
 HRESULT nktDvDynApis_GetModuleFileNameExW(__in HANDLE hProcess, __in_opt HMODULE hModule,
                                           __out_ecount(nSize) LPWSTR lpFilename, __in DWORD nSize);
 HRESULT nktDvDynApis_NtQueryInformationThread(__in HANDLE ThreadHandle, __in int ThreadInformationClass,
