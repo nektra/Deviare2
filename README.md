@@ -36,25 +36,26 @@ installed.
 
 To compile Deviare and/or build samples you need:
 
-- Visual Studio 2012 with Update 4 or later.
+- Visual Studio 2015 with Update 1 or later.
 - .NET Framework 4.
 - Windows SDK 8 with all .NET Framework components installed.
 
 
-**NOTE**: Some of the files you'll find in the *BIN* folder are **NOT**
-generated during compilation, such as the database (.db) files. Deviare
-needs these files to work. It you create new databases, don't forget to
-move them to the *BIN* folder.
+**NOTE**: The database (.db) files you'll find in the *BIN* folder are **NOT**
+generated when building Deviare. Deviare needs these files to work. If you
+create new databases, don't forget to move them to the *BIN* folder.
+To create them you must first build the corresponding tools that are
+included in the solution.
 
 
 -------------
 # BUG REPORTS
 
 If you experience something you think might be a bug in Deviare, please
-report it in GitHub repository or write to us in <http://www.nektra.com/contact/>.
+report it in the GitHub repository or write to us in [our contact page][Nektra contact].
 
 Describe what you did, what happened, what kind of computer you have,
-which operating system you're using, and anything else you think might
+which operating system you're using and anything else you think might
 be relevant.
 
 
@@ -68,10 +69,14 @@ Depending on your needs, you must choose one of them and follow its policies.
 A detail of the policies and agreements for each license type are available in
 the *LICENSE.COMMERCIAL* and *LICENSE.GPL* files.
 
-For further information please refer to <http://www.nektra.com/licensing/> or
-contact Nektra here <http://www.nektra.com/contact/>.
+For further information please refer to [our licensing options][Deviare homepage] or
+contact [Nektra here][Nektra contact].
 
-This library uses a portion of UDis86 project <http://udis86.sourceforge.net/>,
-authored, copyrighted and maintained by Vivek Thampi. UDis86 is licensed under
+This library uses a portion of [UDis86 project][UDis86 link], authored, 
+copyrighted and maintained by Vivek Thampi. UDis86 is licensed under
 the terms of BSD License. For any questions referring to UDis86 contact the
-author at <vivek[at]sig9[dot]com>.
+author at vivek[at]sig9[dot]com.
+
+[UDis86 link]: http://udis86.sourceforge.net/
+[Nektra contact]: http://www.nektra.com/contact/
+[Deviare homepage]: http://www.nektra.com/products/deviare-api-hook-windows/
