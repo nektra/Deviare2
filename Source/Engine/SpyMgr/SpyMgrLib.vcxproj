@@ -244,8 +244,6 @@
     </CustomBuild>
     <CustomBuild Include="Asm\Injector_x64.asm">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Compiling assembler code...</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">"$(VCInstallDir)\Bin\x86_amd64\ML64.EXE" /c /nologo /Fo"%(RootDir)%(Directory)\%(Filename).obj" "%(FullPath)"
 IF ERRORLEVEL 1 goto bad_compile
@@ -258,8 +256,6 @@ EXIT 1
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(RootDir)%(Directory)\GetProcAddress_x64.inc.asm;%(AdditionalInputs)</AdditionalInputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(RootDir)%(Directory)\%(Filename).inl;%(Outputs)</Outputs>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-      </Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Compiling assembler code...</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(VCInstallDir)\Bin\x86_amd64\ML64.EXE" /c /nologo /Fo"%(RootDir)%(Directory)\%(Filename).obj" "%(FullPath)"
 IF ERRORLEVEL 1 goto bad_compile
@@ -299,6 +295,28 @@ EXIT 1
 </Command>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(RootDir)%(Directory)\GetProcAddress_x86.inc.asm;%(AdditionalInputs)</AdditionalInputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(RootDir)%(Directory)\%(Filename).inl;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Compiling assembler code...</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">"$(VCInstallDir)\Bin\ML.EXE" /c /nologo /Fo"%(RootDir)%(Directory)\%(Filename).obj" "%(FullPath)"
+IF ERRORLEVEL 1 goto bad_compile
+"$(ProjectDir)..\..\MiscUtils\File2Inc\bin\File2Inc.exe" "%(RootDir)%(Directory)\%(Filename).obj" "%(RootDir)%(Directory)\%(Filename).inl" /var:aInjectorX86 /type:obj
+GOTO end
+:bad_compile
+EXIT 1
+:end
+</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(RootDir)%(Directory)\GetProcAddress_x86.inc.asm;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(RootDir)%(Directory)\%(Filename).inl;%(Outputs)</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Compiling assembler code...</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(VCInstallDir)\Bin\ML.EXE" /c /nologo /Fo"%(RootDir)%(Directory)\%(Filename).obj" "%(FullPath)"
+IF ERRORLEVEL 1 goto bad_compile
+"$(ProjectDir)..\..\MiscUtils\File2Inc\bin\File2Inc.exe" "%(RootDir)%(Directory)\%(Filename).obj" "%(RootDir)%(Directory)\%(Filename).inl" /var:aInjectorX86 /type:obj
+GOTO end
+:bad_compile
+EXIT 1
+:end
+</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(RootDir)%(Directory)\GetProcAddress_x86.inc.asm;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(RootDir)%(Directory)\%(Filename).inl;%(Outputs)</Outputs>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkObjects>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
