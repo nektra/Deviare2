@@ -1,4 +1,4 @@
-var annotated =
+var annotated_dup =
 [
     [ "Deviare2", "namespace_deviare2.html", "namespace_deviare2" ],
     [ "INktDbModule", "interface_i_nkt_db_module.html", "interface_i_nkt_db_module" ],
