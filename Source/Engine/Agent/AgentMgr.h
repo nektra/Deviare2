@@ -27,8 +27,7 @@
  *
  **/
 
-#ifndef _NKT_DV_AGENT_MANAGER_H
-#define _NKT_DV_AGENT_MANAGER_H
+#pragma once
 
 #include "Agent.h"
 #include "..\..\Common\Database.h"
@@ -261,4 +260,3 @@ private:
 
 //-----------------------------------------------------------
 
-#endif //_NKT_DV_AGENT_MANAGER_H

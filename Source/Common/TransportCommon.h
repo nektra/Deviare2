@@ -27,8 +27,7 @@
  *
  **/
 
-#ifndef _NKT_DV_TRANSPORT_COMMON_H
-#define _NKT_DV_TRANSPORT_COMMON_H
+#pragma once
 
 #include "EngBaseObj.h"
 #if defined _M_X64
@@ -520,4 +519,3 @@ __inline VOID NktDvTransportInitMessage4Callback(__inout NKT_DV_TMSG_COMMON *lpM
 
 //-----------------------------------------------------------
 
-#endif //_NKT_DV_TRANSPORT_MESSAGES_H

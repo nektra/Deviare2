@@ -27,8 +27,7 @@
  *
  **/
 
-#ifndef _NKT_THREADS_H
-#define _NKT_THREADS_H
+#pragma once
 
 #include <windows.h>
 #include "MemoryManager.h"
@@ -178,4 +177,3 @@ private:
 
 //-----------------------------------------------------------
 
-#endif //_NKT_THREADS_H

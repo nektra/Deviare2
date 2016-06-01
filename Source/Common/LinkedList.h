@@ -27,12 +27,7 @@
  *
  **/
 
-#ifndef _NKT_LINKEDLIST_H
-#define _NKT_LINKEDLIST_H
-
-#if _MSC_VER > 1000
-  #pragma once
-#endif // _MSC_VER > 1000
+#pragma once
 
 #include <windows.h>
 #include <crtdbg.h>
@@ -318,4 +313,3 @@ private:
 
 //-----------------------------------------------------------
 
-#endif //_NKT_LINKEDLIST_H

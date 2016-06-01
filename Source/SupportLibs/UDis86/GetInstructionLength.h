@@ -27,11 +27,9 @@
  *
  **/
 
-#ifndef _ASM_GETINSTRUCTION_LENGTH_H
-#define _ASM_GETINSTRUCTION_LENGTH_H
+#pragma once
 
 #include <windows.h>
-
 //-----------------------------------------------------------
 
 SIZE_T GetInstructionLength(__in LPVOID lpAddr, __in SIZE_T nSize, __in BYTE nPlatformBits,
@@ -39,4 +37,3 @@ SIZE_T GetInstructionLength(__in LPVOID lpAddr, __in SIZE_T nSize, __in BYTE nPl
 
 //-----------------------------------------------------------
 
-#endif //_ASM_GETINSTRUCTION_LENGTH_H

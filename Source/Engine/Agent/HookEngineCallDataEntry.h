@@ -27,8 +27,7 @@
  *
  **/
 
-#ifndef _NKT_DV_HOOKENGINE_CALLDATAENTRY_H
-#define _NKT_DV_HOOKENGINE_CALLDATAENTRY_H
+#pragma once
 
 #include "HookEngineInternals.h"
 #include "..\..\Common\FunctionParamsCache.h"
@@ -137,4 +136,3 @@ public:
 
 //-----------------------------------------------------------
 
-#endif //_NKT_DV_HOOKENGINE_CALLDATAENTRY_H

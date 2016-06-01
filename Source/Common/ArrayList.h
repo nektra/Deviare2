@@ -27,12 +27,7 @@
  *
  **/
 
-#ifndef _NKT_ARRAYLIST_H
-#define _NKT_ARRAYLIST_H
-
-#if _MSC_VER > 1000
-  #pragma once
-#endif // _MSC_VER > 1000
+#pragma once
 
 #include <windows.h>
 #include "MemoryManager.h"
@@ -677,4 +672,3 @@ private:
 
 //-----------------------------------------------------------
 
-#endif //_NKT_ARRAYLIST_H

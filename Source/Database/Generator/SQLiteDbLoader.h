@@ -27,8 +27,7 @@
  *
  **/
 
-#ifndef _SQLITEDBLOADER_H
-#define _SQLITEDBLOADER_H
+#pragma once
 
 #include "DbGenerator.h"
 #include "..\..\Common\MemoryManager.h"
@@ -233,4 +232,3 @@ public:
 
 //-----------------------------------------------------------
 
-#endif //_SQLITEDBLOADER_H

@@ -67,6 +67,7 @@
 #include <atlcom.h>
 #include <atlctl.h>
 #include <statreg.h>
+
 #include "..\SpyMgr\SpyMgr.h"
 #include "..\..\Common\WaitableObjects.h"
 #include "..\..\Common\Tools.h"

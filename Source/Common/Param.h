@@ -27,8 +27,7 @@
  *
  **/
 
-#ifndef _NKT_DV_PARAM_H
-#define _NKT_DV_PARAM_H
+#pragma once
 
 class CNktDvParam;
 class CNktDvParamsEnumerator;
@@ -377,4 +376,3 @@ private:
 
 //-----------------------------------------------------------
 
-#endif //_NKT_DV_PARAM_H

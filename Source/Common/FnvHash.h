@@ -40,13 +40,14 @@
 //
 // Share and Enjoy! :-)
 
-#ifndef __FNV_H__
-#define __FNV_H__
 
 //NOTE: This is a stripped down version. Refer to original
 //      webpage for full version
 
 //-----------------------------------------------------------
+
+#pragma once
+
 
 #include <windows.h>
 #include <sys/types.h>
@@ -66,4 +67,3 @@ Fnv64_t fnv_64a_buf(void *buf, size_t len, Fnv64_t hashval);
 
 //-----------------------------------------------------------
 
-#endif //__FNV_H__

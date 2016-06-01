@@ -27,8 +27,7 @@
  *
  **/
 
-#ifndef _NKT_AUTOPTR_H
-#define _NKT_AUTOPTR_H
+#pragma once
 
 #include <windows.h>
 #include <crtdbg.h>
@@ -211,4 +210,3 @@ protected:
 
 //-----------------------------------------------------------
 
-#endif //_NKT_AUTOPTR_H

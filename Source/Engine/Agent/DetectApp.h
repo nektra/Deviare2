@@ -27,8 +27,7 @@
  *
  **/
 
-#ifndef _NKT_DV_DETECTAPP_H
-#define _NKT_DV_DETECTAPP_H
+#pragma once
 
 #include "..\..\Common\EngBaseObj.h"
 
@@ -46,4 +45,3 @@ BOOL IsRunningElevated();
 
 //-----------------------------------------------------------
 
-#endif //_NKT_DV_DETECTAPP_H

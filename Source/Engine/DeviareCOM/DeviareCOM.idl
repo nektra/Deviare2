@@ -6093,8 +6093,8 @@ interface INktSpyMgr : INktObject
    * \param	procOrId			 	A variant containing either a process identifier (PID) or a pointer to a INktProcess interface.
    * \param	dllFileName			 	Filename of the DLL file.
    * \param	unloadOnAgentShutdown	If \c TRUE, the DLL will be automatically unloaded when Agent shuts down; remains loaded in the target process otherwise.
-   * \param	sync				 	\c TRUE to call in asynchronous mode.
-   * \param [in,out]	pActionId	A pointer to receive a cookie identifying this call in completion event, during asynchronous mode. For sync operation, this is ignored.
+   * \param	sync					\c TRUE to call in synchronous mode.
+   * \param [in,out]	pActionId	A pointer to receive a cookie identifying this call in completion event, during asynchronous mode. In a synchronous operation, this is ignored.
    *
    * \remarks The DLL to load must export a set of functions identified by the following C signatures:
    * 
@@ -6128,8 +6128,8 @@ interface INktSpyMgr : INktObject
    *
    * \param	procOrId			A variant containing either a process identifier (PID) or a pointer to a INktProcess interface.
    * \param	dllFileName			Filename of the DLL file.
-   * \param	sync				\c TRUE to call in asynchronous mode.
-   * \param [in,out]	pVal	A pointer to receive a cookie identifying this call in completion event, during asynchronous mode. For sync operation, this is ignored.
+   * \param	sync					\c TRUE to call in synchronous mode.
+   * \param [in,out]	pActionId	A pointer to receive a cookie identifying this call in completion event, during asynchronous mode. In a synchronous operation, this is ignored.
    *
    * \return \c S_OK on success.
    * \return \c E_POINTER if pointer argument is NULL.
@@ -6155,7 +6155,7 @@ interface INktSpyMgr : INktObject
    * \param	dllFileName		  	Filename of the DLL file.
    * \param	apiToCall		  	The API function to call.
    * \param [in,out]	params	A pointer to an array of variants with the parameters to pass. Supported element types are single or arrays of 1, 2, 4 or 8-byte integers, signed or unsigned. In terms of Win32 VARIANT VT constants: VT_Ix, VT_UIx and VT_Ix|VT_ARRAY, VT_IUx|VT_ARRAY, where x=1,2,4 or 8.
-   * \param	sync			  	\c TRUE to call in asynchronous mode.
+   * \param	sync			  	\c TRUE to call in synchronous mode.
    * \param [in,out]	pVal  	A pointer to receive a cookie identifying this call in completion event, during asynchronous mode. For sync operation, this is ignored.
    *
    * \return \c S_OK on success.
@@ -7269,7 +7269,7 @@ interface INktHookInfo : IDispatch
    * \param pRetVal The returned value from the OnCustomMessage event. Only valid for synchronous messages. 
    * \param	msgCode	The custom message code.
    * \param	msgParam	The custom message parameter.
-   * \param	sync	Indicates if the message is sent asynchronously or synchronously.
+   * \param	sync	If \c TRUE, the message is sent synchronously.
    *
    * \return \c S_OK on success.
    * \return \c E_POINTER if pointer argument is NULL.   

@@ -27,8 +27,7 @@
  *
  **/
 
-#ifndef _NKT_DV_SPYMGR_H
-#define _NKT_DV_SPYMGR_H
+#pragma once
 
 #include "..\..\Common\EngBaseObj.h"
 #include "..\..\Common\ProcessesEnum.h"
@@ -422,4 +421,3 @@ private:
 
 //-----------------------------------------------------------
 
-#endif //_NKT_DV_SPYMGR_H

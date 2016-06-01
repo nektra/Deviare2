@@ -27,8 +27,7 @@
  *
  **/
 
-#ifndef _NKT_DV_DBOBJECT_H
-#define _NKT_DV_DBOBJECT_H
+#pragma once
 
 #include "EngBaseObj.h"
 #include "MemoryManager.h"
@@ -312,4 +311,3 @@ private:
 
 //-----------------------------------------------------------
 
-#endif //_NKT_DV_DBOBJECT_H

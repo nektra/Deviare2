@@ -27,8 +27,7 @@
  *
  **/
 
-#ifndef _NKT_DV_PARAMS_ENUMERATOR_H
-#define _NKT_DV_PARAMS_ENUMERATOR_H
+#pragma once
 
 #include "EngBaseObj.h"
 #include "Param.h"
@@ -58,4 +57,3 @@ protected:
 
 //-----------------------------------------------------------
 
-#endif //_NKT_DV_PARAMS_ENUMERATOR_H

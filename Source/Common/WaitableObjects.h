@@ -27,8 +27,7 @@
  *
  **/
 
-#ifndef _NKT_WAITABLEOBJECTS_H
-#define _NKT_WAITABLEOBJECTS_H
+#pragma once
 
 #include <windows.h>
 #include <intrin.h>
@@ -548,4 +547,3 @@ private:
 
 //-----------------------------------------------------------
 
-#endif //_NKT_WAITABLEOBJECTS_H

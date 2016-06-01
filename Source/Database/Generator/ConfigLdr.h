@@ -27,12 +27,7 @@
  *
  **/
 
-#ifndef _CONFIGLOADER_H
-#define _CONFIGLOADER_H
-
-#if _MSC_VER > 1000
-  #pragma once
-#endif // _MSC_VER > 1000
+#pragma once
 
 #include "DbGenerator.h"
 
@@ -45,4 +40,3 @@ LONG ConfigGetBasicTypeFromName(LPCWSTR szNameW);
 
 //-----------------------------------------------------------
 
-#endif //_CONFIGLOADER_H

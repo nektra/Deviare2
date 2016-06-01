@@ -27,8 +27,7 @@
  *
  **/
 
-#ifndef _NKT_DV_DYNAMIC_APIS_H
-#define _NKT_DV_DYNAMIC_APIS_H
+#pragma once
 
 #include "EngDefines.h"
 
@@ -139,4 +138,3 @@ HRESULT nktDvDynApis_DuplicateHandle(__in HANDLE hSourceProcessHandle, __in HAND
 
 //-----------------------------------------------------------
 
-#endif //_NKT_DV_DYNAMIC_APIS_H

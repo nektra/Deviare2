@@ -27,12 +27,8 @@
  *
  **/
 
-#ifndef _NKT_MEMORYMANAGER_TRACKER_H
-#define _NKT_MEMORYMANAGER_TRACKER_H
 
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
 
 #include "MemoryManager.h"
 
@@ -112,4 +108,3 @@ private:
 
 #endif //NKT_ENABLE_MEMORY_TRACKING && !NKT_ENABLE_MEMORY_TRACKING_ONLY_POINTERS
 
-#endif //_NKT_MEMORYMANAGER_TRACKER_H

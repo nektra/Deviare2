@@ -27,8 +27,7 @@
  *
  **/
 
-#ifndef _NKT_DV_MISC_ENUMS_H
-#define _NKT_DV_MISC_ENUMS_H
+#pragma once
 
 #include "EngDefines.h"
 
@@ -56,4 +55,3 @@ namespace ENktDvMiscEnums {
 
 //-----------------------------------------------------------
 
-#endif //_NKT_DV_MISC_ENUMS_H

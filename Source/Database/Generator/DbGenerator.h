@@ -27,8 +27,7 @@
  *
  **/
 
-#ifndef _DBGENERATOR_H
-#define _DBGENERATOR_H
+#pragma once
 
 #ifndef NKT_DV_DBGENERATOR
   #error NKT_DV_DBGENERATOR not defined
@@ -75,4 +74,3 @@ BOOL IsAbortKeyPressed();
 
 //-----------------------------------------------------------
 
-#endif //_DBGENERATOR_H

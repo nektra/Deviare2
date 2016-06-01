@@ -27,8 +27,7 @@
  *
  **/
 
-#ifndef _NKT_DV_MODULE_ENUMERATOR_H
-#define _NKT_DV_MODULE_ENUMERATOR_H
+#pragma once
 
 #include "EngBaseObj.h"
 #include "Module.h"
@@ -99,4 +98,3 @@ private:
 
 //-----------------------------------------------------------
 
-#endif //_NKT_DV_MODULE_ENUMERATOR_H

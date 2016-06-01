@@ -27,11 +27,9 @@
  *
  **/
 
-#ifndef _NKTSQLITECONNECTOR_H
-#define _NKTSQLITECONNECTOR_H
+#pragma once
 
 #include <windows.h>
-
 //NOTE: On x64 VS2008 has a bug like this:
 //      http://connect.microsoft.com/VisualStudio/feedback/details/573262/incorrect-alignment-with-x64-optimizer-and-movaps
 //      But that patch is only for VS2010. Damn!
@@ -142,4 +140,3 @@ private:
 
 //-----------------------------------------------------------
 
-#endif //_NKTSQLITECONNECTOR_H

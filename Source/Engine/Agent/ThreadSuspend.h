@@ -27,8 +27,7 @@
  *
  **/
 
-#ifndef _NKT_DV_THREADSUSPEND_H
-#define _NKT_DV_THREADSUSPEND_H
+#pragma once
 
 #include "..\..\Common\EngBaseObj.h"
 
@@ -81,4 +80,3 @@ private:
 
 //-----------------------------------------------------------
 
-#endif //_NKT_DV_THREADSUSPEND_H

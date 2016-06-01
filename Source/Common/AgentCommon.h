@@ -27,8 +27,7 @@
  *
  **/
 
-#ifndef _NKT_DV_AGENT_COMMON_H
-#define _NKT_DV_AGENT_COMMON_H
+#pragma once
 
 #include "EngBaseObj.h"
 #include "FnvHash.h"
@@ -64,4 +63,3 @@ typedef struct tagNKT_DV_AGENTINITDATA {
 
 //-----------------------------------------------------------
 
-#endif //_NKT_DV_AGENT_COMMON_H

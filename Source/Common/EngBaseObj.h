@@ -27,8 +27,7 @@
  *
  **/
 
-#ifndef _NKT_DV_ENGBASEOBJ_H
-#define _NKT_DV_ENGBASEOBJ_H
+#pragma once
 
 #include "EngDefines.h"
 #include <ole2.h>
@@ -214,4 +213,3 @@ protected:
 
 //-----------------------------------------------------------
 
-#endif //_NKT_DV_ENGBASEOBJ_H

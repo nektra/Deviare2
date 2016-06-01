@@ -27,8 +27,7 @@
  *
  **/
 
-#ifndef _NKT_DV_EXPORTEDFUNCTION_H
-#define _NKT_DV_EXPORTEDFUNCTION_H
+#pragma once
 
 class CNktDvExportedFunction;
 #include "EngBaseObj.h"
@@ -129,4 +128,3 @@ protected:
 
 //-----------------------------------------------------------
 
-#endif //_NKT_DV_EXPORTEDFUNCTION_H

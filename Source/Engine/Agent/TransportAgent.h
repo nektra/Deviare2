@@ -27,8 +27,7 @@
  *
  **/
 
-#ifndef _NKT_DV_TRANSPORT_AGENT_H
-#define _NKT_DV_TRANSPORT_AGENT_H
+#pragma once
 
 #include "..\..\Common\TransportCommon.h"
 #include "..\..\Common\TransportBigData.h"
@@ -116,4 +115,3 @@ public:
 
 //-----------------------------------------------------------
 
-#endif //_NKT_DV_TRANSPORT_AGENT_H

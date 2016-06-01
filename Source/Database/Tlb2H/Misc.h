@@ -27,10 +27,10 @@
  *
  **/
 
-#ifndef _MISC_H
-#define _MISC_H
+#pragma once
 
 #define _WIN32_WINNT 0x0500
+
 #include <windows.h>
 #include "..\..\Common\ComPtr.h"
 #include "..\..\Common\StringLiteW.h"
@@ -197,4 +197,3 @@ LPWSTR miscGetScodeString(__in SCODE sc, __out_z WCHAR szTempBufW[32]);
 
 //-----------------------------------------------------------
 
-#endif //!_MISC_H

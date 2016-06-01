@@ -27,12 +27,7 @@
  *
  **/
 
-#ifndef _NKT_COMPTR_H
-#define _NKT_COMPTR_H
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
 
 #include <windows.h>
 #include "MemoryManager.h"
@@ -624,4 +619,3 @@ protected:
 
 //-----------------------------------------------------------
 
-#endif //_NKT_COMPTR_H

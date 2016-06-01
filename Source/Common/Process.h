@@ -27,8 +27,7 @@
  *
  **/
 
-#ifndef _NKT_DV_PROCESS_H
-#define _NKT_DV_PROCESS_H
+#pragma once
 
 class CNktDvProcess;
 class CNktDvModulesEnumerator;
@@ -164,4 +163,3 @@ protected:
 
 //-----------------------------------------------------------
 
-#endif //_NKT_DV_PROCESS_H

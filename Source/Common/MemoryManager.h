@@ -27,12 +27,7 @@
  *
  **/
 
-#ifndef _NKT_MEMORYMANAGER_H
-#define _NKT_MEMORYMANAGER_H
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
 
 #include <windows.h>
 #include <stdio.h>
@@ -109,4 +104,3 @@ SIZE_T nktTryMemCopy(__out void *lpDest, __in const void *lpSrc, __in SIZE_T nCo
 
 //-----------------------------------------------------------
 
-#endif //_NKT_MEMORYMANAGER_H

@@ -27,8 +27,7 @@
  *
  **/
 
-#ifndef _NKT_DV_PROCESS_MEMORY_H
-#define _NKT_DV_PROCESS_MEMORY_H
+#pragma once
 
 #include "EngBaseObj.h"
 #include <objbase.h>
@@ -265,4 +264,3 @@ private:
 
 //-----------------------------------------------------------
 
-#endif //_NKT_DV_PROCESS_MEMORY_H

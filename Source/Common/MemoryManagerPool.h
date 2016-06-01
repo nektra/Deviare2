@@ -27,8 +27,7 @@
  *
  **/
 
-#ifndef _NKT_MEMORYMANAGER_POOL_H
-#define _NKT_MEMORYMANAGER_POOL_H
+#pragma once
 
 #include "MemoryManager.h"
 
@@ -55,4 +54,3 @@ VOID OnProcessExit();
 
 //-----------------------------------------------------------
 
-#endif _NKT_MEMORYMANAGER_POOL_H

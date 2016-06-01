@@ -27,8 +27,7 @@
  *
  **/
 
-#ifndef _NKT_DV_HOOKENGINEINTERNALS_H
-#define _NKT_DV_HOOKENGINEINTERNALS_H
+#pragma once
 
 #include "HookEngine.h"
 #include "..\..\Common\Debug.h"
@@ -112,4 +111,3 @@ public:
 
 //-----------------------------------------------------------
 
-#endif //_NKT_DV_HOOKENGINEINTERNALS_H

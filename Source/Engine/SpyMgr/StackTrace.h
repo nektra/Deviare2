@@ -27,8 +27,7 @@
  *
  **/
 
-#ifndef _NKT_DV_STACKTRACE_H
-#define _NKT_DV_STACKTRACE_H
+#pragma once
 
 #include "..\..\Common\EngBaseObj.h"
 #include "..\..\Common\ExportedFunction.h"
@@ -77,4 +76,3 @@ private:
 
 //-----------------------------------------------------------
 
-#endif //_NKT_DV_STACKTRACE_H

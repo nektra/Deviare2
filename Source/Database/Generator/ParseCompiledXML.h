@@ -27,12 +27,7 @@
  *
  **/
 
-#ifndef _PARSER_H
-#define _PARSER_H
-
-#if _MSC_VER > 1000
-  #pragma once
-#endif // _MSC_VER > 1000
+#pragma once
 
 #include "DbGenerator.h"
 
@@ -42,4 +37,3 @@ BOOL ParseCompiledXML();
 
 //-----------------------------------------------------------
 
-#endif //_PARSER_H

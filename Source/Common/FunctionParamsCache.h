@@ -27,8 +27,7 @@
  *
  **/
 
-#ifndef _NKT_DV_FUNCTIONPARAMSCACHE_H
-#define _NKT_DV_FUNCTIONPARAMSCACHE_H
+#pragma once
 
 #include "ParamsEnum.h"
 
@@ -83,4 +82,3 @@ private:
 
 //-----------------------------------------------------------
 
-#endif //_NKT_DV_FUNCTIONPARAMSCACHE_H

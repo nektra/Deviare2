@@ -27,12 +27,7 @@
  *
  **/
 
-#ifndef _XMLHELPERS_H
-#define _XMLHELPERS_H
-
-#if _MSC_VER > 1000
-  #pragma once
-#endif // _MSC_VER > 1000
+#pragma once
 
 #include <windows.h>
 #include <ole2.h>
@@ -93,4 +88,3 @@ private:
 
 //-----------------------------------------------------------
 
-#endif //_XMLHELPERS_H

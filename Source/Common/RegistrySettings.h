@@ -27,8 +27,7 @@
  *
  **/
 
-#ifndef _NKT_DV_REGISTRYSETTINGS_H
-#define _NKT_DV_REGISTRYSETTINGS_H
+#pragma once
 
 #include "EngBaseObj.h"
 
@@ -65,4 +64,3 @@ public:
 
 //-----------------------------------------------------------
 
-#endif //_NKT_DV_REGISTRYSETTINGS_H

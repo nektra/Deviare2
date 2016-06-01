@@ -27,8 +27,7 @@
  *
  **/
 
-#ifndef _NKT_BASE64_H
-#define _NKT_BASE64_H
+#pragma once
 
 #include "EngDefines.h"
 
@@ -39,4 +38,3 @@ HRESULT nktBase64Decrypt(__deref_out LPBYTE *lpBuffer, __out SIZE_T *lpnBufferSi
 
 //-----------------------------------------------------------
 
-#endif //_NKT_BASE64_H

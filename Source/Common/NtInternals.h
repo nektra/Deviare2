@@ -27,8 +27,7 @@
  *
  **/
 
-#ifndef _NKT_DV_NTINTERNALS_H
-#define _NKT_DV_NTINTERNALS_H
+#pragma once
 
 #include "EngDefines.h"
 #include "DynamicAPIs.h"
@@ -498,4 +497,3 @@ BOOL nktDvNtIsLoaderLoaderLockHeld(__in BOOL bAnyThread);
 
 //-----------------------------------------------------------
 
-#endif //_NKT_DV_NTINTERNALS_H

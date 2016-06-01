@@ -27,8 +27,7 @@
  *
  **/
 
-#ifndef _DVDBCREATOR_H
-#define _DVDBCREATOR_H
+#pragma once
 
 #include "DbGenerator.h"
 #include "SQLiteDbLoader.h"
@@ -88,4 +87,3 @@ private:
 
 //-----------------------------------------------------------
 
-#endif //_DVDBCREATOR_H

@@ -27,8 +27,7 @@
  *
  **/
 
-#ifndef _NKT_DV_MODULE_H
-#define _NKT_DV_MODULE_H
+#pragma once
 
 class CNktDvModule;
 #include "EngBaseObj.h"
@@ -121,4 +120,3 @@ private:
 
 //-----------------------------------------------------------
 
-#endif //_NKT_DV_MODULE_H

@@ -27,8 +27,7 @@
  *
  **/
 
-#ifndef _NKT_DV_ENGINEDATABASE_H
-#define _NKT_DV_ENGINEDATABASE_H
+#pragma once
 
 class CNktDvEngDatabase;
 class CNktDvDbModule;
@@ -213,4 +212,3 @@ private:
 
 //-----------------------------------------------------------
 
-#endif //_NKT_DV_ENGINEDATABASE_H

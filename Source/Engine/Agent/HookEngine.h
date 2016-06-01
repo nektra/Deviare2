@@ -27,8 +27,7 @@
  *
  **/
 
-#ifndef _NKT_DV_HOOKENGINE_H
-#define _NKT_DV_HOOKENGINE_H
+#pragma once
 
 #include "Agent.h"
 #include "..\..\Common\EngBaseObj.h"
@@ -224,4 +223,3 @@ HRESULT nktDvHookEng_MiniHookInstall(__in LPVOID lpAddress2Hook, __in LPVOID lpN
 
 //-----------------------------------------------------------
 
-#endif //_NKT_DV_HOOKENGINE_H

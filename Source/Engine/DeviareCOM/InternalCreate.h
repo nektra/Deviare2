@@ -27,8 +27,7 @@
  *
  **/
 
-#ifndef _HOOKCALLINFOPLUGIN_INTERNALCREATE_H
-#define _HOOKCALLINFOPLUGIN_INTERNALCREATE_H
+#pragma once
 
 //-----------------------------------------------------------
 
@@ -93,4 +92,3 @@ typedef struct {
 
 //-----------------------------------------------------------
 
-#endif //_HOOKCALLINFOPLUGIN_INTERNALCREATE_H

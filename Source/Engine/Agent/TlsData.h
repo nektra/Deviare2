@@ -27,8 +27,7 @@
  *
  **/
 
-#ifndef _NKT_DV_TLSDATA_H
-#define _NKT_DV_TLSDATA_H
+#pragma once
 
 #include "..\..\Common\EngBaseObj.h"
 #include "..\..\Common\TransportCommon.h"
@@ -112,4 +111,3 @@ BOOL nktDvTlsData_CheckInUseStack(__in DWORD dwTid);
 
 //-----------------------------------------------------------
 
-#endif //_NKT_DV_TLSDATA_H

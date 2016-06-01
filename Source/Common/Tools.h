@@ -27,8 +27,7 @@
  *
  **/
 
-#ifndef _NKT_DV_TOOLS_H
-#define _NKT_DV_TOOLS_H
+#pragma once
 
 #include "EngDefines.h"
 #include <objbase.h>
@@ -187,4 +186,3 @@ public:
 
 //-----------------------------------------------------------
 
-#endif //_NKT_DV_TOOLS_H

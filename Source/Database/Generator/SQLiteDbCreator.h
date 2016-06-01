@@ -27,12 +27,7 @@
  *
  **/
 
-#ifndef _SQLITEDBCREATOR_H
-#define _SQLITEDBCREATOR_H
-
-#if _MSC_VER > 1000
-  #pragma once
-#endif // _MSC_VER > 1000
+#pragma once
 
 #include "DbGenerator.h"
 
@@ -42,4 +37,3 @@ BOOL CreateSQLiteDatabase(LPCWSTR szDestFileNameW);
 
 //-----------------------------------------------------------
 
-#endif //_SQLITEDBCREATOR_H

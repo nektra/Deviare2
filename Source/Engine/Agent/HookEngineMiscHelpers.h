@@ -27,8 +27,7 @@
  *
  **/
 
-#ifndef _NKT_DV_HOOKENGINE_MISCHELPERS_H
-#define _NKT_DV_HOOKENGINE_MISCHELPERS_H
+#pragma once
 
 #include "HookEngineInternals.h"
 
@@ -96,4 +95,3 @@ static __inline VOID HookEng_WriteUnalignedULongLong(__in LPVOID lpAddr, __in UL
 
 //-----------------------------------------------------------
 
-#endif //_NKT_DV_HOOKENGINE_MISCHELPERS_H

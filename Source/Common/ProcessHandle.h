@@ -27,8 +27,7 @@
  *
  **/
 
-#ifndef _NKT_DV_PROCESSHANDLE_H
-#define _NKT_DV_PROCESSHANDLE_H
+#pragma once
 
 #include "EngBaseObj.h"
 
@@ -87,4 +86,3 @@ private:
 
 //-----------------------------------------------------------
 
-#endif //_NKT_DV_PROCESSHANDLE_H

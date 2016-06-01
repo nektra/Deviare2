@@ -27,8 +27,7 @@
  *
  **/
 
-#ifndef _NKT_DV_PDBFUNCTIONSYMBOL_H
-#define _NKT_DV_PDBFUNCTIONSYMBOL_H
+#pragma once
 
 #include "EngBaseObj.h"
 class CNktDvPdbSymbolManager;
@@ -80,4 +79,3 @@ protected:
 
 //-----------------------------------------------------------
 
-#endif //_NKT_DV_PDBFUNCTIONSYMBOL_H

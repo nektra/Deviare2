@@ -27,8 +27,7 @@
  *
  **/
 
-#ifndef _NKT_DV_HOOK_CUSTOMHANDLER_MGR_H
-#define _NKT_DV_HOOK_CUSTOMHANDLER_MGR_H
+#pragma once
 
 #define USE_MARSHALLING
 
@@ -269,4 +268,3 @@ private:
 
 //-----------------------------------------------------------
 
-#endif //_NKT_DV_HOOK_CUSTOMHANDLER_MGR_H

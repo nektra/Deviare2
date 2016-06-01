@@ -27,8 +27,7 @@
  *
  **/
 
-#ifndef _NKT_DV_HOOK_H
-#define _NKT_DV_HOOK_H
+#pragma once
 
 #include "..\..\Common\EngBaseObj.h"
 #include "..\..\Common\ExportedFunction.h"
@@ -300,4 +299,3 @@ private:
 
 //-----------------------------------------------------------
 
-#endif //_NKT_DV_HOOK_H

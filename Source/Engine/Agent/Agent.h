@@ -27,8 +27,7 @@
  *
  **/
 
-#ifndef _NKT_DV_AGENT_H
-#define _NKT_DV_AGENT_H
+#pragma once
 
 #include "..\..\Common\EngBaseObj.h"
 #include "..\..\Common\AgentCommon.h"
@@ -44,4 +43,3 @@ HRESULT MiniHooks_Install();
 
 //-----------------------------------------------------------
 
-#endif //_NKT_DV_AGENT_H

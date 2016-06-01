@@ -27,8 +27,7 @@
  *
  **/
 
-#ifndef _NKT_DV_ENGOBJ_CACHE_H
-#define _NKT_DV_ENGOBJ_CACHE_H
+#pragma once
 
 #include "EngDefines.h"
 #include "FnvHash.h"
@@ -218,4 +217,3 @@ private:
 
 //-----------------------------------------------------------
 
-#endif //_NKT_DV_ENGOBJ_CACHE_H

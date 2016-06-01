@@ -27,8 +27,7 @@
  *
  **/
 
-#ifndef _NKT_DV_DEVIARECOM_ACTCTX_H
-#define _NKT_DV_DEVIARECOM_ACTCTX_H
+#pragma once
 
 #include "Agent.h"
 #include "..\..\Common\EngBaseObj.h"
@@ -56,4 +55,3 @@ private:
 
 //-----------------------------------------------------------
 
-#endif //_NKT_DV_DEVIARECOM_ACTCTX_H

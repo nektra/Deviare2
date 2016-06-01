@@ -27,8 +27,7 @@
  *
  **/
 
-#ifndef _NKT_DEBUG_H
-#define _NKT_DEBUG_H
+#pragma once
 
 #include <windows.h>
 #include <time.h>
@@ -148,4 +147,3 @@ __inline VOID DebugBreak()
 
 //-----------------------------------------------------------
 
-#endif //_NKT_DEBUG_H

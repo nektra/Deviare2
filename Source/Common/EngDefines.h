@@ -27,8 +27,7 @@
  *
  **/
 
-#ifndef _NKT_DV_ENGINEDEFINITIONS_H
-#define _NKT_DV_ENGINEDEFINITIONS_H
+#pragma once
 
 #ifndef WIN32_LEAN_AND_MEAN
   #define WIN32_LEAN_AND_MEAN
@@ -49,6 +48,7 @@
 #ifndef _WIN32_IE
   #define _WIN32_IE 0x0700
 #endif //!_WIN32_IE
+
 
 #include <windows.h>
 #include "MemoryManager.h"
@@ -123,4 +123,3 @@ __inline int NKT_DV_CMP(__in varType x, __in varType y)
 
 //-----------------------------------------------------------
 
-#endif //_NKT_DV_ENGINEDEFINITIONS_H

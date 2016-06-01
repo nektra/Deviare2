@@ -27,8 +27,7 @@
  *
  **/
 
-#ifndef _NKT_DV_INTERNALPROCESSESLIST_H
-#define _NKT_DV_INTERNALPROCESSESLIST_H
+#pragma once
 
 #include "..\..\Common\EngBaseObj.h"
 #include "..\..\Common\ProcessesEnum.h"
@@ -94,4 +93,3 @@ public:
 
 //-----------------------------------------------------------
 
-#endif //_NKT_DV_INTERNALPROCESSESLIST_H

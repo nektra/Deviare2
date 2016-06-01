@@ -27,8 +27,7 @@
  *
  **/
 
-#ifndef _MODULEENUMERATOR_H
-#define _MODULEENUMERATOR_H
+#pragma once
 
 #if _MSC_VER > 1000
 #pragma once
@@ -42,4 +41,3 @@ BOOL DoModEnum();
 
 //-----------------------------------------------------------
 
-#endif //_MODULEENUMERATOR_H

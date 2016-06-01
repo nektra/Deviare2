@@ -27,8 +27,7 @@
  *
  **/
 
-#ifndef _NKT_DV_ENGINEERRORCODES_H
-#define _NKT_DV_ENGINEERRORCODES_H
+#pragma once
 
 //-----------------------------------------------------------
 
@@ -54,4 +53,3 @@
 
 //-----------------------------------------------------------
 
-#endif //_NKT_DV_ENGINEERRORCODES_H
