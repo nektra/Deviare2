@@ -674,7 +674,7 @@ VOID CNktDvTransportEngine::WorkerThreadProc(__in SIZE_T nIndex)
           lpOvr = lpConn->GetBufferFromSortedReadedQueue(lpConn->nNextReadOrderToProcess);
           if (lpOvr == NULL)
             break;
-          hRes = DispatchReadedMessage(lpConn, lpOvr);
+          hRes = DispatchReadMessage(lpConn, lpOvr);
           NktInterlockedIncrement(&(lpConn->nNextReadOrderToProcess));
         }
       }
@@ -821,7 +821,7 @@ VOID CNktDvTransportEngine::DispatcherThreadProc(__in SIZE_T nDispatcherPtr)
   return;
 }
 
-HRESULT CNktDvTransportEngine::DispatchReadedMessage(__inout CConnection *lpConn,
+HRESULT CNktDvTransportEngine::DispatchReadMessage(__inout CConnection *lpConn,
                                                      __inout CNktDvTransportOverlapped *lpOvr)
 {
   union {

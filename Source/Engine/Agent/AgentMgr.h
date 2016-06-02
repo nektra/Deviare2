@@ -230,7 +230,7 @@ private:
   DWORD dwRunThread;
   CNktDvTransportAgent cTransport;
   LONG volatile nTransportActive;
-  LONG volatile nLoadedDllsNextInteralId;
+  LONG volatile nLoadedDllsNextInternalId;
   TNktArrayList4Structs<USER_DLL,32,USER_DLL_Remove> aLoadedUserDllsList;
   LONG volatile nSendLoadedUnloadedDllAsync;
   DWORD dwAgentInitFlags;

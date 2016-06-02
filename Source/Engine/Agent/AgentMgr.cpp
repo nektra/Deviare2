@@ -178,7 +178,7 @@ CDvAgentMgr::CDvAgentMgr() : CNktFastMutex(), CNktMemMgrObj(), CNktDvTransportAg
   hAgentInst = NULL;
   dwPID = ::GetCurrentProcessId();
   NktInterlockedExchange(&nTransportActive, 0);
-  NktInterlockedExchange(&nLoadedDllsNextInteralId, 0);
+  NktInterlockedExchange(&nLoadedDllsNextInternalId, 0);
   NktInterlockedExchange(&nSendLoadedUnloadedDllAsync, 0);
   dwAgentInitFlags = 0;
   hNtDll = hKernel32Dll = hKernelBaseDll = NULL;
@@ -2238,7 +2238,7 @@ HRESULT CDvAgentMgr::OnEngMsg_LoadDll(__inout NKT_DV_TMSG_LOADDLL *lpMsg,
       return E_OUTOFMEMORY;
   }
   NKT_DEBUGPRINTLNA(Nektra::dlAgent, ("%lu) Agent [LoadDll]: %S", ::GetTickCount(), (LPWSTR)cStrTempW));
-  sUserDll.nInternalId = NktInterlockedIncrement(&nLoadedDllsNextInteralId);
+  sUserDll.nInternalId = NktInterlockedIncrement(&nLoadedDllsNextInternalId);
   sUserDll.szDllNameW = cStrTempW.Detach();
   sUserDll.bUnloadOnExit = lpMsg->bUnloadOnAgentShutdown;
   {

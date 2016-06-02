@@ -990,7 +990,8 @@ HRESULT CNktSpyMgrImpl::CallCustomApi(__in VARIANT procOrId, __in BSTR dllFileNa
   if (nInitialized == 0)
     return SetupErrorInfoAndReturn(E_ACCESSDENIED);
   params = RealVariant_From_Variant(params);
-  if (params != NULL)
+  // If the variant is VT_EMPTY we received a null reference.
+  if (params != NULL && params->vt != VT_EMPTY)
   {
     //get values for custom call
     switch (params->vt)

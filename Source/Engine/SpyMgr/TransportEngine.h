@@ -176,7 +176,7 @@ private:
   virtual CConnection* FindConnectionAndAddRef(__in DWORD dwPid);
   virtual VOID WorkerThreadProc(__in SIZE_T nIndex);
   virtual VOID DispatcherThreadProc(__in SIZE_T nDispatcherPtr);
-  virtual HRESULT DispatchReadedMessage(__inout CConnection *lpConn,
+  virtual HRESULT DispatchReadMessage(__inout CConnection *lpConn,
                                         __inout CNktDvTransportOverlapped *lpOvr);
   virtual HRESULT SignalProcessedEvent(__inout CNktDvTransportOverlapped *lpOvr);
 
