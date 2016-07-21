@@ -50,14 +50,19 @@ public:
   CDvAgentMgr();
   virtual ~CDvAgentMgr();
 
-  virtual HRESULT Initialize(__in LPNKT_DV_AGENTINITDATA lpInitData, __in HANDLE _hShutdownEvent,
-                             __in HANDLE _hMainThread);
-  virtual VOID Finalize();
+  HRESULT Initialize(__in LPNKT_DV_AGENTINITDATA lpInitData, __in HANDLE _hShutdownEvent,
+                     __in HANDLE _hMainThread);
+  VOID Finalize();
 
-  virtual HRESULT StartServer();
-  virtual VOID Run();
+  HRESULT StartServer();
+  VOID Run();
 
-  virtual BOOL CheckIfInTrampoline(__in SIZE_T nCurrIP);
+  BOOL CheckIfInTrampoline(__in SIZE_T nCurrIP);
+
+  CNktHookLib& HookLib()
+    {
+    return cHookEngine.HookLib();
+    };
 
 public:
   HINSTANCE hAgentInst;
@@ -235,7 +240,7 @@ private:
   LONG volatile nSendLoadedUnloadedDllAsync;
   DWORD dwAgentInitFlags;
 
-  CNktDvHookEngine cHookEng;
+  CNktDvHookEngine cHookEngine;
   HINSTANCE hNtDll, hKernel32Dll, hKernelBaseDll;
 
   struct tagLoadedModules {

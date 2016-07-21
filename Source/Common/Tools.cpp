@@ -1136,8 +1136,7 @@ HRESULT CNktDvTools::SuspendAfterCreateProcessW(__out LPHANDLE lphReadyExecution
   if (FAILED(hRes))
     return hRes;
   //create remote code
-  lpRemoteCode = (LPBYTE)::VirtualAllocEx(hSuspendedProc, NULL, 1024, MEM_COMMIT,
-                                          PAGE_EXECUTE_READWRITE);
+  lpRemoteCode = (LPBYTE)::VirtualAllocEx(hSuspendedProc, NULL, 1024, MEM_RESERVE|MEM_COMMIT, PAGE_EXECUTE_READWRITE);
   if (lpRemoteCode == NULL)
     return E_OUTOFMEMORY;
   //write new stub
@@ -1262,7 +1261,7 @@ HRESULT CNktDvTools::SuspendAfterCreateProcessW(__out LPHANDLE lphReadyExecution
     //call eax
     aTempBuf[m++] = 0xFF;  aTempBuf[m++] = 0xD0;
     //jmp dword ptr [lpRemoteCode] (absolute)
-    dwTemp32 = (DWORD)lpRemoteCode;
+    dwTemp32 = (DWORD)((ULONG_PTR)lpRemoteCode);
     aTempBuf[m++] = 0xFF; aTempBuf[m++] = 0x25;  nktMemCopy(aTempBuf+m, &dwTemp32, 4);  m+=4;
     //NEW STUB
     //at this point eax has the original entry point, store it in lpRemoteCode using interlocked
@@ -1365,6 +1364,7 @@ HRESULT CNktDvTools::SuspendAfterCreateProcessW(__out LPHANDLE lphReadyExecution
     ::VirtualFreeEx(hSuspendedProc, lpRemoteCode, 0, MEM_RELEASE);
     return E_FAIL;
   }
+  ::VirtualProtectEx(hSuspendedProc, lpRemoteCode, 1024, PAGE_EXECUTE_READ, &dwTemp32);
   ::FlushInstructionCache(hSuspendedProc, lpRemoteCode, (m+0xFF) & (~0xFF));
   //set new entry point address
 #if defined _M_IX86
@@ -1377,7 +1377,7 @@ HRESULT CNktDvTools::SuspendAfterCreateProcessW(__out LPHANDLE lphReadyExecution
 #elif defined _M_X64
   if (bIs64BitProcess == FALSE)
   {
-    sWow64ThreadCtx.Eip = (DWORD)(lpRemoteCode + nNewStubOfs);
+    sWow64ThreadCtx.Eip = (DWORD)((ULONG_PTR)(lpRemoteCode + nNewStubOfs));
     hRes = nktDvDynApis_Wow64SetThreadContext(hSuspendedMainThread, &sWow64ThreadCtx);
     if (FAILED(hRes))
     {
@@ -1489,7 +1489,7 @@ undocumented_method:
           {
             if (sLdrEntry32.sEntry.DllBase != 0)
             {
-              if (aModList.AddElement((HMODULE)(sLdrEntry32.sEntry.DllBase)) == FALSE)
+              if (aModList.AddElement((HMODULE)((ULONG_PTR)(sLdrEntry32.sEntry.DllBase))) == FALSE)
               {
                 hRes = E_OUTOFMEMORY;
                 break;
@@ -1701,7 +1701,7 @@ HRESULT CNktDvTools::GetModuleInfo(__in DWORD dwProcessId, __in HANDLE hProcess,
             hRes = nktDvNtGetFirstLdrEntry32(&sLdrEntry32, lpPeb, hProcess);
             while (SUCCEEDED(hRes))
             {
-              if ((LPBYTE)(sLdrEntry32.sEntry.DllBase) == sModInfo.lpBaseAddr)
+              if ((LPBYTE)((ULONG_PTR)(sLdrEntry32.sEntry.DllBase)) == sModInfo.lpBaseAddr)
                 break;
               hRes = nktDvNtGetNextLdrEntry32(&sLdrEntry32);
             }

@@ -36,7 +36,9 @@
     (!defined(NKT_ENABLE_MEMORY_TRACKING_ONLY_POINTERS))
 
 #include "WaitableObjects.h"
+#pragma warning(disable : 4091) //disable VS2015 warnings because of SDK v7.1
 #include <imagehlp.h>
+#pragma warning(default : 4091)
 
 //-----------------------------------------------------------
 
@@ -85,11 +87,11 @@ public:
 private:
   typedef USHORT (WINAPI *lpfnRtlCaptureStackBackTrace)(ULONG, ULONG, PVOID*, PULONG);
   typedef BOOL (WINAPI *lpfnSymInitializeW)(__in HANDLE hProcess, __in_opt PCWSTR UserSearchPath,
-                                              __in BOOL fInvadeProcess);
+                                            __in BOOL fInvadeProcess);
   typedef BOOL (WINAPI *lpfnSymCleanup)(__in HANDLE hProcess);
   typedef BOOL (WINAPI *lpfnSymGetSymFromAddr64)(__in HANDLE hProcess, __in DWORD64 qwAddr,
-                                                   __out_opt PDWORD64 pdwDisplacement,
-                                                   __inout PIMAGEHLP_SYMBOL64 Symbol);
+                                                __out_opt PDWORD64 pdwDisplacement,
+                                                __inout PIMAGEHLP_SYMBOL64 Symbol);
   typedef LPAPI_VERSION (WINAPI *lpfnImagehlpApiVersion)(VOID);
 
   HINSTANCE hDbgHelpDLL;

@@ -218,6 +218,7 @@ void CNktMemMgrTracker::AddTrace(__in LPBYTE lpPtr, __in SIZE_T nBlockSize,
   nHashIndex = ((SIZE_T)lpPtr >> 8) % NKT_MEMORY_TRACKING_HASH_SIZE;
   {
     CNktAutoFastMutex cLock(&cMutex[nHashIndex]);
+    ULONG nHash;
 
     for (lpCurrBlock=lpMemoryBlocks[nHashIndex]; lpCurrBlock!=NULL; lpCurrBlock=lpCurrBlock->lpNext)
     {
@@ -241,7 +242,7 @@ void CNktMemMgrTracker::AddTrace(__in LPBYTE lpPtr, __in SIZE_T nBlockSize,
       nktMemSet(lpNewBlock->nStackValues, 0, sizeof(lpNewBlock->nStackValues));
       if (fnRtlCaptureStackBackTrace != NULL)
         fnRtlCaptureStackBackTrace(2, NKT_MEMORY_TRACKING_STACK_ENTRIES, //W2K: last param cant be null
-                                   (LPVOID*)(lpNewBlock->nStackValues), NULL);
+                                   (LPVOID*)(lpNewBlock->nStackValues), &nHash);
       lpMemoryBlocks[nHashIndex] = lpNewBlock;
       *TAGENDPTR(lpNewBlock, nBlockSize) = MEMTRACE_TAG_END;
     }

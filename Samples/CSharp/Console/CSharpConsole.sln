@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 14
+VisualStudioVersion = 14.0.25123.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpConsole", "CSharpConsole.csproj", "{37480340-9647-428E-96E7-1368468EB72C}"
 	ProjectSection(ProjectDependencies) = postProject
 		{E73BB233-D88B-44A7-A98F-D71EE158381D} = {E73BB233-D88B-44A7-A98F-D71EE158381D}

@@ -38,24 +38,18 @@ _TEXT SEGMENT
 PUBLIC NktDvSuperHook_x86@0
 
 USAGE_COUNT                     equ 0FFDDFF01h
-UNINSTALL_DISABLE_FLAGS         equ 0FFDDFF02h
-HOOK_ENGINE_PTR                 equ 0FFDDFF03h
-HOOK_ENTRY_PTR                  equ 0FFDDFF04h
-PRECALL_ADDR                    equ 0FFDDFF05h
-POSTCALL_ADDR                   equ 0FFDDFF06h
-ORIGINAL_STUB_AND_JUMP          equ 0FFDDFF07h
-CONTINUE_AFTER_CALL_MARK        equ 0FFDDFF08h
-AFTER_CALL_STACK_PRESERVE_SIZE  equ 0FFDDFF09h
-AFTER_CALL_STACK_PRESERVE_SIZE2 equ 0FFDDFF10h
+HOOK_ENGINE_PTR                 equ 0FFDDFF02h
+HOOK_ENTRY_PTR                  equ 0FFDDFF03h
+PRECALL_ADDR                    equ 0FFDDFF04h
+POSTCALL_ADDR                   equ 0FFDDFF05h
+JMP_TO_ORIGINAL                 equ 0FFDDFF06h
+CONTINUE_AFTER_CALL_MARK        equ 0FFDDFF07h
+AFTER_CALL_STACK_PRESERVE_SIZE  equ 0FFDDFF08h
+AFTER_CALL_STACK_PRESERVE_SIZE2 equ 0FFDDFF09h
 
 ALIGN 4
 NktDvSuperHook_x86@0:
-    DB      8 DUP (90h)                ;NOPs for hotpatching double hooks
-
     lock    inc dword ptr ds:[USAGE_COUNT] ;increment usage count
-
-    test    dword ptr ds:[UNINSTALL_DISABLE_FLAGS], 0101h
-    jne     @not_hooked
 
     push    eax                        ;save registers
     push    ebx
@@ -129,10 +123,8 @@ NktDvSuperHook_x86@0:
     pop     ebx
     pop     eax
 
-    DD      ORIGINAL_STUB_AND_JUMP
-    DB      60 DUP (90h)               ;original prolog (64 bytes total)
-    DB      0E9h                       ;JMP NEAR relative
-    DD      0h                         ;RELATIVE address of original proc after prolog
+    DB      0FFh, 25h                  ;JMP DWORD PTR []
+    DD      JMP_TO_ORIGINAL            ;RELATIVE address to call original
 
     DD      CONTINUE_AFTER_CALL_MARK
 
@@ -213,13 +205,11 @@ NktDvSuperHook_x86@0:
     pop     ecx
     pop     ebx
     pop     eax
-@not_hooked:
+
     lock    dec dword ptr ds:[USAGE_COUNT] ;decrement usage count
 
-    DD      ORIGINAL_STUB_AND_JUMP
-    DB      60 DUP (90h)               ;original prolog
-    DB      0E9h                       ;JMP NEAR relative
-    DD      0h                         ;RELATIVE address of original proc after prolog
+    DB      0FFh, 25h                  ;JMP DWORD PTR []
+    DD      JMP_TO_ORIGINAL            ;RELATIVE address to call original
 
     DD      0FFDDFFFFh
 

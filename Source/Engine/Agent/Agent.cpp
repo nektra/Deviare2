@@ -31,8 +31,8 @@
 #include "AgentMgr.h"
 #include "..\..\Common\Tools.h"
 #include "HookCustomHandlerMgr.h"
+#include "HookEngineMiscHelpers.h"
 #include "..\..\Common\RegistrySettings.h"
-#include "ThreadSuspend.h"
 #include <tlhelp32.h>
 #include "DetectApp.h"
 
@@ -45,18 +45,18 @@
 #if defined _M_IX86
   #ifdef _DEBUG
     #pragma comment(lib, "..\\..\\..\\Libs\\Lz4Lib_Debug.lib")
-    #pragma comment(lib, "..\\..\\..\\Libs\\UDis86Lib_Debug.lib")
-  #else //_DEBUG
+    #pragma comment(lib, "..\\..\\..\\Externals\\DeviareInProc\\Libs\\2015\\NktHookLib_Debug.lib")
+#else //_DEBUG
     #pragma comment(lib, "..\\..\\..\\Libs\\Lz4Lib.lib")
-    #pragma comment(lib, "..\\..\\..\\Libs\\UDis86Lib.lib")
+    #pragma comment(lib, "..\\..\\..\\Externals\\DeviareInProc\\Libs\\2015\\NktHookLib.lib")
   #endif //_DEBUG
 #elif defined _M_X64
   #ifdef _DEBUG
     #pragma comment(lib, "..\\..\\..\\Libs\\Lz4Lib64_Debug.lib")
-    #pragma comment(lib, "..\\..\\..\\Libs\\UDis86Lib64_Debug.lib")
+    #pragma comment(lib, "..\\..\\..\\Externals\\DeviareInProc\\Libs\\2015\\NktHookLib64_Debug.lib")
   #else //_DEBUG
     #pragma comment(lib, "..\\..\\..\\Libs\\Lz4Lib64.lib")
-    #pragma comment(lib, "..\\..\\..\\Libs\\UDis86Lib64.lib")
+    #pragma comment(lib, "..\\..\\..\\Externals\\DeviareInProc\\Libs\\2015\\NktHookLib64.lib")
   #endif //_DEBUG
 #else
   #error Unsupported platform
@@ -92,27 +92,17 @@ static HANDLE hMainThread = NULL;
 static DWORD dwMainThreadId = 0;
 static LONG volatile nManualShutdown = 0;
 static LONG volatile nMiniHooksLock = 0;
-static struct {
-  LONG volatile *lpnDisable;
-  lpfnExitProcess fnORIG;
-} sExitProcess = { NULL, NULL };
-static struct {
-  LONG volatile *lpnDisable;
-  lpfnCorExitProcess fnORIG;
-} sCorExitProcess = { NULL, NULL };
-static struct {
-  LONG volatile *lpnDisable;
-  lpfnTerminateProcess fnORIG;
-} sTerminateProcess = { NULL, NULL };
-static struct {
-  LONG volatile *lpnDisable;
-  lpfnCoInitializeSecurity fnORIG;
-} sCoInitializeSecurity = { NULL, NULL };
+#if defined _M_IX86
+static CNktHookLib::HOOK_INFO sMiniHooks[4] = { 0 };
+#elif defined _M_X64
+static CNktHookLib::HOOK_INFO sMiniHooks[5] = { 0 };
+#endif
+#define MINIHOOK_ExitProcess          0
+#define MINIHOOK_CorExitProcess       1
+#define MINIHOOK_TerminateProcess     2
+#define MINIHOOK_CoInitializeSecurity 3
 #if defined _M_X64
-static struct {
-  LONG volatile *lpnDisable;
-  lpfnRtlInstallFunctionTableCallback fnRtlInstallFunctionTableCallback_ORIG;
-} sRtlInstallFunctionTableCallback = { NULL, NULL };
+  #define MINIHOOK_RtlInstallFunctionTableCallback 4
 #endif //_M_X64
 BOOL bAppIsExiting = FALSE;
 HINSTANCE hAgentDllInstance = NULL;
@@ -120,7 +110,7 @@ HINSTANCE hAgentDllInstance = NULL;
 //-----------------------------------------------------------
 
 static DWORD WINAPI MainThreadProc(__inout LPVOID lpParam);
-static VOID MiniHooks_Uninstall(__in BOOL bFinishMainThread);
+static VOID Finalize(__in BOOL bFinishMainThread);
 static VOID WINAPI OnExitProcessCalled(__in UINT uExitCode);
 static VOID WINAPI OnCorExitProcessCalled(__in int uExitCode);
 static BOOL WINAPI OnTerminateProcessCalled(__in HANDLE hProcess, __in UINT uExitCode);
@@ -164,7 +154,7 @@ BOOL APIENTRY DllMain(__in HMODULE hModule, __in DWORD ulReasonForCall, __in LPV
         bAppIsExiting = TRUE;
         cShutdownEvent.Set();
       }
-      MiniHooks_Uninstall(FALSE);
+      Finalize(FALSE);
       nktDvTlsData_OnThreadExit();
       break;
 
@@ -329,9 +319,9 @@ static DWORD WINAPI MainThreadProc(__inout LPVOID lpParam)
   HRESULT hRes; //local copy to avoid race conditions when SetEvent is called
 
   //setup min hooks
-  hRes = MiniHooks_Install();
-  NKT_DEBUGPRINTLNA(Nektra::dlAgent, ("%lu) AgentMainThreadProc[MiniHooks_Install]: hRes=%08X",
-                     ::GetTickCount(), hRes));
+  hRes = InstallMiniHooks();
+  NKT_DEBUGPRINTLNA(Nektra::dlAgent, ("%lu) AgentMainThreadProc[InstallMiniHooks]: hRes=%08X",
+                    ::GetTickCount(), hRes));
   //because in XP all I/O operation is cancelled when the thread exits, i moved the transport server initialization
   //here (in Vista/7 I/O associated with a completion port is not cancelled)
   if (SUCCEEDED(hRes))
@@ -354,7 +344,7 @@ static DWORD WINAPI MainThreadProc(__inout LPVOID lpParam)
   }
   if (FAILED(hRes))
   {
-    MiniHooks_Uninstall(FALSE);
+    Finalize(FALSE);
     return 0;
   }
   NKT_DEBUGPRINTLNA(Nektra::dlAgent, ("%lu) MainThreadProc [Entering]", ::GetTickCount()));
@@ -382,89 +372,90 @@ static DWORD WINAPI MainThreadProc(__inout LPVOID lpParam)
   return 0;
 }
 
-HRESULT MiniHooks_Install()
+HRESULT InstallMiniHooks()
 {
   CNktSimpleLockNonReentrant cLock(&nMiniHooksLock);
   HINSTANCE hDll;
-  LPBYTE lpProcToHook;
   HRESULT hRes;
 
-  if (sExitProcess.lpnDisable == NULL)
+  if (sMiniHooks[MINIHOOK_ExitProcess].nHookId == 0)
   {
     hRes = NKT_DVERR_NotFound;
     hDll = ::GetModuleHandleW(L"kernel32.dll");
     if (hDll != NULL)
     {
-      lpProcToHook = (LPBYTE)::GetProcAddress(hDll, "ExitProcess");
-      if (lpProcToHook != NULL)
+      sMiniHooks[MINIHOOK_ExitProcess].lpProcToHook = ::GetProcAddress(hDll, "ExitProcess");
+      if (sMiniHooks[MINIHOOK_ExitProcess].lpProcToHook != NULL)
       {
-        hRes = nktDvHookEng_MiniHookInstall(lpProcToHook, OnExitProcessCalled, (LPVOID*)&(sExitProcess.fnORIG),
-                                            &(sExitProcess.lpnDisable));
+        sMiniHooks[MINIHOOK_ExitProcess].lpNewProcAddr = OnExitProcessCalled;
+        hRes = HRESULT_FROM_WIN32(cAgentMgr.HookLib().Hook(&sMiniHooks[MINIHOOK_ExitProcess], 1));
       }
     }
     if (FAILED(hRes))
       return hRes;
   }
-  if (sCorExitProcess.lpnDisable == NULL)
+  if (sMiniHooks[MINIHOOK_CorExitProcess].nHookId == 0)
   {
     hDll = ::GetModuleHandleW(L"mscoree.dll");
     if (hDll != NULL)
     {
-      lpProcToHook = (LPBYTE)::GetProcAddress(hDll, "CorExitProcess");
-      if (lpProcToHook != NULL)
+      sMiniHooks[MINIHOOK_CorExitProcess].lpProcToHook = ::GetProcAddress(hDll, "CorExitProcess");
+      if (sMiniHooks[MINIHOOK_CorExitProcess].lpProcToHook != NULL)
       {
-        hRes = nktDvHookEng_MiniHookInstall(lpProcToHook, OnCorExitProcessCalled, (LPVOID*)&(sCorExitProcess.fnORIG),
-                                            &(sCorExitProcess.lpnDisable));
+        sMiniHooks[MINIHOOK_CorExitProcess].lpNewProcAddr = OnCorExitProcessCalled;
+        hRes = HRESULT_FROM_WIN32(cAgentMgr.HookLib().Hook(&sMiniHooks[MINIHOOK_CorExitProcess], 1));
         if (FAILED(hRes))
           return hRes;
+        MiscHelpers::FindDllAndIncrementUsageCount(sMiniHooks[MINIHOOK_CorExitProcess].lpProcToHook);
       }
     }
   }
-  if (sTerminateProcess.lpnDisable == NULL)
+  if (sMiniHooks[MINIHOOK_TerminateProcess].nHookId == 0)
   {
     hRes = NKT_DVERR_NotFound;
     hDll = ::GetModuleHandleW(L"kernel32.dll");
     if (hDll != NULL)
     {
-      lpProcToHook = (LPBYTE)::GetProcAddress(hDll, "TerminateProcess");
-      if (lpProcToHook != NULL)
+      sMiniHooks[MINIHOOK_TerminateProcess].lpProcToHook = ::GetProcAddress(hDll, "TerminateProcess");
+      if (sMiniHooks[MINIHOOK_TerminateProcess].lpProcToHook != NULL)
       {
-        hRes = nktDvHookEng_MiniHookInstall(lpProcToHook, OnTerminateProcessCalled,
-                                            (LPVOID*)&(sTerminateProcess.fnORIG), &(sTerminateProcess.lpnDisable));
+        sMiniHooks[MINIHOOK_TerminateProcess].lpNewProcAddr = OnTerminateProcessCalled;
+        hRes = HRESULT_FROM_WIN32(cAgentMgr.HookLib().Hook(&sMiniHooks[MINIHOOK_TerminateProcess], 1));
       }
     }
     if (FAILED(hRes))
       return hRes;
   }
-  if (sCoInitializeSecurity.lpnDisable == NULL)
+  if (sMiniHooks[MINIHOOK_CoInitializeSecurity].nHookId == 0)
   {
     hRes = NKT_DVERR_NotFound;
     hDll = ::GetModuleHandleW(L"ole32.dll");
     if (hDll != NULL)
     {
-      lpProcToHook = (LPBYTE)::GetProcAddress(hDll, "CoInitializeSecurity");
-      if (lpProcToHook != NULL)
+      sMiniHooks[MINIHOOK_CoInitializeSecurity].lpProcToHook = ::GetProcAddress(hDll, "CoInitializeSecurity");
+      if (sMiniHooks[MINIHOOK_CoInitializeSecurity].lpProcToHook != NULL)
       {
-        hRes = nktDvHookEng_MiniHookInstall(lpProcToHook, OnCoInitializeSecurityCalled,
-                                    (LPVOID*)&(sCoInitializeSecurity.fnORIG), &(sCoInitializeSecurity.lpnDisable));
+        sMiniHooks[MINIHOOK_CoInitializeSecurity].lpNewProcAddr = OnCoInitializeSecurityCalled;
+        hRes = HRESULT_FROM_WIN32(cAgentMgr.HookLib().Hook(&sMiniHooks[MINIHOOK_CoInitializeSecurity], 1));
+        if (SUCCEEDED(hRes))
+          MiscHelpers::FindDllAndIncrementUsageCount(sMiniHooks[MINIHOOK_CoInitializeSecurity].lpProcToHook);
       }
     }
     if (FAILED(hRes))
       return hRes;
   }
 #if defined _M_X64
-  if (sRtlInstallFunctionTableCallback.lpnDisable == NULL)
+  if (sMiniHooks[MINIHOOK_RtlInstallFunctionTableCallback].nHookId == 0)
   {
     hRes = NKT_DVERR_NotFound;
     hDll = ::GetModuleHandleW(L"ntdll.dll");
     if (hDll != NULL)
     {
-      lpProcToHook = (LPBYTE)::GetProcAddress(hDll, "RtlInstallFunctionTableCallback");
-      if (lpProcToHook != NULL)
+      sMiniHooks[MINIHOOK_RtlInstallFunctionTableCallback].lpProcToHook = ::GetProcAddress(hDll, "RtlInstallFunctionTableCallback");
+      if (sMiniHooks[MINIHOOK_RtlInstallFunctionTableCallback].lpProcToHook != NULL)
       {
-        hRes = nktDvHookEng_MiniHookInstall(lpProcToHook, OnRtlInstallFunctionTableCallbackCalled,
-                            (LPVOID*)&(sRtlInstallFunctionTableCallback.fnRtlInstallFunctionTableCallback_ORIG),
-                            &(sRtlInstallFunctionTableCallback.lpnDisable));
+        sMiniHooks[MINIHOOK_RtlInstallFunctionTableCallback].lpNewProcAddr = OnRtlInstallFunctionTableCallbackCalled;
+        hRes = HRESULT_FROM_WIN32(cAgentMgr.HookLib().Hook(&sMiniHooks[MINIHOOK_RtlInstallFunctionTableCallback], 1));
       }
     }
     if (FAILED(hRes))
@@ -474,64 +465,28 @@ HRESULT MiniHooks_Install()
   return S_OK;
 }
 
-static VOID MiniHooks_Uninstall(__in BOOL bFinishMainThread)
+static VOID Finalize(__in BOOL bFinishMainThread)
 {
   BOOL bCallDetach;
 
   bCallDetach = FALSE;
   {
     CNktSimpleLockNonReentrant cLock(&nMiniHooksLock);
+    SIZE_T i;
 
-    if (sExitProcess.lpnDisable != NULL)
+    for (i=0; i<_countof(sMiniHooks); i++)
     {
-      NktInterlockedExchange(sExitProcess.lpnDisable, 1);
-      _ReadWriteBarrier();
-      sExitProcess.lpnDisable = NULL; //disable first to avoid recursion
-      _ReadWriteBarrier();
-      if (bFinishMainThread != FALSE)
-        bCallDetach = TRUE;
+      if (sMiniHooks[i].nHookId != 0)
+      {
+        cAgentMgr.HookLib().RemoveHook(sMiniHooks[i].nHookId, TRUE);
+        sMiniHooks[i].nHookId = 0;
+        if (bFinishMainThread != FALSE)
+          bCallDetach = TRUE;
+      }
     }
-    if (sCorExitProcess.lpnDisable != NULL)
-    {
-      NktInterlockedExchange(sCorExitProcess.lpnDisable, 1);
-      _ReadWriteBarrier();
-      sCorExitProcess.lpnDisable = NULL; //disable first to avoid recursion
-      _ReadWriteBarrier();
-      if (bFinishMainThread != FALSE)
-        bCallDetach = TRUE;
-    }
-    if (sTerminateProcess.lpnDisable != NULL)
-    {
-      NktInterlockedExchange(sTerminateProcess.lpnDisable, 1);
-      _ReadWriteBarrier();
-      sTerminateProcess.lpnDisable = NULL; //disable first to avoid recursion
-      _ReadWriteBarrier();
-      if (bFinishMainThread != FALSE)
-        bCallDetach = TRUE;
-    }
-    if (sCoInitializeSecurity.lpnDisable != NULL)
-    {
-      NktInterlockedExchange(sCoInitializeSecurity.lpnDisable, 1);
-      _ReadWriteBarrier();
-      sCoInitializeSecurity.lpnDisable = NULL; //disable first to avoid recursion
-      _ReadWriteBarrier();
-      if (bFinishMainThread != FALSE)
-        bCallDetach = TRUE;
-    }
-#if defined _M_X64
-    if (sRtlInstallFunctionTableCallback.lpnDisable != NULL)
-    {
-      NktInterlockedExchange(sRtlInstallFunctionTableCallback.lpnDisable, 1);
-      _ReadWriteBarrier();
-      sRtlInstallFunctionTableCallback.lpnDisable = NULL; //disable first to avoid recursion
-      _ReadWriteBarrier();
-    }
-#endif //_M_X64
   }
   if (bCallDetach != FALSE)
-  {
     ShutdownMainThread();
-  }
   return;
 }
 
@@ -540,8 +495,8 @@ static VOID WINAPI OnExitProcessCalled(__in UINT uExitCode)
   NKT_DEBUGPRINTLNA(Nektra::dlAgent, ("%lu) Agent [OnExitProcessCalled]", ::GetTickCount()));
   //try to shutdown DLL (MiniHooks_Uninstall with TRUE will call shutdown)
   //bAppIsExiting = TRUE;
-  MiniHooks_Uninstall(TRUE);
-  sExitProcess.fnORIG(uExitCode);
+  Finalize(TRUE);
+  lpfnExitProcess(sMiniHooks[MINIHOOK_ExitProcess].lpCallOriginal)(uExitCode);
   return;
 }
 
@@ -550,8 +505,8 @@ static VOID WINAPI OnCorExitProcessCalled(__in int uExitCode)
   NKT_DEBUGPRINTLNA(Nektra::dlAgent, ("%lu) Agent [OnCorExitProcessCalled]", ::GetTickCount()));
   //try to shutdown DLL (MiniHooks_Uninstall with TRUE will call shutdown)
   //bAppIsExiting = TRUE;
-  MiniHooks_Uninstall(TRUE);
-  sCorExitProcess.fnORIG(uExitCode);
+  Finalize(TRUE);
+  lpfnCorExitProcess(sMiniHooks[MINIHOOK_CorExitProcess].lpCallOriginal)(uExitCode);
   return;
 }
 
@@ -562,9 +517,9 @@ static BOOL WINAPI OnTerminateProcessCalled(__in HANDLE hProcess, __in UINT uExi
     NKT_DEBUGPRINTLNA(Nektra::dlAgent, ("%lu) Agent [OnTerminateProcessCalled]", ::GetTickCount()));
     //try to shutdown DLL (MiniHooks_Uninstall with TRUE will call shutdown)
     bAppIsExiting = TRUE;
-    MiniHooks_Uninstall(TRUE);
+    Finalize(TRUE);
   }
-  return sTerminateProcess.fnORIG(hProcess, uExitCode);
+  return lpfnTerminateProcess(sMiniHooks[MINIHOOK_TerminateProcess].lpCallOriginal)(hProcess, uExitCode);
 }
 
 static HRESULT WINAPI OnCoInitializeSecurityCalled(__in_opt PSECURITY_DESCRIPTOR pSecDesc, __in LONG cAuthSvc,
@@ -574,11 +529,11 @@ static HRESULT WINAPI OnCoInitializeSecurityCalled(__in_opt PSECURITY_DESCRIPTOR
 {
   if (DetectApplication() == appInternetExplorer8 && IsRunningElevated() == FALSE)
   {
-    return sCoInitializeSecurity.fnORIG(NULL, -1, NULL, NULL, RPC_C_AUTHN_LEVEL_CONNECT,
-                                        RPC_C_IMP_LEVEL_IMPERSONATE, NULL, 0, NULL);
+    return lpfnCoInitializeSecurity(sMiniHooks[MINIHOOK_CoInitializeSecurity].lpCallOriginal)(NULL, -1, NULL, NULL,
+                                    RPC_C_AUTHN_LEVEL_CONNECT, RPC_C_IMP_LEVEL_IMPERSONATE, NULL, 0, NULL);
   }
-  return sCoInitializeSecurity.fnORIG(pSecDesc, cAuthSvc, asAuthSvc, pReserved1, dwAuthnLevel, dwImpLevel, pAuthList,
-                                      dwCapabilities, pReserved3);
+  return lpfnCoInitializeSecurity(sMiniHooks[MINIHOOK_CoInitializeSecurity].lpCallOriginal)(pSecDesc, cAuthSvc, asAuthSvc,
+                                  pReserved1, dwAuthnLevel, dwImpLevel, pAuthList, dwCapabilities, pReserved3);
 }
 
 #if defined _M_X64
@@ -619,8 +574,8 @@ static BOOLEAN NTAPI OnRtlInstallFunctionTableCallbackCalled(__in DWORD64 TableI
     }
   }
   //call original
-  return sRtlInstallFunctionTableCallback.fnRtlInstallFunctionTableCallback_ORIG(TableIdentifier, BaseAddress,
-                                            Length, Callback, Context, OutOfProcessCallbackDll);
+  return lpfnRtlInstallFunctionTableCallback(sMiniHooks[MINIHOOK_RtlInstallFunctionTableCallback].lpCallOriginal)
+             (TableIdentifier, BaseAddress, Length, Callback, Context, OutOfProcessCallbackDll);
 }
 #endif //_M_X64
 
@@ -667,99 +622,79 @@ static VOID ShutdownMainThread()
 
 static VOID EnsureNoThreadsInModule()
 {
-  typedef void (__stdcall *lpfnNtSuspendThread)(__in HANDLE ThreadHandle, __out_opt PULONG PreviousSuspendCount);
-  CNktDvThreadSuspend cThreadSuspender;
-  lpfnNtSuspendThread fnNtSuspendThread;
-  HANDLE hThread;
+  HANDLE hSnapShot, hThread;
   CONTEXT sThreadCtx;
-  DWORD *lpdwTids, dwCurrTid;
-  SIZE_T i, nTidsCount, nCurrIP, nStartIP, nEndIP;
-  /*
-  SIZE_T k, nStackTrace[6], nStackLimitLow, nStackLimitHigh;
-  */
+  THREADENTRY32 sTe;
+  DWORD dwCurrPid, dwCurrTid;
+  SIZE_T nCurrIP, nStartIP, nEndIP;
   BOOL bContinue;
-  HRESULT hRes;
 
   nStartIP = (SIZE_T)(cAgentMgr.hAgentInst);
   nEndIP = nStartIP + CNktDvTools::GetModuleSize(cAgentMgr.hAgentInst);
   //check
-  fnNtSuspendThread = (lpfnNtSuspendThread)::GetProcAddress(::GetModuleHandleW(L"ntdll.dll"), "NtSuspendThread");
-  if (fnNtSuspendThread == NULL)
-    return;
+  dwCurrPid = ::GetCurrentProcessId();
   dwCurrTid = ::GetCurrentThreadId();
-  do
+  for (bContinue=TRUE; bContinue!=FALSE; )
   {
     bContinue = FALSE;
-    //enumerate process' threads
-    hRes = cThreadSuspender.GetProcessThreads(&lpdwTids, &nTidsCount);
-    if (FAILED(hRes) || nTidsCount == 0)
-      break;
-    for (i=0; i<nTidsCount; i++)
+    hSnapShot = ::CreateToolhelp32Snapshot(TH32CS_SNAPTHREAD, 0);
+    if (hSnapShot != INVALID_HANDLE_VALUE)
     {
-      if (lpdwTids[i] == dwCurrTid)
-        continue;
-      //check if some code is still in use
-      if (nktDvTlsData_CheckInUseStack(lpdwTids[i]) != FALSE)
+      nktMemSet(&sTe, 0, sizeof(sTe));
+      sTe.dwSize = (DWORD)sizeof(sTe);
+      if (::Thread32First(hSnapShot, &sTe) != FALSE)
       {
-        bContinue = TRUE;
-        break;
-      }
-      //check if eip/rip is in dll
-      hThread = ::OpenThread(THREAD_GET_CONTEXT|THREAD_QUERY_INFORMATION|THREAD_SUSPEND_RESUME, FALSE, lpdwTids[i]);
-      if (hThread != NULL)
-      {
-        fnNtSuspendThread(hThread, NULL);
-        //get thread position
-        nktMemSet(&sThreadCtx, 0, sizeof(sThreadCtx));
-        sThreadCtx.ContextFlags = CONTEXT_FULL;
-        if (::GetThreadContext(hThread, &sThreadCtx) != FALSE)
+        do
         {
-#if defined _M_X64
-          nCurrIP = (SIZE_T)sThreadCtx.Rip;
-#else //_M_X64
-          nCurrIP = (SIZE_T)sThreadCtx.Eip;
-#endif //_M_X64
-          //check if inside this dll... shouldn't be
-          if (nCurrIP >= nStartIP && nCurrIP < nEndIP)
-            bContinue = TRUE;
-          //check if inside a trampoline
-          if (bContinue == FALSE && cAgentMgr.CheckIfInTrampoline(nCurrIP) != FALSE)
-            bContinue = TRUE;
-          //NOTE: Is code below really needed? (To avoid crash on Office X64)
-          //      Because previous checks may be not necessary.
-          /*
-          //check stack
-          if (bContinue == FALSE)
+          if (sTe.dwSize >= FIELD_OFFSET(THREADENTRY32, th32OwnerProcessID) + (DWORD)sizeof(sTe.th32OwnerProcessID))
           {
-            CNktDvHookEngine::GetStackLimits(hThread, nStackLimitLow, nStackLimitHigh);
-            nktMemSet(nStackTrace, 0, sizeof(nStackTrace));
-#if defined _M_IX86
-            CNktDvHookEngine::GetStackTrace(nStackTrace, NKT_DV_ARRAYLEN(nStackTrace), 0, sThreadCtx.Esp,
-                                            sThreadCtx.Ebp, nStackLimitLow, nStackLimitHigh, NULL);
-#elif defined _M_X64
-            CNktDvHookEngine::GetStackTrace(nStackTrace, NKT_DV_ARRAYLEN(nStackTrace), 0, sThreadCtx.Rip,
-                                            sThreadCtx.Rsp, nStackLimitLow, nStackLimitHigh, NULL);
-#endif
-            for (k=0; k<NKT_DV_ARRAYLEN(nStackTrace) && bContinue==FALSE; k++)
+            if (sTe.th32OwnerProcessID == dwCurrPid && sTe.th32ThreadID != dwCurrTid)
             {
-              if (nStackTrace[k] >= nStartIP && nStackTrace[k] < nEndIP)
+              //check if some code is still in use
+              if (nktDvTlsData_CheckInUseStack(sTe.th32ThreadID) != FALSE)
+              {
                 bContinue = TRUE;
+                break;
+              }
+              //check if eip/rip is in dll
+              hThread = ::OpenThread(THREAD_GET_CONTEXT | THREAD_QUERY_INFORMATION | THREAD_SUSPEND_RESUME, FALSE, sTe.th32ThreadID);
+              if (hThread != NULL)
+              {
+                nktDvDynApis_NtSuspendThread(hThread);
+                //get thread position
+                nktMemSet(&sThreadCtx, 0, sizeof(sThreadCtx));
+                sThreadCtx.ContextFlags = CONTEXT_FULL;
+                if (::GetThreadContext(hThread, &sThreadCtx) != FALSE)
+                {
+#if defined _M_X64
+                  nCurrIP = (SIZE_T)sThreadCtx.Rip;
+#else //_M_X64
+                  nCurrIP = (SIZE_T)sThreadCtx.Eip;
+#endif //_M_X64
+                  //check if inside this dll... shouldn't be
+                  if (nCurrIP >= nStartIP && nCurrIP < nEndIP)
+                    bContinue = TRUE;
+                  //check if inside a trampoline
+                  if (bContinue == FALSE && cAgentMgr.CheckIfInTrampoline(nCurrIP) != FALSE)
+                    bContinue = TRUE;
+                }
+                //resume thread and close handle
+                ::ResumeThread(hThread);
+                ::CloseHandle(hThread);
+                if (bContinue != FALSE)
+                  break;
+              }
             }
           }
-          */
+          sTe.dwSize = (DWORD)sizeof(sTe);
         }
-        //resume thread and close handle
-        ::ResumeThread(hThread);
-        ::CloseHandle(hThread);
-        if (bContinue != FALSE)
-          break;
+        while (::Thread32Next(hSnapShot, &sTe) != FALSE);
       }
+      ::CloseHandle(hSnapShot);
     }
-    nktMemFree(lpdwTids);
     if (bContinue != FALSE)
       ::Sleep(20);
   }
-  while (bContinue != FALSE);
   return;
 }
 

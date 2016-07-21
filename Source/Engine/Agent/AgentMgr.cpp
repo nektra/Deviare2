@@ -172,7 +172,7 @@ static BOOL OnLdrLoadDll_IsDll(__in PUNICODE_STRING lpDllNameUS, __in LPCWSTR sz
 
 #pragma warning(disable : 4355)
 CDvAgentMgr::CDvAgentMgr() : CNktFastMutex(), CNktMemMgrObj(), CNktDvTransportAgentCallback(),
-                                   CNktDvHookEngineCallback(), cHookEng(this)
+                             CNktDvHookEngineCallback(), cHookEngine(this)
 #pragma warning(default : 4355)
 {
   hAgentInst = NULL;
@@ -269,7 +269,7 @@ HRESULT CDvAgentMgr::Initialize(__in LPNKT_DV_AGENTINITDATA lpInitData, __in HAN
 
     nktMemSet(sHookInfo, 0, sizeof(sHookInfo));
     //initialize hook engine
-    hRes = cHookEng.Initialize();
+    hRes = cHookEngine.Initialize();
     NKT_DEBUGPRINTLNA(Nektra::dlAgent, ("%lu) AgentMgr[HookEng]: hRes=%08X", ::GetTickCount(), hRes));
     if (SUCCEEDED(hRes))
     {
@@ -311,7 +311,7 @@ HRESULT CDvAgentMgr::Initialize(__in LPNKT_DV_AGENTINITDATA lpInitData, __in HAN
       {
         for (i=0; i<NKT_DV_ARRAYLEN(sHookInfo); i++)
           sHookInfo[i].nFlags |= NKT_DV_TMSG_ADDHOOK_FLAG_DisableStackWalk;
-        hRes = cHookEng.Hook(sHookInfo, NKT_DV_ARRAYLEN(sHookInfo));
+        hRes = cHookEngine.Hook(sHookInfo, NKT_DV_ARRAYLEN(sHookInfo));
       }
       else
       {
@@ -324,7 +324,7 @@ HRESULT CDvAgentMgr::Initialize(__in LPNKT_DV_AGENTINITDATA lpInitData, __in HAN
       for (i=0; i<NKT_DV_ARRAYLEN(sHookInfo); i++)
       {
         if (sHookInfo[i].lpProcToHook != NULL)
-          cHookEng.EnableHook(sHookInfo[i].dwHookId, TRUE);
+          cHookEngine.EnableHook(sHookInfo[i].dwHookId, TRUE);
       }
     }
     NKT_DEBUGPRINTLNA(Nektra::dlAgent, ("%lu) AgentMgr[Hooks]: hRes=%08X", ::GetTickCount(), hRes));
@@ -343,7 +343,7 @@ VOID CDvAgentMgr::Finalize()
 
   cShutdownMtx.StartShutdownAndWaitPending(this);
   //unhook all
-  cHookEng.Finalize();
+  cHookEngine.Finalize();
   //end transport
   cTransport.Finalize();
   hShutdownEvent = hServerProcDup = hMainThread = NULL;
@@ -434,7 +434,7 @@ VOID CDvAgentMgr::Run()
 
 BOOL CDvAgentMgr::CheckIfInTrampoline(__in SIZE_T nCurrIP)
 {
-  return cHookEng.CheckIfInTrampoline(nCurrIP);
+  return cHookEngine.CheckIfInTrampoline(nCurrIP);
 }
 
 VOID CDvAgentMgr::TAC_OnConnectionEstablished(__inout CNktDvTransportAgent *lpTransport)
@@ -1373,7 +1373,7 @@ HRESULT CDvAgentMgr::OnInternalLdrLoadDll(__inout CNktDvHookEngine::CALLINFO &sC
       //----
       if (lpUserData->bIsMsCoreeDll != FALSE)
       {
-        hRes = MiniHooks_Install();
+        hRes = InstallMiniHooks();
         if (FAILED(hRes))
           return hRes; //error
       }
@@ -1552,7 +1552,7 @@ HRESULT CDvAgentMgr::OnInternalLdrUnloadDll(__inout CNktDvHookEngine::CALLINFO &
         //mark as unloading
         lpMod->bUnloading = TRUE;
         //unhook api's in this dll
-        cHookEng.DllUnloadUnhook(hDll);
+        cHookEngine.DllUnloadUnhook(hDll);
         CNktDvProcess::MarkModulesEnumeratorAsDirty(::GetCurrentProcessId(), hDll);
       }
       //inform about unloads
@@ -2484,7 +2484,7 @@ HRESULT CDvAgentMgr::OnEngMsg_AddHook(__inout NKT_DV_TMSG_ADDHOOK *lpMsg,
       return E_FAIL;
   }
   NKT_DEBUGPRINTLNA(Nektra::dlAgent, ("%lu) Agent [AddHook]: Id:%lu / Batch:%lu / %S",
-                     ::GetTickCount(), lpMsg->dwHookId, lpMsg->dwBatchId, (LPWSTR)(cData->cStrFuncW)));
+                    ::GetTickCount(), lpMsg->dwHookId, lpMsg->dwBatchId, (LPWSTR)(cData->cStrFuncW)));
   //do hooking
   cData->sHookInfo.dwSpyMgrHookId = lpMsg->dwSpyMgrHookId;
   cData->sHookInfo.lpProcToHook = (LPVOID)(lpMsg->lpAddress);
@@ -2520,11 +2520,11 @@ HRESULT CDvAgentMgr::OnEngMsg_AddHook(__inout NKT_DV_TMSG_ADDHOOK *lpMsg,
       CDvAgentMgrAutoSendDllNotificationAsync cAutoNotifyAsync(&nSendLoadedUnloadedDllAsync);
       //CDvAgentMgrAutoTlsSendDllNotificationAsync cAutoTlsNotifyAsync;
 
-      hRes = cHookEng.Hook(&(cData->sHookInfo), 1);
+      hRes = cHookEngine.Hook(&(cData->sHookInfo), 1);
     }
     if (SUCCEEDED(hRes))
     {
-      cHookEng.EnableHook(lpMsg->dwHookId, TRUE);
+      cHookEngine.EnableHook(lpMsg->dwHookId, TRUE);
       //prepare data
       hRes = NktDvTransportInitMessage(&sMsgResp, NKT_DV_TMSG_CODE_HookStateChange,
                                        cTransport.GetNextMsgId(), NULL, NULL);
@@ -2558,7 +2558,7 @@ HRESULT CDvAgentMgr::OnEngMsg_RemoveHook(__inout NKT_DV_TMSG_REMOVEHOOK *lpMsg)
   if (lpMsg->dwHookId == 0 || lpMsg->dwHookId >= 0x80000000)
     return E_FAIL;
   NKT_DEBUGPRINTLNA(Nektra::dlAgent, ("%lu) Agent [RemoveHook]: Id:%lu / Batch:%lu", ::GetTickCount(),
-                     lpMsg->dwHookId, lpMsg->dwBatchId));
+                    lpMsg->dwHookId, lpMsg->dwBatchId));
   //process data
   if (lpMsg->dwBatchId == 0)
   {
@@ -2567,7 +2567,7 @@ HRESULT CDvAgentMgr::OnEngMsg_RemoveHook(__inout NKT_DV_TMSG_REMOVEHOOK *lpMsg)
       CDvAgentMgrAutoSendDllNotificationAsync cAutoNotifyAsync(&nSendLoadedUnloadedDllAsync);
       //CDvAgentMgrAutoTlsSendDllNotificationAsync cAutoTlsNotifyAsync;
 
-      hRes = cHookEng.Unhook(&(lpMsg->dwHookId), 1);
+      hRes = cHookEngine.Unhook(&(lpMsg->dwHookId), 1);
     }
     hRes = S_OK;
   }
@@ -2600,7 +2600,7 @@ HRESULT CDvAgentMgr::OnEngMsg_EnableHook(__inout NKT_DV_TMSG_ENABLEHOOK *lpMsg)
   NKT_DEBUGPRINTLNA(Nektra::dlAgent, ("%lu) Agent [EnableHook]: Id:%lu  (%s)", ::GetTickCount(),
                      lpMsg->dwHookId, (lpMsg->bEnable != FALSE) ? "Enable" : "Disable"));
   //do hook enable/disable
-  hRes = cHookEng.EnableHook(lpMsg->dwHookId, lpMsg->bEnable);
+  hRes = cHookEngine.EnableHook(lpMsg->dwHookId, lpMsg->bEnable);
   //prepare data
   hRes = NktDvTransportInitMessage(&sMsgResp, NKT_DV_TMSG_CODE_HookStateChange, cTransport.GetNextMsgId(),
                                    NULL, NULL);
@@ -2662,12 +2662,12 @@ HRESULT CDvAgentMgr::OnEngMsg_BatchHookExec(__inout NKT_DV_TMSG_BATCHHOOKEXEC *l
           CDvAgentMgrAutoSendDllNotificationAsync cAutoNotifyAsync(&nSendLoadedUnloadedDllAsync);
           //CDvAgentMgrAutoTlsSendDllNotificationAsync cAutoTlsNotifyAsync;
 
-          hRes = cHookEng.Hook(sHookInfos, nEntriesCount);
+          hRes = cHookEngine.Hook(sHookInfos, nEntriesCount);
         }
         if (SUCCEEDED(hRes))
         {
           for (i=0; i<nEntriesCount; i++)
-            cHookEng.EnableHook(sHookInfos[i].dwHookId, TRUE);
+            cHookEngine.EnableHook(sHookInfos[i].dwHookId, TRUE);
           //prepare data
           for (i=0; i<nEntriesCount && SUCCEEDED(hRes); i++)
           {
@@ -2693,7 +2693,7 @@ HRESULT CDvAgentMgr::OnEngMsg_BatchHookExec(__inout NKT_DV_TMSG_BATCHHOOKEXEC *l
           CDvAgentMgrAutoSendDllNotificationAsync cAutoNotifyAsync(&nSendLoadedUnloadedDllAsync);
           //CDvAgentMgrAutoTlsSendDllNotificationAsync cAutoTlsNotifyAsync;
 
-          hRes = cHookEng.Unhook(dwHookIds, nEntriesCount);
+          hRes = cHookEngine.Unhook(dwHookIds, nEntriesCount);
         }
         hRes = S_OK;
         break;
@@ -2718,12 +2718,12 @@ HRESULT CDvAgentMgr::OnEngMsg_BatchHookExec(__inout NKT_DV_TMSG_BATCHHOOKEXEC *l
           CDvAgentMgrAutoSendDllNotificationAsync cAutoNotifyAsync(&nSendLoadedUnloadedDllAsync);
           //CDvAgentMgrAutoTlsSendDllNotificationAsync cAutoTlsNotifyAsync;
 
-          hRes = cHookEng.Hook(sHookInfos, nEntriesCount);
+          hRes = cHookEngine.Hook(sHookInfos, nEntriesCount);
         }
         if (SUCCEEDED(hRes))
         {
           for (i=0; i<nEntriesCount; i++)
-            cHookEng.EnableHook(sHookInfos[i].dwHookId, TRUE);
+            cHookEngine.EnableHook(sHookInfos[i].dwHookId, TRUE);
           //prepare data
           for (i=0; i<nEntriesCount && SUCCEEDED(hRes); i++)
           {
@@ -2749,7 +2749,7 @@ HRESULT CDvAgentMgr::OnEngMsg_BatchHookExec(__inout NKT_DV_TMSG_BATCHHOOKEXEC *l
           CDvAgentMgrAutoSendDllNotificationAsync cAutoNotifyAsync(&nSendLoadedUnloadedDllAsync);
           //CDvAgentMgrAutoTlsSendDllNotificationAsync cAutoTlsNotifyAsync;
 
-          hRes = cHookEng.Unhook(dwHookIds, nEntriesCount);
+          hRes = cHookEngine.Unhook(dwHookIds, nEntriesCount);
         }
         hRes = S_OK;
         break;
@@ -2788,9 +2788,9 @@ HRESULT CDvAgentMgr::OnEngMsg_HelperCall(__inout NKT_DV_TMSG_HELPERCALL *lpMsg)
     case NKT_DV_TMSG_CODE_HELPERCALL_QueryHookOverwrite:
       //build and send callback message
       NktDvTransportInitMessage4Callback(&sCallBackMsg, NKT_DV_TMSG_CODE_HelperCallCallback, lpMsg);
-      hRes = cHookEng.QueryOverwrittenHooks((SIZE_T)(lpMsg->sQueryHookOverwrite.dwCount),
-                                            lpMsg->sQueryHookOverwrite.aHookIdsList,
-                                            sCallBackMsg.sQueryHookOverwrite.aOverwritten);
+      hRes = cHookEngine.QueryOverwrittenHooks((SIZE_T)(lpMsg->sQueryHookOverwrite.dwCount),
+                                               lpMsg->sQueryHookOverwrite.aHookIdsList,
+                                               sCallBackMsg.sQueryHookOverwrite.aOverwritten);
       //send callback message
       if (SUCCEEDED(hRes))
         hRes = cTransport.SendMsg(&sCallBackMsg, sizeof(sCallBackMsg));
@@ -2854,7 +2854,7 @@ HRESULT CDvAgentMgr::CheckOverwrittenHooks()
     return S_OK; //avoid recursion
   //not previously set
   NktInterlockedBitReset(&nDelayedCheckOverrides, 0); //unmark check
-  hRes = cHookEng.CheckOverwrittenHooks();
+  hRes = cHookEngine.CheckOverwrittenHooks();
   NktInterlockedBitReset(&nDelayedCheckOverrides, 1);
   return hRes;
 }

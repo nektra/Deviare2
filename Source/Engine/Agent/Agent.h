@@ -39,7 +39,7 @@ extern HINSTANCE hAgentDllInstance;
 
 //-----------------------------------------------------------
 
-HRESULT MiniHooks_Install();
+HRESULT InstallMiniHooks();
 
 //-----------------------------------------------------------
 

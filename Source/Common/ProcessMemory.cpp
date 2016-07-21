@@ -599,7 +599,7 @@ HRESULT CNktDvProcessMemory::AllocMem(__deref_out LPVOID *lplpRemoteDest, __in S
   //convert protection flags
   dwProtFlags = (bExecuteFlag != FALSE) ? PAGE_EXECUTE_READWRITE : PAGE_READWRITE;
   //do allocation
-  *lplpRemoteDest = ::VirtualAllocEx(hTempProc, NULL, nSize, MEM_COMMIT, dwProtFlags);
+  *lplpRemoteDest = ::VirtualAllocEx(hTempProc, NULL, nSize, MEM_RESERVE|MEM_COMMIT, dwProtFlags);
   return ((*lplpRemoteDest) != NULL) ? S_OK : E_FAIL;
 }
 

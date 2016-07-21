@@ -54,8 +54,7 @@ void TestHookWndProc(__in Deviare2::INktSpyMgr *lpSpyMgr)
       return;
     }
     ::GetWindowThreadProcessId(sCmdLineParams.sWndProc.hWnds[i], &(sWndInfo.dwProcId));
-    LogPrintNoTick(L"Window %lu => process id: %lu\n", (ULONG)(sCmdLineParams.sWndProc.hWnds[i]),
-                   sWndInfo.dwProcId);
+    LogPrintNoTick(L"Window %lu => process id: %Iu\n", (SIZE_T)(sCmdLineParams.sWndProc.hWnds[i]), sWndInfo.dwProcId);
     if (sWndInfo.dwProcId == 0)
     {
       wprintf_s(L"Error: Cannot find desired window's process.\n");
@@ -63,8 +62,7 @@ void TestHookWndProc(__in Deviare2::INktSpyMgr *lpSpyMgr)
     }
     //lpWndProc = (LPVOID)::GetWindowLongPtr(hWnd, GWLP_WNDPROC);
     sWndInfo.lpWndProc = (LPVOID)::GetClassLongPtr(sCmdLineParams.sWndProc.hWnds[i], GCLP_WNDPROC);
-    LogPrintNoTick(L"Window %lu => WndProc: 0x%p\n", (ULONG)(sCmdLineParams.sWndProc.hWnds[i]),
-                   (LPVOID)(sWndInfo.lpWndProc));
+    LogPrintNoTick(L"Window %Iu => WndProc: 0x%p\n", (SIZE_T)(sCmdLineParams.sWndProc.hWnds[i]), sWndInfo.lpWndProc);
     if (sWndInfo.lpWndProc == NULL)
     {
       wprintf_s(L"Error: Cannot retrieve WndProc address.\n");
@@ -88,8 +86,8 @@ err_nomem:
       goto err_nomem;
     hRes = lpSpyMgr->CreateHookForAddress((size_t)(aWndInfoList[i].lpWndProc), bstr, nFlags, &cHook);
     ::SysFreeString(bstr);
-    LogPrintNoTick(L"CNktDvEngine::CreateHook (Window %lu) => %08X\n",
-                   (ULONG)(sCmdLineParams.sWndProc.hWnds[i]), hRes);
+    LogPrintNoTick(L"CNktDvEngine::CreateHook (Window %Iu) => %08X\n", (SIZE_T)(sCmdLineParams.sWndProc.hWnds[i]),
+                   hRes);
     //add custom handlers
     lTemp = Deviare2::flgChDontCallIfLoaderLocked;
     if (sCmdLineParams.bCustomHandlerDebug != FALSE)
@@ -110,8 +108,7 @@ err_nomem:
       hRes = cHook->Attach(cVt, VARIANT_TRUE);
       if (SUCCEEDED(hRes))
         hRes = cHook->Hook(VARIANT_TRUE);
-      LogPrintNoTick(L"CNktDvHook::Hook (Window %lu) => %08X\n",
-                     (ULONG)(sCmdLineParams.sWndProc.hWnds[i]), hRes);
+      LogPrintNoTick(L"CNktDvHook::Hook (Window %Iu) => %08X\n", (SIZE_T)(sCmdLineParams.sWndProc.hWnds[i]), hRes);
     }
   }
   //wait for exit key

@@ -31,7 +31,7 @@
 #include "DynamicAPIs.h"
 #include "NtInternals.h"
 #ifdef AGENTDLL
-  #include "..\SupportLibs\UDis86\GetInstructionLength.h"
+ #include "..\..\Externals\DeviareInProc\Include\NktHookLib.h"
 #endif //AGENTDLL
 
 //-----------------------------------------------------------
@@ -1012,7 +1012,7 @@ HRESULT nktDvDynApis_AllocateVirtualMemory(__out PVOID *BaseAddress, __in SIZE_T
     return E_NOTIMPL;
   *BaseAddress = NULL;
   RegionSize_Temp = RegionSize;
-  nNtStatus = fnNtAllocateVirtualMemory((HANDLE)-1, BaseAddress, 0, &RegionSize_Temp, MEM_COMMIT, Protect);
+  nNtStatus = fnNtAllocateVirtualMemory((HANDLE)-1, BaseAddress, 0, &RegionSize_Temp, MEM_RESERVE|MEM_COMMIT, Protect);
   if (nNtStatus < 0)
     return HRESULT_FROM_NT(nNtStatus);
   return S_OK;
@@ -1632,6 +1632,7 @@ static LPVOID BuildOriginalNtCall(__in LPBYTE lpFileFuncAddr, __in PRTL_OSVERSIO
   SIZE_T nDestSize;
   DWORD dwRawAddr;
 #endif //_M_IX86
+  DWORD dwOldProt;
   LPBYTE lpSrc, lpDest, lpStub;
 
   //stage 1: scan for a return
@@ -1674,7 +1675,7 @@ static LPVOID BuildOriginalNtCall(__in LPBYTE lpFileFuncAddr, __in PRTL_OSVERSIO
           nDestSize += 12;
           continue;
         }
-        nInstrLen = GetInstructionLength(lpSrc+k, 128, sizeof(SIZE_T)<<3, NULL);
+        nInstrLen = NktHookLibHelpers::GetInstructionLength(lpSrc + k, 128, sizeof(SIZE_T) << 3);
         k += nInstrLen;
         nDestSize += nInstrLen;
       }
@@ -1704,7 +1705,7 @@ static LPVOID BuildOriginalNtCall(__in LPBYTE lpFileFuncAddr, __in PRTL_OSVERSIO
           k++;
           break;
         }
-        nInstrLen = GetInstructionLength(lpSrc+k, 128, sizeof(SIZE_T)<<3, NULL);
+        nInstrLen = NktHookLibHelpers::GetInstructionLength(lpSrc+k, 128, sizeof(SIZE_T) << 3);
         k += nInstrLen;
       }
       //add to extra size
@@ -1714,7 +1715,7 @@ static LPVOID BuildOriginalNtCall(__in LPBYTE lpFileFuncAddr, __in PRTL_OSVERSIO
       continue;
     }
     //no special behavior
-    nInstrLen = GetInstructionLength(lpFileFuncAddr+nSrcOfs, 128, sizeof(SIZE_T)<<3, NULL);
+    nInstrLen = NktHookLibHelpers::GetInstructionLength(lpFileFuncAddr+nSrcOfs, 128, sizeof(SIZE_T) << 3);
     nSrcOfs += nInstrLen;
     nCurrSize += nInstrLen;
   }
@@ -1778,7 +1779,7 @@ static LPVOID BuildOriginalNtCall(__in LPBYTE lpFileFuncAddr, __in PRTL_OSVERSIO
             nDestSize += 12;
             continue;
           }
-          nInstrLen = GetInstructionLength(lpSrc+k, 128, sizeof(SIZE_T)<<3, NULL);
+          nInstrLen = NktHookLibHelpers::GetInstructionLength(lpSrc+k, 128, sizeof(SIZE_T) << 3);
           memcpy(lpDest+nDestSize, lpSrc+k, nInstrLen);
           k += nInstrLen;
           nDestSize += nInstrLen;
@@ -1813,7 +1814,7 @@ static LPVOID BuildOriginalNtCall(__in LPBYTE lpFileFuncAddr, __in PRTL_OSVERSIO
             k++;
             break;
           }
-          nInstrLen = GetInstructionLength(lpSrc+k, 128, sizeof(SIZE_T)<<3, NULL);
+          nInstrLen = NktHookLibHelpers::GetInstructionLength(lpSrc+k, 128, sizeof(SIZE_T) << 3);
           memcpy(lpDest+k, lpSrc+k, nInstrLen);
           k += nInstrLen;
         }
@@ -1823,12 +1824,13 @@ static LPVOID BuildOriginalNtCall(__in LPBYTE lpFileFuncAddr, __in PRTL_OSVERSIO
         continue;
       }
       //no special behavior
-      nInstrLen = GetInstructionLength(lpFileFuncAddr+nSrcOfs, 128, sizeof(SIZE_T)<<3, NULL);
+      nInstrLen = NktHookLibHelpers::GetInstructionLength(lpFileFuncAddr+nSrcOfs, 128, sizeof(SIZE_T) << 3);
       memcpy(lpStub+nCurrSize, lpFileFuncAddr+nSrcOfs, nInstrLen);
       nSrcOfs += nInstrLen;
       nCurrSize += nInstrLen;
     }
     NKT_ASSERT(nMainCodeSize == nCurrSize);
+    ::VirtualProtect(lpStub, nCurrSize + nExtraSize, PAGE_EXECUTE_READ, &dwOldProt);
   }
   return lpStub;
 }

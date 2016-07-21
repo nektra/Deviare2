@@ -149,7 +149,7 @@ HRESULT nktDvNtGetBaseAddress32(__out LPBYTE *lplpBaseAddress, __in LPBYTE lpPeb
   if (ReadProcMem(hProcess, &dwTemp32, lpPeb+0x08, sizeof(dwTemp32)) == FALSE ||
       dwTemp32 == 0)
     return E_FAIL;
-  *lplpBaseAddress = (LPBYTE)dwTemp32;
+  *lplpBaseAddress = (LPBYTE)((ULONG_PTR)dwTemp32);
   return S_OK;
 }
 
@@ -168,19 +168,19 @@ HRESULT nktDvNtGetFirstLdrEntry32(__out NKT_DV_LDRENTRY32 *lpEntry32, __in LPBYT
       dwTemp32 == 0)
     return E_FAIL;
   //check PEB_LDR_DATA32.Initialize flag
-  if (ReadProcMem(hProcess, &nTemp8, (LPBYTE)dwTemp32+0x04, sizeof(nTemp8)) == FALSE)
+  if (ReadProcMem(hProcess, &nTemp8, (LPBYTE)((ULONG_PTR)dwTemp32)+0x04, sizeof(nTemp8)) == FALSE)
     return E_FAIL;
   if (nTemp8 == 0)
     return NKT_DVERR_NotFound;
   //get PEB_LDR_DATA32.InLoadOrderModuleList.Flink
   lpEntry32->nFirstLink = dwTemp32+0x0C;
-  if (ReadProcMem(hProcess, &(lpEntry32->nCurrLink), (LPBYTE)(lpEntry32->nFirstLink),
+  if (ReadProcMem(hProcess, &(lpEntry32->nCurrLink), (LPBYTE)((ULONG_PTR)(lpEntry32->nFirstLink)),
                   sizeof(lpEntry32->nCurrLink)) == FALSE)
     return E_FAIL;
   if (lpEntry32->nFirstLink == lpEntry32->nCurrLink)
     return NKT_DVERR_NotFound;
   //read first entry
-  lpPtr = (LPBYTE)(lpEntry32->nCurrLink) - FIELD_OFFSET(NKT_DV_LDR_DATA_TABLE_ENTRY32, InLoadOrderLinks);
+  lpPtr = (LPBYTE)((ULONG_PTR)(lpEntry32->nCurrLink)) - FIELD_OFFSET(NKT_DV_LDR_DATA_TABLE_ENTRY32, InLoadOrderLinks);
   if (ReadProcMem(lpEntry32->hProcess, &(lpEntry32->sEntry), lpPtr, sizeof(lpEntry32->sEntry)) == FALSE)
     return E_FAIL;
   lpEntry32->nCurrLink = lpEntry32->sEntry.InLoadOrderLinks.Flink;
@@ -195,7 +195,7 @@ HRESULT nktDvNtGetNextLdrEntry32(__inout NKT_DV_LDRENTRY32 *lpEntry32)
     return E_INVALIDARG;
   if (lpEntry32->nFirstLink == lpEntry32->nCurrLink)
     return NKT_DVERR_NotFound;
-  lpPtr = (LPBYTE)(lpEntry32->nCurrLink) - FIELD_OFFSET(NKT_DV_LDR_DATA_TABLE_ENTRY32, InLoadOrderLinks);
+  lpPtr = (LPBYTE)((ULONG_PTR)(lpEntry32->nCurrLink)) - FIELD_OFFSET(NKT_DV_LDR_DATA_TABLE_ENTRY32, InLoadOrderLinks);
   if (ReadProcMem(lpEntry32->hProcess, &(lpEntry32->sEntry), lpPtr, sizeof(lpEntry32->sEntry)) == FALSE)
     return E_FAIL;
   lpEntry32->nCurrLink = lpEntry32->sEntry.InLoadOrderLinks.Flink;
@@ -320,7 +320,7 @@ HRESULT nktDvNtFindApiMapSet(__out CNktStringW &cStrReplDllW, __in HANDLE hProce
     case 32:
       if (ReadProcMem(hProcess, &dwTemp32, lpPeb+0x38, sizeof(dwTemp32)) == FALSE)
         return E_FAIL;
-      lpApiMapSet = (LPBYTE)dwTemp32;
+      lpApiMapSet = (LPBYTE)((ULONG_PTR)dwTemp32);
       break;
 #if defined _M_X64
     case 64:
@@ -613,8 +613,8 @@ BOOL nktDvNtIsLoaderLoaderLockHeld(__in BOOL bAnyThread)
   PRTL_CRITICAL_SECTION lpCS;
 
   lpCS = nktDvNtGetLoaderLock();
-  return (lpCS->OwningThread != 0 &&
-          (bAnyThread != FALSE || lpCS->OwningThread == (HANDLE)::GetCurrentThreadId())) ? TRUE : FALSE;
+  return (lpCS->OwningThread != NULL &&
+          (bAnyThread != FALSE || lpCS->OwningThread == (HANDLE)((ULONG_PTR)::GetCurrentThreadId()))) ? TRUE : FALSE;
 }
 
 //-----------------------------------------------------------

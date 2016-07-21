@@ -68,15 +68,15 @@ public:
   CHookEntry();
   virtual ~CHookEntry();
 
-  virtual HRESULT AttachCustomHandler(__in LPCWSTR szDllNameW, __in SIZE_T nFlags, __in LPCWSTR szParametersW,
-                                      __in CNktDvHookEngineCallback *lpHookEngCallback);
+  HRESULT AttachCustomHandler(__in LPCWSTR szDllNameW, __in SIZE_T nFlags, __in LPCWSTR szParametersW,
+                              __in CNktDvHookEngineCallback *lpHookEngCallback);
 
-  virtual HRESULT ProcessCustomHandler(__deref_out CNktDvParamsEnumerator **lplpCustomParamsEnum,
-                                       __inout LPVOID lpCallInfo, //CNktDvHookEngine::CALLINFO*
-                                       __inout CNktDvParamsEnumerator *lpParamsEnum,
-                                       __inout CNktDvParam *lpResult, __inout LPBYTE lpIntercallCustomData,
-                                       __in CNktDvHookEngineCallback *lpHookEngCallback);
-  virtual VOID DetachAllCustomHandlers();
+  HRESULT ProcessCustomHandler(__deref_out CNktDvParamsEnumerator **lplpCustomParamsEnum,
+                               __inout LPVOID lpCallInfo, //CNktDvHookEngine::CALLINFO*
+                               __inout CNktDvParamsEnumerator *lpParamsEnum,
+                               __inout CNktDvParam *lpResult, __inout LPBYTE lpIntercallCustomData,
+                               __in CNktDvHookEngineCallback *lpHookEngCallback);
+  VOID DetachAllCustomHandlers();
 
 public:
   DWORD dwId, dwSpyMgrId;
@@ -91,15 +91,15 @@ public:
   } sHookInfo;
   //----
   LONG volatile nCallCounter;
-  LPBYTE lpHookedAddr, lpOrigProc;
-  SIZE_T nOriginalStubSize, nNewStubSize;
-  BYTE aOriginalStub[HOOKENG_MAX_ORIGINAL_STUB_SIZE], aModifiedStub[8], aNewStub[HOOKENG_MAX_STUB_SIZE];
-  LPBYTE lpInjectedCodeAddr;
-  SIZE_T nInjectedCodeSize;
+  LONG volatile nUsageCount;
+  //----
+  CNktHookLib::HOOK_INFO sHookLibInfo;
+  //----
+  LPVOID lpOrigProc;
+  LPBYTE lpSuperHookStub;
   LPVOID lpAfterCallMark;
-  LPBYTE volatile lpUninstalledDisabledAddr;
-  PSIZE_T volatile lpUsageCounterAddr;
   BOOL bChangedInformed;
+  BYTE aModifiedEntrypointCode[5];
   //----
   CNktDvFunctionParamsCache cFuncParamCache;
   LONG volatile nInstalledCode; //0-not installed / 1-installed / 2-marked for deletion /
@@ -108,6 +108,3 @@ public:
   TNktComPtr<CHookCustomHandlerMgr> cCustomHandlersMgr;
   CHookCustomHandlerMgr::CPluginInstanceList aPluginInstancesList;
 };
-
-//-----------------------------------------------------------
-

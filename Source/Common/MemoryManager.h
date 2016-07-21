@@ -32,8 +32,10 @@
 #include <windows.h>
 #include <stdio.h>
 
+//IMPORTANT: Temporary fully disabled due to RtlCaptureStackBackTrace trying to acquire a SRW_LOCK previously
+//           acquired by the dll loader in NTDLL when the loader call to NtProtectVirtualMemory.
 #ifdef _DEBUG
-  #define NKT_ENABLE_MEMORY_TRACKING
+  //#define NKT_ENABLE_MEMORY_TRACKING
   //#define NKT_ENABLE_MEMORY_TRACKING_ONLY_POINTERS
 #else //_DEBUG
   //#define NKT_ENABLE_MEMORY_TRACKING

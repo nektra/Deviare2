@@ -32,7 +32,9 @@
 #include "EngDefines.h"
 #include "DynamicAPIs.h"
 #include <winternl.h>
+#pragma warning(disable : 4091) //disable VS2015 warnings because of SDK v7.1
 #include <imagehlp.h>
+#pragma warning(default : 4091)
 #include "StringLiteW.h"
 
 //-----------------------------------------------------------

@@ -46,15 +46,12 @@ CHookEntry::CHookEntry() : CNktDvObject(), TNktLnkLstNode<CHookEntry>()
   hProcDll = NULL;
   sHookInfo.dwCookie = 0;
   NktInterlockedExchange(&nCallCounter, 0);
-  lpHookedAddr = lpOrigProc = NULL;
-  nOriginalStubSize = nNewStubSize = 0;
-  //BYTE aOriginalStub[HOOKENG_MAX_STUB_SIZE], aModifiedStub[8], aNewStub[HOOKENG_MAX_STUB_SIZE];
-  lpInjectedCodeAddr = NULL;
-  nInjectedCodeSize = 0;
+  NktInterlockedExchange(&nUsageCount, 0);
+  nktMemSet(&sHookLibInfo, 0, sizeof(sHookLibInfo));
+  lpOrigProc = NULL;
+  lpSuperHookStub = NULL;
   lpAfterCallMark = NULL;
-  lpUninstalledDisabledAddr = NULL;
-  lpUsageCounterAddr = NULL;
-  lpInjectedCodeAddr = NULL;
+  nktMemSet(aModifiedEntrypointCode, 0, sizeof(aModifiedEntrypointCode));
   nInstalledCode = 0;
   bChangedInformed = FALSE;
   return;
@@ -148,7 +145,7 @@ HRESULT CHookEntry::AttachCustomHandler(__in LPCWSTR szDllNameW, __in SIZE_T nFl
     NKT_DEBUGPRINTLNA(Nektra::dlHookEngine, ("%lu) CHookCustomHandlerMgr[Call_OnHookAdded]: "
                       "hRes=%08X (%S) [%S @ %IXh ]", ::GetTickCount(), hRes, szDllNameW,
                       (lpDbFunc != NULL && lpDbFunc->GetName()[0] != 0) ? (lpDbFunc->GetName()) : L"???",
-                      (SIZE_T)lpHookedAddr));
+                      (SIZE_T)(sHookLibInfo.lpProcToHook)));
     cPluginInstance.Release();
     cCustomHandlersMgr->FreeUnusedPlugins();
   }
@@ -193,7 +190,7 @@ HRESULT CHookEntry::ProcessCustomHandler(__deref_out CNktDvParamsEnumerator **lp
     NKT_DEBUGPRINTLNA(Nektra::dlHookEngine, ("%lu) CHookEntry[ProcessCustomHandler]: "
                       "hRes=%08X [%S @ %IXh ]", ::GetTickCount(), hRes,
                       (lpDbFunc != NULL && lpDbFunc->GetName()[0] != 0) ? (lpDbFunc->GetName()) : L"???",
-                      (SIZE_T)lpHookedAddr));
+                      (SIZE_T)(sHookLibInfo.lpProcToHook)));
   }
   if (nActCtxCookie != 0)
     cCustomHandlersMgr->DeactivateDeviareComContext(nActCtxCookie);

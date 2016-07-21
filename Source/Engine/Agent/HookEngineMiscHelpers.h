@@ -33,65 +33,10 @@
 
 //-----------------------------------------------------------
 
-LPBYTE HookEng_SkipJumpInstructions(__in LPBYTE lpPtr);
-HRESULT HookEng_CreateNewStub(__inout CHookEntry *lpEntry, __in LPVOID lpProcToHook, __in BOOL bSkipJumps);
-HRESULT HookEng_CreateNewStub2(__inout BYTE aOriginalStub[HOOKENG_MAX_ORIGINAL_STUB_SIZE],
-                               __inout SIZE_T& nOriginalStubSize, __inout BYTE aNewStub[HOOKENG_MAX_STUB_SIZE],
-                               __inout SIZE_T& nNewStubSize, __in LPVOID lpProcToHook, __in BOOL bSkipJumps);
-HRESULT HookEng_FindDll(__out HINSTANCE *lphDll, __in LPVOID lpAddress);
-HRESULT HookEng_FindDllAndIncrementUsageCount(__out HINSTANCE *lphDll, __in LPVOID lpAddress);
+namespace MiscHelpers {
 
-//-----------------------------------------------------------
+LPBYTE SkipJumpInstructions(__in LPBYTE lpPtr);
+HRESULT FindDll(__out HINSTANCE *lphDll, __in LPVOID lpAddress);
+HRESULT FindDllAndIncrementUsageCount(__in LPVOID lpAddress);
 
-static __inline ULONG HookEng_ReadUnalignedULong(__in LPVOID lpAddr)
-{
-  return ((ULONG)(*( (LPBYTE)lpAddr)   )      ) |
-         ((ULONG)(*(((LPBYTE)lpAddr)+1)) <<  8) |
-         ((ULONG)(*(((LPBYTE)lpAddr)+2)) << 16) |
-         ((ULONG)(*(((LPBYTE)lpAddr)+3)) << 24);
-}
-
-static __inline VOID HookEng_WriteUnalignedULong(__in LPVOID lpAddr, __in ULONG nVal)
-{
-  *( (LPBYTE)lpAddr   ) = (BYTE)( nVal        & 0xFF);
-  *(((LPBYTE)lpAddr)+1) = (BYTE)((nVal >>  8) & 0xFF);
-  *(((LPBYTE)lpAddr)+2) = (BYTE)((nVal >> 16) & 0xFF);
-  *(((LPBYTE)lpAddr)+3) = (BYTE)((nVal >> 24) & 0xFF);
-  return;
-}
-
-static __inline ULONGLONG HookEng_ReadUnalignedULongLong(__in LPVOID lpAddr)
-{
-  return ((ULONGLONG)(*( (LPBYTE)lpAddr)   )      ) |
-         ((ULONGLONG)(*(((LPBYTE)lpAddr)+1)) <<  8) |
-         ((ULONGLONG)(*(((LPBYTE)lpAddr)+2)) << 16) |
-         ((ULONGLONG)(*(((LPBYTE)lpAddr)+3)) << 24) |
-         ((ULONGLONG)(*(((LPBYTE)lpAddr)+4)) << 32) |
-         ((ULONGLONG)(*(((LPBYTE)lpAddr)+5)) << 40) |
-         ((ULONGLONG)(*(((LPBYTE)lpAddr)+6)) << 48) |
-         ((ULONGLONG)(*(((LPBYTE)lpAddr)+7)) << 56);
-}
-
-static __inline VOID HookEng_WriteUnalignedULongLong(__in LPVOID lpAddr, __in ULONGLONG nVal)
-{
-  *( (LPBYTE)lpAddr   ) = (BYTE)( nVal        & 0xFF);
-  *(((LPBYTE)lpAddr)+1) = (BYTE)((nVal >>  8) & 0xFF);
-  *(((LPBYTE)lpAddr)+2) = (BYTE)((nVal >> 16) & 0xFF);
-  *(((LPBYTE)lpAddr)+3) = (BYTE)((nVal >> 24) & 0xFF);
-  *(((LPBYTE)lpAddr)+4) = (BYTE)((nVal >> 32) & 0xFF);
-  *(((LPBYTE)lpAddr)+5) = (BYTE)((nVal >> 40) & 0xFF);
-  *(((LPBYTE)lpAddr)+6) = (BYTE)((nVal >> 48) & 0xFF);
-  *(((LPBYTE)lpAddr)+7) = (BYTE)((nVal >> 56) & 0xFF);
-  return;
-}
-
-#if defined _M_IX86
-  #define HookEng_ReadUnalignedSizeT HookEng_ReadUnalignedULong
-  #define HookEng_WriteUnalignedSizeT HookEng_WriteUnalignedULong
-#elif defined _M_X64
-  #define HookEng_ReadUnalignedSizeT HookEng_ReadUnalignedULongLong
-  #define HookEng_WriteUnalignedSizeT HookEng_WriteUnalignedULongLong
-#endif
-
-//-----------------------------------------------------------
-
+} //namespace MiscHelpers

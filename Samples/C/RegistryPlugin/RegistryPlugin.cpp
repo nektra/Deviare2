@@ -102,7 +102,7 @@ MY_EXPORT HRESULT WINAPI OnHookAdded(__in INktHookInfo *lpHookInfo, __in DWORD d
   lpHookInfo->get_FunctionName(&functionName);
   lpHookInfo->get_Address(&address);
   sprintf_s(szBufA, 1024, "MyRegistryPlugin::OnHookAdded called [Hook: %S @ 0x%IX / Chain:%lu]",
-           functionName, address, dwChainIndex);
+            (BSTR)functionName, address, dwChainIndex);
   ::OutputDebugStringA(szBufA);
   return S_OK;
 }
@@ -116,7 +116,7 @@ MY_EXPORT VOID WINAPI OnHookRemoved(__in INktHookInfo *lpHookInfo, __in DWORD dw
   lpHookInfo->get_FunctionName(&functionName);
   lpHookInfo->get_Address(&address);
   sprintf_s(szBufA, 1024, "MyRegistryPlugin::OnHookRemoved called [Hook: %S @ 0x%IX / Chain:%lu]",
-            functionName, address, dwChainIndex);
+            (BSTR)functionName, address, dwChainIndex);
   ::OutputDebugStringA(szBufA);
   return;
 }
@@ -135,7 +135,7 @@ MY_EXPORT HRESULT WINAPI OnFunctionCall(__in INktHookInfo *lpHookInfo, __in DWOR
   lpHookInfo->get_FunctionName(&functionName);
   lpHookInfo->get_Address(&address);
   sprintf_s(szBufA, 1024, "MyRegistryPlugin::OnFunctionCall called [Hook: %S @ 0x%IX / Chain:%lu]",
-            functionName, address, dwChainIndex);
+            (BSTR)functionName, address, dwChainIndex);
   ::OutputDebugStringA(szBufA);
 
   hRes = lpHookCallInfoPlugin->Params(&paramsEnum);

@@ -30,7 +30,6 @@
 #include "HookEngineInternals.h"
 #include "HookEngineCallDataEntry.h"
 #include "HookEngineMiscHelpers.h"
-#include "ThreadSuspend.h"
 #include <intrin.h>
 
 //-----------------------------------------------------------
@@ -81,11 +80,11 @@ CNktDvHookEngine::CNktDvHookEngine(__in CNktDvHookEngineCallback *_lpCallback) :
 {
   NKT_ASSERT(_lpCallback != NULL);
   lpCallback = _lpCallback;
+  nBaseStubCopyMaxSize = 0;
   //----
   if (::QueryPerformanceFrequency(&liTimerFreq) == FALSE)
     liTimerFreq.QuadPart = 0;
   NktInterlockedExchange(&nCallCounter, 0);
-  nInjectedCodeMaxSize = 0;
   return;
 }
 
@@ -126,13 +125,12 @@ HRESULT CNktDvHookEngine::Hook(__in HOOKINFO aHookInfo[], __in SIZE_T nCount)
 {
   CNktDvHookEngineAutoTlsLock cAutoTls;
   CNktAutoFastMutex cLock(this);
-  CNktDvThreadSuspend cThreadSuspender;
-  CNktDvThreadSuspend::IP_RANGE aIpRanges[MAX_SUSPEND_IPRANGES];
   TNktArrayListWithRelease<CHookEntry*> cNewEntryList;
   TNktLnkLst<CHookEntry>::Iterator it;
+  TNktAutoFreePtr<CNktHookLib::LPHOOK_INFO> cHookInfoList;
   CNktStringW cStrTempW[2];
   CHookEntry *lpHookEntry;
-  SIZE_T nHookIdx, nThisRoundSuspCount;
+  SIZE_T nHookIdx;
   HRESULT hRes;
 
   if (aHookInfo == 0)
@@ -158,34 +156,36 @@ HRESULT CNktDvHookEngine::Hook(__in HOOKINFO aHookInfo[], __in SIZE_T nCount)
         return NKT_DVERR_AlreadyExists;
     }
   }
+  cHookInfoList.Attach((CNktHookLib::LPHOOK_INFO*)nktMemMalloc(nCount * sizeof(CNktHookLib::LPHOOK_INFO)));
+  if (!cHookInfoList)
+    return E_OUTOFMEMORY;
   //create entries for each item
+  hRes = S_OK;
   for (nHookIdx=0; nHookIdx<nCount; nHookIdx++)
   {
-    LPBYTE lpInjCodeAddr, lpPtr;
-    SIZE_T k, k2, nBaseInjectedCodeSize;
-    DWORD dw;
+    LPBYTE lpBaseStub, lpPtr;
+    SIZE_T k, k2, nBaseStubSize;
+    DWORD dw, dwOldProt;
 
     //allocate new entry
-    lpHookEntry = NKT_MEMMGR_NEW CHookEntry;
-    if (lpHookEntry != NULL)
-    {
-      if (cNewEntryList.AddElement(lpHookEntry) == FALSE)
-      {
-        delete lpHookEntry;
-        lpHookEntry = NULL;
-      }
-    }
+    lpHookEntry = NKT_MEMMGR_NEW CHookEntry();
     if (lpHookEntry == NULL)
     {
       NKT_DEBUGPRINTLNA(Nektra::dlHookEngine, ("%lu) CNktDvHookEngine[New Hook Entry]: hRes=%08X",
                         ::GetTickCount(), E_OUTOFMEMORY));
-      return E_OUTOFMEMORY;
+      hRes = E_OUTOFMEMORY;
+      break;
     }
+    cHookInfoList[nHookIdx] = &(lpHookEntry->sHookLibInfo);
     lpHookEntry->cCustomHandlersMgr = cCustomHandlersMgr;
     lpHookEntry->dwId = aHookInfo[nHookIdx].dwHookId;
     lpHookEntry->dwSpyMgrId = aHookInfo[nHookIdx].dwSpyMgrHookId;
-    lpHookEntry->lpOrigProc = (LPBYTE)(aHookInfo[nHookIdx].lpProcToHook);
-    lpHookEntry->lpHookedAddr = HookEng_SkipJumpInstructions((LPBYTE)(aHookInfo[nHookIdx].lpProcToHook));
+    lpHookEntry->sHookLibInfo.lpProcToHook = lpHookEntry->lpOrigProc = aHookInfo[nHookIdx].lpProcToHook;
+    if ((aHookInfo[nHookIdx].nFlags & NKT_DV_TMSG_ADDHOOK_FLAG_DontSkipJumps) != 0)
+    {
+      lpHookEntry->sHookLibInfo.lpProcToHook =
+        MiscHelpers::SkipJumpInstructions((LPBYTE)(lpHookEntry->sHookLibInfo.lpProcToHook));
+    }
     lpHookEntry->lpDbFunc = aHookInfo[nHookIdx].lpDbFunc;
     if (aHookInfo[nHookIdx].szFunctionNameW != NULL && aHookInfo[nHookIdx].szFunctionNameW[0] != 0)
     {
@@ -204,7 +204,9 @@ HRESULT CNktDvHookEngine::Hook(__in HOOKINFO aHookInfo[], __in SIZE_T nCount)
     {
       NKT_DEBUGPRINTLNA(Nektra::dlHookEngine, ("%lu) CNktDvHookEngine[HookEntry Func Name]: hRes=%08X",
                         ::GetTickCount(), E_OUTOFMEMORY));
-      return E_OUTOFMEMORY;
+      lpHookEntry->Release();
+      hRes = E_OUTOFMEMORY;
+      break;
     }
     lpHookEntry->nStackReturnSize = (lpHookEntry->lpDbFunc != NULL) ? 
                     CNktDvFunctionParamsCache::GetStackUsage(lpHookEntry->lpDbFunc) : NKT_SIZE_T_MAX;
@@ -223,9 +225,12 @@ HRESULT CNktDvHookEngine::Hook(__in HOOKINFO aHookInfo[], __in SIZE_T nCount)
       lpHookEntry->nFlags |= HOOKENG_FLAG_InvalidateCache;
     if ((aHookInfo[nHookIdx].nFlags & NKT_DV_TMSG_ADDHOOK_FLAG_DisableStackWalk) != 0)
       lpHookEntry->nFlags |= HOOKENG_FLAG_DisableStackWalk;
-    hRes = HookEng_FindDll(&(lpHookEntry->hProcDll), aHookInfo[nHookIdx].lpProcToHook);
+    hRes = MiscHelpers::FindDll(&(lpHookEntry->hProcDll), aHookInfo[nHookIdx].lpProcToHook);
     if (FAILED(hRes) && hRes != NKT_DVERR_NotFound)
-      return hRes;
+    {
+      lpHookEntry->Release();
+      break;
+    }
     //initialize memory reader/writer
     if (cProcMem == NULL)
     {
@@ -234,7 +239,9 @@ HRESULT CNktDvHookEngine::Hook(__in HOOKINFO aHookInfo[], __in SIZE_T nCount)
       {
         NKT_DEBUGPRINTLNA(Nektra::dlHookEngine, ("%lu) CNktDvHookEngine[ProcMem assign]: hRes=%08X",
                            ::GetTickCount(), E_OUTOFMEMORY));
-        return E_OUTOFMEMORY;
+        lpHookEntry->Release();
+        hRes = E_OUTOFMEMORY;
+        break;
       }
     }
     hRes = lpHookEntry->cFuncParamCache.Initialize(aHookInfo[nHookIdx].lpDbFunc, cProcMem,
@@ -243,7 +250,8 @@ HRESULT CNktDvHookEngine::Hook(__in HOOKINFO aHookInfo[], __in SIZE_T nCount)
     {
       NKT_DEBUGPRINTLNA(Nektra::dlHookEngine, ("%lu) CNktDvHookEngine[FuncParam init]: hRes=%08X",
                          ::GetTickCount(), hRes));
-      return hRes;
+      lpHookEntry->Release();
+      break;
     }
     //attach custom handlers
     if (aHookInfo[nHookIdx].sCustomHandlers.lpData != NULL &&
@@ -257,7 +265,9 @@ HRESULT CNktDvHookEngine::Hook(__in HOOKINFO aHookInfo[], __in SIZE_T nCount)
 hk_badtransport:
         NKT_DEBUGPRINTLNA(Nektra::dlHookEngine, ("%lu) CNktDvHookEngine[Transport data]: hRes=%08X",
                            ::GetTickCount(), NKT_DVERR_InvalidTransportData));
-        return NKT_DVERR_InvalidTransportData;
+        lpHookEntry->Release();
+        hRes = NKT_DVERR_InvalidTransportData;
+        break;
       }
       d = aHookInfo[nHookIdx].sCustomHandlers.lpData;
       nCount = (SIZE_T)(*((ULONG NKT_UNALIGNED *)d));
@@ -280,7 +290,11 @@ hk_badtransport:
           goto hk_badtransport;
         if (cStrTempW[0].CopyN((LPWSTR)d, nLen[0]) == FALSE ||
             cStrTempW[1].CopyN(((LPWSTR)d)+nLen[0], nLen[1]) == FALSE)
-          return E_OUTOFMEMORY;
+        {
+          lpHookEntry->Release();
+          hRes = E_OUTOFMEMORY;
+          break;
+        }
         nLen[0] *= sizeof(WCHAR);
         nLen[1] *= sizeof(WCHAR);
         d += nLen[0]+nLen[1];
@@ -291,170 +305,150 @@ hk_badtransport:
         {
           NKT_DEBUGPRINTLNA(Nektra::dlHookEngine, ("%lu) CNktDvHookEngine[AttachCustomHandler]: hRes=%08X",
                              ::GetTickCount(), hRes));
-          return hRes;
+          lpHookEntry->Release();
+          break;
         }
         nCount--;
       }
     }
-    //read original stub
-    hRes = HookEng_CreateNewStub(lpHookEntry, lpHookEntry->lpHookedAddr, ((aHookInfo[nHookIdx].nFlags &
-                                 NKT_DV_TMSG_ADDHOOK_FLAG_DontSkipJumps) == 0) ? TRUE : FALSE);
-    if (FAILED(hRes))
-    {
-      NKT_DEBUGPRINTLNA(Nektra::dlHookEngine, ("%lu) CNktDvHookEngine[Stub creation]: hRes=%08X",
-                         ::GetTickCount(), hRes));
-      return hRes;
-    }
-    //calculate inject code size
+    
+    //calculate base stub code size
 #if defined _M_IX86
-    lpInjCodeAddr = (LPBYTE)NktDvSuperHook_x86;
+    lpBaseStub = (LPBYTE)MiscHelpers::SkipJumpInstructions((LPBYTE)NktDvSuperHook_x86);
 #elif defined _M_X64
-    lpInjCodeAddr = (LPBYTE)NktDvSuperHook_x64;
+    lpBaseStub = (LPBYTE)MiscHelpers::SkipJumpInstructions((LPBYTE)NktDvSuperHook_x64);
 #endif
-    lpInjCodeAddr = HookEng_SkipJumpInstructions(lpInjCodeAddr);
-    for (lpPtr=lpInjCodeAddr; ; lpPtr++)
+    for (lpPtr=lpBaseStub; ; lpPtr++)
     {
 #if defined _M_IX86
-      if (HookEng_ReadUnalignedSizeT(lpPtr) == 0xFFDDFFFF)
+      if (*((ULONG NKT_UNALIGNED *)lpPtr) == 0xFFDDFFFF)
         break;
 #elif defined _M_X64
-      if (HookEng_ReadUnalignedSizeT(lpPtr) == 0xFFDDFFDDFFDDFFFF)
+      if (*((ULONGLONG NKT_UNALIGNED *)lpPtr) == 0xFFDDFFDDFFDDFFFF)
         break;
 #endif
     }
-    k = (SIZE_T)(lpPtr - lpInjCodeAddr);
-    NKT_ASSERT(k > 0);
-    nBaseInjectedCodeSize = (k+31) & (~31);
-    lpHookEntry->nInjectedCodeSize = nBaseInjectedCodeSize + 2*sizeof(SIZE_T);
+    nBaseStubSize = (SIZE_T)(lpPtr - lpBaseStub);
+    NKT_ASSERT(nBaseStubSize > 0);
     //allocate memory for inject code
-    lpHookEntry->lpInjectedCodeAddr = AllocInjectedCode(lpHookEntry->lpHookedAddr);
-    if (lpHookEntry->lpInjectedCodeAddr == NULL)
+    lpHookEntry->lpSuperHookStub = AllocateForBaseStubCopy();
+    if (lpHookEntry->lpSuperHookStub == NULL)
     {
       NKT_DEBUGPRINTLNA(Nektra::dlHookEngine, ("%lu) CNktDvHookEngine[Code area alloc]: hRes=%08X",
                          ::GetTickCount(), E_OUTOFMEMORY));
-      return E_OUTOFMEMORY;
+      lpHookEntry->Release();
+      hRes = E_OUTOFMEMORY;
+      break;
     }
-    //copy code
-    nktMemCopy(lpHookEntry->lpInjectedCodeAddr, lpInjCodeAddr, nBaseInjectedCodeSize);
-    nktMemSet(lpHookEntry->lpInjectedCodeAddr + nBaseInjectedCodeSize, 0, 2*sizeof(SIZE_T));
-    for (k=0; k<nBaseInjectedCodeSize; )
+    //change block protection
+    if (::VirtualProtect(lpHookEntry->lpSuperHookStub, nBaseStubSize, PAGE_EXECUTE_READWRITE, &dwOldProt) == FALSE)
     {
-      lpPtr = lpHookEntry->lpInjectedCodeAddr + k;
+      hRes = NKT_HRESULT_FROM_LASTERROR();
+      NKT_DEBUGPRINTLNA(Nektra::dlHookEngine, ("%lu) CNktDvHookEngine[Protect change]: hRes=%08X",
+                        ::GetTickCount(), hRes));
+      FreeBaseStubCopy(lpHookEntry);
+      lpHookEntry->Release();
+      break;
+    }
+    //copy code and patch
+    nktMemCopy(lpHookEntry->lpSuperHookStub, lpBaseStub, nBaseStubSize);
+    for (k=0; k<nBaseStubSize; )
+    {
+      lpPtr = lpHookEntry->lpSuperHookStub + k;
 #if defined _M_IX86
-      switch (HookEng_ReadUnalignedSizeT(lpPtr))
+      switch (*((ULONG NKT_UNALIGNED *)lpPtr))
       {
         case 0xFFDDFF01: //USAGE_COUNT
-          HookEng_WriteUnalignedSizeT(lpPtr, (SIZE_T)(lpHookEntry->lpInjectedCodeAddr) +
-                                             nBaseInjectedCodeSize + sizeof(SIZE_T));
-          k += sizeof(SIZE_T);
+          *((ULONG NKT_UNALIGNED *)lpPtr) = (ULONG)((ULONG_PTR)&(lpHookEntry->nUsageCount));
+          k += sizeof(ULONG);
           break;
-        case 0xFFDDFF02: //UNINSTALL_DISABLE_FLAGS
-          HookEng_WriteUnalignedSizeT(lpPtr, (SIZE_T)(lpHookEntry->lpInjectedCodeAddr) +
-                                             nBaseInjectedCodeSize);
-          k += sizeof(SIZE_T);
+        case 0xFFDDFF02: //HOOK_ENGINE_PTR
+          *((ULONG NKT_UNALIGNED *)lpPtr) = (ULONG)((ULONG_PTR)this);
+          k += sizeof(ULONG);
           break;
-        case 0xFFDDFF03: //HOOK_ENGINE_PTR
-          HookEng_WriteUnalignedSizeT(lpPtr, (SIZE_T)this);
-          k += sizeof(SIZE_T);
+        case 0xFFDDFF03: //HOOK_ENTRY_PTR
+          *((ULONG NKT_UNALIGNED *)lpPtr) = (ULONG)((ULONG_PTR)lpHookEntry);
+          k += sizeof(ULONG);
           break;
-        case 0xFFDDFF04: //HOOK_ENTRY_PTR
-          HookEng_WriteUnalignedSizeT(lpPtr, (SIZE_T)lpHookEntry);
-          k += sizeof(SIZE_T);
+        case 0xFFDDFF04: //PRECALL_ADDR
+          *((ULONG NKT_UNALIGNED *)lpPtr) = (ULONG)((ULONG_PTR)PreCallCommon);
+          k += sizeof(ULONG);
           break;
-        case 0xFFDDFF05: //PRECALL_ADDR
-          HookEng_WriteUnalignedSizeT(lpPtr, (SIZE_T)PreCallCommon);
-          k += sizeof(SIZE_T);
+        case 0xFFDDFF05: //POSTCALL_ADDR
+          *((ULONG NKT_UNALIGNED *)lpPtr) = (ULONG)((ULONG_PTR)PostCallCommon);
+          k += sizeof(ULONG);
           break;
-        case 0xFFDDFF06: //POSTCALL_ADDR
-          HookEng_WriteUnalignedSizeT(lpPtr, (SIZE_T)PostCallCommon);
-          k += sizeof(SIZE_T);
+        case 0xFFDDFF06: //JMP_TO_ORIGINAL
+          *((ULONG NKT_UNALIGNED *)lpPtr) = (ULONG)((ULONG_PTR)&(lpHookEntry->sHookLibInfo.lpCallOriginal));
+          k += sizeof(ULONG);
           break;
-        case 0xFFDDFF07: //ORIGINAL_STUB_AND_JUMP
-          nktMemCopy(lpPtr, lpHookEntry->aNewStub, lpHookEntry->nNewStubSize);
-          lpPtr += lpHookEntry->nNewStubSize;
-          lpPtr[0] = 0xE9; //JMP NEAR relative
-          k2 = (SIZE_T)(lpHookEntry->lpHookedAddr) + lpHookEntry->nOriginalStubSize - (SIZE_T)lpPtr - 5;
-          HookEng_WriteUnalignedSizeT(lpPtr+1, k2);
-          k += 64 + (1+4);
+        case 0xFFDDFF07: //CONTINUE_AFTER_CALL_MARK
+          lpHookEntry->lpAfterCallMark = lpPtr + sizeof(ULONG);
+          k += sizeof(ULONG);
           break;
-        case 0xFFDDFF08: //CONTINUE_AFTER_CALL_MARK
-          lpHookEntry->lpAfterCallMark = lpPtr + sizeof(SIZE_T);
-          k += sizeof(SIZE_T);
-          break;
-        case 0xFFDDFF09: //AFTER_CALL_STACK_PRESERVE_SIZE
+        case 0xFFDDFF08: //AFTER_CALL_STACK_PRESERVE_SIZE
           //preserve stack size for postcall plus some extra
           if (lpHookEntry->nStackReturnSize == NKT_SIZE_T_MAX)
             k2 = CALC_STACK_PRESERVE(DUMMY_CALC_STACK_PRESERVE_SIZE);
           else
             k2 = CALC_STACK_PRESERVE(lpHookEntry->nStackReturnSize);
-          HookEng_WriteUnalignedSizeT(lpPtr, k2);
-          k += sizeof(SIZE_T);
+          *((ULONG NKT_UNALIGNED *)lpPtr) = (ULONG)((ULONG_PTR)k2);
+          k += sizeof(ULONG);
           break;
-        case 0xFFDDFF10: //AFTER_CALL_STACK_PRESERVE_SIZE2
+        case 0xFFDDFF09: //AFTER_CALL_STACK_PRESERVE_SIZE2
           //preserve stack size for postcall plus some extra
           if (lpHookEntry->nStackReturnSize == NKT_SIZE_T_MAX)
             k2 = CALC_STACK_PRESERVE(DUMMY_CALC_STACK_PRESERVE_SIZE);
           else
             k2 = CALC_STACK_PRESERVE(lpHookEntry->nStackReturnSize);
-          HookEng_WriteUnalignedSizeT(lpPtr, 0); //zero
+          *((ULONG NKT_UNALIGNED *)lpPtr) = 0; //zero
           lpPtr[0] = (BYTE)( k2       & 0xFF);
           lpPtr[1] = (BYTE)((k2 >> 8) & 0xFF);
-          k += sizeof(SIZE_T);
+          k += sizeof(ULONG);
           break;
         default:
           k++;
           break;
       }
 #elif defined _M_X64
-      switch (HookEng_ReadUnalignedSizeT(lpPtr))
+      switch (*((ULONGLONG NKT_UNALIGNED *)lpPtr))
       {
         case 0xFFDDFFDDFFDDFF01: //USAGE_COUNT
-          HookEng_WriteUnalignedSizeT(lpPtr, (SIZE_T)(lpHookEntry->lpInjectedCodeAddr) +
-                                             nBaseInjectedCodeSize + sizeof(SIZE_T));
-          k += sizeof(SIZE_T);
+          *((ULONGLONG NKT_UNALIGNED *)lpPtr) = (ULONGLONG)((ULONG_PTR)&(lpHookEntry->nUsageCount));
+          k += sizeof(ULONGLONG);
           break;
-        case 0xFFDDFFDDFFDDFF02: //UNINSTALL_DISABLE_FLAGS
-          HookEng_WriteUnalignedSizeT(lpPtr, (SIZE_T)(lpHookEntry->lpInjectedCodeAddr) +
-                                             nBaseInjectedCodeSize);
-          k += sizeof(SIZE_T);
+        case 0xFFDDFFDDFFDDFF02: //HOOK_ENGINE_PTR
+          *((ULONGLONG NKT_UNALIGNED *)lpPtr) = (ULONGLONG)((ULONG_PTR)this);
+          k += sizeof(ULONGLONG);
           break;
-        case 0xFFDDFFDDFFDDFF03: //HOOK_ENGINE_PTR
-          HookEng_WriteUnalignedSizeT(lpPtr, (SIZE_T)this);
-          k += sizeof(SIZE_T);
+        case 0xFFDDFFDDFFDDFF03: //HOOK_ENTRY_PTR
+          *((ULONGLONG NKT_UNALIGNED *)lpPtr) = (ULONGLONG)((ULONG_PTR)lpHookEntry);
+          k += sizeof(ULONGLONG);
           break;
-        case 0xFFDDFFDDFFDDFF04: //HOOK_ENTRY_PTR
-          HookEng_WriteUnalignedSizeT(lpPtr, (SIZE_T)lpHookEntry);
-          k += sizeof(SIZE_T);
+        case 0xFFDDFFDDFFDDFF04: //PRECALL_ADDR
+          *((ULONGLONG NKT_UNALIGNED *)lpPtr) = (ULONGLONG)((ULONG_PTR)PreCallCommon);
+          k += sizeof(ULONGLONG);
           break;
-        case 0xFFDDFFDDFFDDFF05: //PRECALL_ADDR
-          HookEng_WriteUnalignedSizeT(lpPtr, (SIZE_T)PreCallCommon);
-          k += sizeof(SIZE_T);
+        case 0xFFDDFFDDFFDDFF05: //POSTCALL_ADDR
+          *((ULONGLONG NKT_UNALIGNED *)lpPtr) = (ULONGLONG)((ULONG_PTR)PostCallCommon);
+          k += sizeof(ULONGLONG);
           break;
-        case 0xFFDDFFDDFFDDFF06: //POSTCALL_ADDR
-          HookEng_WriteUnalignedSizeT(lpPtr, (SIZE_T)PostCallCommon);
-          k += sizeof(SIZE_T);
+        case 0xFFDDFFDDFFDDFF06: //JMP_TO_ORIGINAL
+          *((ULONGLONG NKT_UNALIGNED *)lpPtr) = (ULONGLONG)((ULONG_PTR)&(lpHookEntry->sHookLibInfo.lpCallOriginal));
+          k += sizeof(ULONGLONG);
           break;
-        case 0xFFDDFFDDFFDDFF07: //ORIGINAL_STUB_AND_JUMP
-          nktMemCopy(lpPtr, lpHookEntry->aNewStub, lpHookEntry->nNewStubSize);
-          lpPtr += lpHookEntry->nNewStubSize;
-          lpPtr[0] = 0xFF;  lpPtr[1] = 0x25; //JMP QWORD PTR [RIP+0h]
-          HookEng_WriteUnalignedULong(lpPtr+2, 0);
-          k2 = (SIZE_T)(lpHookEntry->lpHookedAddr) + lpHookEntry->nOriginalStubSize;
-          HookEng_WriteUnalignedSizeT(lpPtr+6, k2);
-          k += 64 + (6+8);
+        case 0xFFDDFFDDFFDDFF07: //CONTINUE_AFTER_CALL_MARK
+          lpHookEntry->lpAfterCallMark = lpPtr + sizeof(ULONGLONG);
+          k += sizeof(ULONGLONG);
           break;
-        case 0xFFDDFFDDFFDDFF08: //CONTINUE_AFTER_CALL_MARK
-          lpHookEntry->lpAfterCallMark = lpPtr + sizeof(SIZE_T);
-          k += sizeof(SIZE_T);
-          break;
-        case 0xFFDDFFDDFFDDFF09: //AFTER_CALL_STACK_PRESERVE_SIZE
+        case 0xFFDDFFDDFFDDFF08: //AFTER_CALL_STACK_PRESERVE_SIZE
           //preserve stack size for postcall plus some extra
           if (lpHookEntry->nStackReturnSize == NKT_SIZE_T_MAX)
             k2 = CALC_STACK_PRESERVE(DUMMY_CALC_STACK_PRESERVE_SIZE);
           else
             k2 = CALC_STACK_PRESERVE(lpHookEntry->nStackReturnSize);
-          HookEng_WriteUnalignedSizeT(lpPtr, k2);
-          k += sizeof(SIZE_T);
+          *((ULONGLONG NKT_UNALIGNED *)lpPtr) = (ULONGLONG)k2;
+          k += sizeof(ULONGLONG);
           break;
         default:
           k++;
@@ -462,117 +456,51 @@ hk_badtransport:
       }
 #endif
     }
-    lpHookEntry->lpUninstalledDisabledAddr = lpHookEntry->lpInjectedCodeAddr + nBaseInjectedCodeSize;
-    lpHookEntry->lpUninstalledDisabledAddr[0] = 1; //hook is initially disabled
-    lpHookEntry->lpUsageCounterAddr = (PSIZE_T)(lpHookEntry->lpInjectedCodeAddr + nBaseInjectedCodeSize +
-                                              sizeof(SIZE_T));
-    //replace original proc with a jump
-    dw = (DWORD)((SIZE_T)(lpHookEntry->lpInjectedCodeAddr) - (SIZE_T)(lpHookEntry->lpHookedAddr)) - 5;
-    nktMemCopy(lpHookEntry->aModifiedStub, lpHookEntry->aOriginalStub, 8);
-    lpHookEntry->aModifiedStub[0] = 0xE9; //JMP
-    lpHookEntry->aModifiedStub[1] = (BYTE)( dw        & 0xFF);
-    lpHookEntry->aModifiedStub[2] = (BYTE)((dw >>  8) & 0xFF);
-    lpHookEntry->aModifiedStub[3] = (BYTE)((dw >> 16) & 0xFF);
-    lpHookEntry->aModifiedStub[4] = (BYTE)((dw >> 24) & 0xFF);
+    NKT_ASSERT(lpHookEntry->lpAfterCallMark != NULL);
+    ::VirtualProtect(lpHookEntry->lpSuperHookStub, nBaseStubSize, dwOldProt, &dw);
+    lpHookEntry->sHookLibInfo.lpNewProcAddr = lpHookEntry->lpSuperHookStub;
+    if (cNewEntryList.AddElement(lpHookEntry) == FALSE)
+    {
+      FreeBaseStubCopy(lpHookEntry);
+      lpHookEntry->Release();
+      hRes = E_OUTOFMEMORY;
+      break;
+    }
   }
   //hook new items
-  for (nHookIdx=nThisRoundSuspCount=0; nHookIdx<nCount; )
+  if (SUCCEEDED(hRes))
+    hRes = NKT_HRESULT_FROM_WIN32(cHookLib.Hook(cHookInfoList.Get(), nCount));
+  //done
+  if (SUCCEEDED(hRes))
   {
-    SIZE_T k, k2;
-    DWORD dw[64];
-
-    if (nThisRoundSuspCount == 0)
+    for (nHookIdx=0; nHookIdx<nCount; nHookIdx++)
     {
-      //suspend threads
-      nThisRoundSuspCount = (nCount-nHookIdx > MAX_SUSPEND_IPRANGES) ? MAX_SUSPEND_IPRANGES :
-                                                                       (nCount-nHookIdx);
-      for (k=0; k<nThisRoundSuspCount; k++)
-      {
-        aIpRanges[k].nStart = (SIZE_T)(cNewEntryList[nHookIdx+k]->lpHookedAddr);
-        aIpRanges[k].nEnd = aIpRanges[k].nStart + HOOKENG_JUMP_TO_HOOK_SIZE;
-      }
-      hRes = cThreadSuspender.SuspendAll(aIpRanges, nThisRoundSuspCount);
-      if (FAILED(hRes))
-      {
-        NKT_DEBUGPRINTLNA(Nektra::dlHookEngine, ("%lu) CNktDvHookEngine[Suspend threads]: hRes=%08X",
-                           ::GetTickCount(), hRes));
-err_uninstall_and_destroy:
-        for (nHookIdx=k2=0; nHookIdx<nCount; nHookIdx++)
-        {
-          if (cNewEntryList[nHookIdx]->nInstalledCode != 0)
-          {
-            dw[k2++] = cNewEntryList[nHookIdx]->dwId;
-            if (k2 >= NKT_DV_ARRAYLEN(dw))
-            {
-              Unhook(dw, k2);
-              k2 = 0;
-            }
-          }
-        }
-        if (k2 > 0)
-          Unhook(dw, k2);
-        return hRes;
-      }
-    }
-    for (k=0; k<nThisRoundSuspCount; k++)
-    {
-      //replace each entry point
-      dw[0] = 0;
-      hRes = nktDvDynApis_NtProtectVirtualMemory(cNewEntryList[nHookIdx+k]->lpHookedAddr, HOOKENG_JUMP_TO_HOOK_SIZE,
-                                                 PAGE_EXECUTE_READWRITE, &dw[0]);
-      if (FAILED(hRes))
-      {
-        hRes = nktDvDynApis_NtProtectVirtualMemory(cNewEntryList[nHookIdx+k]->lpHookedAddr, HOOKENG_JUMP_TO_HOOK_SIZE,
-                                                   PAGE_EXECUTE_WRITECOPY, &dw[0]);
-      }
-      if (FAILED(hRes))
-      {
-        cThreadSuspender.ResumeAll();
-        NKT_DEBUGPRINTLNA(Nektra::dlHookEngine, ("%lu) CNktDvHookEngine[VirtualProtect]: hRes=%08X",
-                           ::GetTickCount(), hRes));
-        goto err_uninstall_and_destroy;
-      }
-      nktMemCopy(cNewEntryList[nHookIdx+k]->lpHookedAddr, cNewEntryList[nHookIdx+k]->aModifiedStub,
-                 HOOKENG_JUMP_TO_HOOK_SIZE);
-      nktDvDynApis_NtProtectVirtualMemory(cNewEntryList[nHookIdx+k]->lpHookedAddr, HOOKENG_JUMP_TO_HOOK_SIZE, dw[0],
-                                          &dw[0]);
-      //flush instruction cache
-      nktDvDynApis_NtFlushInstructionCache(cNewEntryList[nHookIdx+k]->lpHookedAddr, 32);
-      //mark as installed
-      NktInterlockedExchange(&(cNewEntryList[nHookIdx+k]->nInstalledCode), 1);
-      cHooksList.PushTail((CHookEntry*)cNewEntryList[nHookIdx+k]);
-      ((CHookEntry*)cNewEntryList[nHookIdx+k])->AddRef();
-    }
-    //advance count
-    nHookIdx += nThisRoundSuspCount;
-    //check if we can proceed with the next hook with this
-    nThisRoundSuspCount = 0;
-    for (k=nHookIdx; k<nCount; k++) {
-      k2 = (SIZE_T)(cNewEntryList[k]->lpHookedAddr);
-      if (cThreadSuspender.CheckIfThreadIsInRange(k2, k2+HOOKENG_JUMP_TO_HOOK_SIZE) == FALSE)
-        break;
-      nThisRoundSuspCount++;
-    }
-    if (nThisRoundSuspCount == 0)
-    {
-      //resume threads
-      cThreadSuspender.ResumeAll();
+      lpHookEntry = (CHookEntry*)cNewEntryList[nHookIdx];
+      cHooksList.PushTail(lpHookEntry);
+      lpHookEntry->AddRef();
+      nktMemCopy(lpHookEntry->aModifiedEntrypointCode, lpHookEntry->sHookLibInfo.lpProcToHook,
+                 sizeof(lpHookEntry->aModifiedEntrypointCode));
     }
   }
-  return S_OK;
+  else
+  {
+    for (nHookIdx = 0; nHookIdx<nCount; nHookIdx++)
+    {
+      lpHookEntry = (CHookEntry*)cNewEntryList[nHookIdx];
+      FreeBaseStubCopy(lpHookEntry);
+    }
+  }
+  return hRes;
 }
 
 HRESULT CNktDvHookEngine::Unhook(__in LPDWORD lpdwHookIds, __in SIZE_T nCount)
 {
   CNktDvHookEngineAutoTlsLock cAutoTls;
-  CNktAutoFastMutex cLock(this);
+  CHookEntry* aTempHookEntriesList[128];
+  CNktHookLib::LPHOOK_INFO aHookLibItemsList[128];
   TNktLnkLst<CHookEntry>::Iterator it;
   CHookEntry *lpHookEntry;
-  CNktDvThreadSuspend cThreadSuspender;
-  CNktDvThreadSuspend::IP_RANGE aIpRanges[2];
-  DWORD dw;
-  BOOL b, bInUse, bFreeInjectedCode;
-  SIZE_T k, nHookIdx, nIpRangesCount;
+  SIZE_T k, nHookIdx, nStart, nRetryCount, nTempHookEntriesCount;
 
   //NOTE: should this be moved to a background thread???
   if (FAILED(cAutoTls.GetError()))
@@ -582,198 +510,147 @@ HRESULT CNktDvHookEngine::Unhook(__in LPDWORD lpdwHookIds, __in SIZE_T nCount)
   if (nCount == 0)
     return E_INVALIDARG;
   //check parameters
-  for (nHookIdx=nIpRangesCount=0; nHookIdx<nCount; nHookIdx++)
+  for (nHookIdx=nTempHookEntriesCount=0; nHookIdx<=nCount; nHookIdx++)
   {
-    for (lpHookEntry=it.Begin(cHooksList); lpHookEntry!=NULL; lpHookEntry=it.Next())
+    if (nHookIdx < nCount)
     {
-      if (lpHookEntry->dwId == lpdwHookIds[nHookIdx])
-        break;
-    }
-    if (lpHookEntry == NULL)
-      continue; //hook not found
-    //mark the hook as uninstalled
-    NktInterlockedExchange(&(lpHookEntry->nInstalledCode), 2);
-    _ReadWriteBarrier();
-    lpHookEntry->lpUninstalledDisabledAddr[1] = 1;
-    _ReadWriteBarrier();
-    //set-up ranges
-    aIpRanges[0].nStart = (SIZE_T)(lpHookEntry->lpHookedAddr);
-    aIpRanges[0].nEnd = aIpRanges[0].nStart + lpHookEntry->nOriginalStubSize;
-    aIpRanges[1].nStart = (SIZE_T)(lpHookEntry->lpInjectedCodeAddr);
-    aIpRanges[1].nEnd = aIpRanges[1].nStart + lpHookEntry->nInjectedCodeSize;
-    if (nIpRangesCount > 0)
-    {
-      //check if a previous thread suspension can be used for the current unhook item
-      if (cThreadSuspender.CheckIfThreadIsInRange(aIpRanges[0].nStart, aIpRanges[0].nEnd) != FALSE ||
-          cThreadSuspender.CheckIfThreadIsInRange(aIpRanges[1].nStart, aIpRanges[1].nEnd) != FALSE)
       {
-        nIpRangesCount = 0;
-        cThreadSuspender.ResumeAll(); //resume last
-      }
-    }
-    //suspend threads
-    bFreeInjectedCode = FALSE;
-    if (nIpRangesCount == 0)
-    {
-      //we have to suspend the threads
-      nIpRangesCount = 2;
-      bInUse = TRUE;
-      for (k=20; k>0; k--)
-      {
-        if (FAILED(cThreadSuspender.SuspendAll(aIpRanges, nIpRangesCount)))
-          break;
-        //check if still in use
-        if (*(lpHookEntry->lpUsageCounterAddr) == 0)
+        CNktAutoFastMutex cLock(this);
+
+        for (lpHookEntry=it.Begin(cHooksList); lpHookEntry!=NULL; lpHookEntry=it.Next())
         {
-          bInUse = FALSE;
-          break;
+          if (lpHookEntry->dwId == lpdwHookIds[nHookIdx])
+          {
+            cHooksList.Remove(lpHookEntry);
+            aTempHookEntriesList[nTempHookEntriesCount] = lpHookEntry;
+            aHookLibItemsList[nTempHookEntriesCount] = &(lpHookEntry->sHookLibInfo);
+            nTempHookEntriesCount++;
+            break;
+          }
         }
-        //the hook is in use, so wait a moment
-        cThreadSuspender.ResumeAll();
-        if (k > 1)
-          ::Sleep(10);
       }
+      if (nTempHookEntriesCount < NKT_DV_ARRAYLEN(aTempHookEntriesList))
+        continue;
     }
     else
     {
-      //iujuuuu!!! we can reuse the previous suspension
-      bInUse = (*(lpHookEntry->lpUsageCounterAddr) == 0) ? FALSE : TRUE;
+      if (nTempHookEntriesCount == 0)
+        continue;
     }
-    if (bInUse == FALSE)
+    //disable hooks
+    cHookLib.EnableHook(aHookLibItemsList, nTempHookEntriesCount, FALSE);
+    //remove hooks while the stub is not in use
+    nStart = 0;
+    while (nStart < nTempHookEntriesCount)
     {
-      //check if the modified stub is the same than the current one
-      b = SecureCheckStub(lpHookEntry);
-      if (b != FALSE)
+      k = nStart;
+      for (nRetryCount=5; nRetryCount>0; nRetryCount--)
       {
-        //try to restore original code at entry point
-        dw = 0;
-        b = SUCCEEDED(nktDvDynApis_NtProtectVirtualMemory(lpHookEntry->lpHookedAddr, HOOKENG_JUMP_TO_HOOK_SIZE,
-                                                          PAGE_EXECUTE_READWRITE, &dw));
-        if (b == FALSE)
+        for (k=nStart; k<nTempHookEntriesCount; k++)
         {
-          b = SUCCEEDED(nktDvDynApis_NtProtectVirtualMemory(lpHookEntry->lpHookedAddr, HOOKENG_JUMP_TO_HOOK_SIZE,
-                                                            PAGE_EXECUTE_WRITECOPY, &dw));
+          if (aTempHookEntriesList[k]->nUsageCount > 0)
+            break;
         }
-        if (b != FALSE)
+        if (k > nStart)
+          break;
+        if (nRetryCount > 0)
+          ::Sleep(5);
+      }
+      if (k > nStart)
+      {
+        cHookLib.Unhook(aHookLibItemsList+nStart, k-nStart);
+        while (nStart < k)
         {
-          b = SecureMemCopy(lpHookEntry->lpHookedAddr, lpHookEntry->aOriginalStub, HOOKENG_JUMP_TO_HOOK_SIZE);
-          ::nktDvDynApis_NtProtectVirtualMemory(lpHookEntry->lpHookedAddr, HOOKENG_JUMP_TO_HOOK_SIZE, dw, &dw);
-          //flush instruction cache
-          nktDvDynApis_NtFlushInstructionCache(lpHookEntry->lpHookedAddr, 32);
-        }
-        if (b != FALSE)
-        {
-          //at this point, the original entry point code was restored so i can release virtual
-          //memory blocks release trampoline
-          bFreeInjectedCode = TRUE;
+          if (bAppIsExiting == FALSE)
+            FreeBaseStubCopy(aTempHookEntriesList[nStart]);
+          aTempHookEntriesList[nStart]->Release();
+          nStart++;
         }
       }
-    }
-    else
-    {
-      //do not remove a hook in-use
-      //NOTE: This will produce a leak although it should occur almost never, sorry
-      NktInterlockedExchange(&(lpHookEntry->nInstalledCode), 3);
-    }
-    //free hook entry but do not free hooking code and libraries if physical unhook
-    //did not succeeded
-    if (bFreeInjectedCode == FALSE)
-    {
-      lpHookEntry->hProcDll = NULL;
-      lpHookEntry->lpInjectedCodeAddr = NULL;
+      else
+      {
+        //hook entry at 'nStart' is still in use, just keep disable... and LEAK!!! :(
+        aTempHookEntriesList[nStart]->hProcDll = NULL;
+        aTempHookEntriesList[nStart]->lpSuperHookStub = NULL;
+        nStart++;
+      }
     }
   }
-  //resume all if threads were suspended
-  cThreadSuspender.ResumeAll();
-  //detach unhooked items from the chain
-  for (lpHookEntry=it.Begin(cHooksList); lpHookEntry!=NULL; lpHookEntry=it.Next())
-  {
-    switch (lpHookEntry->nInstalledCode)
-    {
-      case 2:
-        cHooksList.Remove(lpHookEntry);
-        if (bAppIsExiting == FALSE)
-          FreeInjectedCode(lpHookEntry);
-        lpHookEntry->Release();
-        break;
-      case 3:
-        cHooksList.Remove(lpHookEntry);
-        lpHookEntry->DetachAllCustomHandlers();
-        break;
-    }
-  }
+  //done
   return S_OK;
 }
 
 VOID CNktDvHookEngine::DllUnloadUnhook(__in HINSTANCE hDll)
 {
-  CNktAutoFastMutex cLock(this);
   TNktLnkLst<CHookEntry>::IteratorRev it;
   CHookEntry *lpHookEntry;
   DWORD dw[64];
   SIZE_T k;
-  BOOL bContinue;
 
-  //mark hooks as uninstalled first
-  for (lpHookEntry=it.Begin(cHooksList); lpHookEntry!=NULL; lpHookEntry=it.Next())
+  //disable hooks first
   {
-    if (lpHookEntry->hProcDll == hDll)
-    {
-      _ReadWriteBarrier();
-      lpHookEntry->lpUninstalledDisabledAddr[1] = 1;
-      _ReadWriteBarrier();
-    }
-  }
-  //unhook in reverse order
-  for (bContinue=TRUE; bContinue!=FALSE; )
-  {
-    bContinue = FALSE;
-    k = 0;
+    CNktAutoFastMutex cLock(this);
+
     for (lpHookEntry=it.Begin(cHooksList); lpHookEntry!=NULL; lpHookEntry=it.Next())
     {
       if (lpHookEntry->hProcDll == hDll)
       {
-        bContinue = TRUE;
-        dw[k++] = lpHookEntry->dwId;
-        if (k >= NKT_DV_ARRAYLEN(dw))
-        {
-          Unhook(dw, k);
-          k = 0;
-        }
+        cHookLib.EnableHook(lpHookEntry->sHookLibInfo.nHookId, FALSE);
+      }
+    }
+  }
+  //unhook in reverse order
+  do
+  {
+    k = 0;
+    {
+      CNktAutoFastMutex cLock(this);
+
+      for (lpHookEntry=it.Begin(cHooksList); lpHookEntry!=NULL && k<NKT_DV_ARRAYLEN(dw); lpHookEntry=it.Next())
+      {
+        if (lpHookEntry->hProcDll == hDll)
+          dw[k++] = lpHookEntry->dwId;
       }
     }
     if (k > 0)
       Unhook(dw, k);
   }
+  while (k > 0);
   return;
 }
 
 VOID CNktDvHookEngine::UnhookAll()
 {
-  CNktAutoFastMutex cLock(this);
   TNktLnkLst<CHookEntry>::IteratorRev itRev;
   DWORD dw[64];
   SIZE_T k;
   CHookEntry *lpHookEntry;
 
-  //mark all hooks as uninstalled first
-  for (lpHookEntry=itRev.Begin(cHooksList); lpHookEntry!=NULL; lpHookEntry=itRev.Next())
+  //disable all hooks first
   {
-    _ReadWriteBarrier();
-    lpHookEntry->lpUninstalledDisabledAddr[1] = 1;
-    _ReadWriteBarrier();
+    CNktAutoFastMutex cLock(this);
+
+    for (lpHookEntry = itRev.Begin(cHooksList); lpHookEntry != NULL; lpHookEntry = itRev.Next())
+    {
+      cHookLib.EnableHook(lpHookEntry->sHookLibInfo.nHookId, FALSE);
+    }
   }
   //unhook in reverse order
-  while (cHooksList.IsEmpty() == FALSE)
+  do
   {
-    for (lpHookEntry=itRev.Begin(cHooksList),k=0; lpHookEntry!=NULL && k<NKT_DV_ARRAYLEN(dw);
-         lpHookEntry=itRev.Next())
     {
-      dw[k++] = lpHookEntry->dwId;
+      CNktAutoFastMutex cLock(this);
+
+      for (lpHookEntry=itRev.Begin(cHooksList),k=0; lpHookEntry!=NULL && k<NKT_DV_ARRAYLEN(dw);
+           lpHookEntry=itRev.Next())
+      {
+        dw[k++] = lpHookEntry->dwId;
+      }
     }
     if (k > 0)
       Unhook(dw, k);
   }
+  while (k > 0);
   return;
 }
 
@@ -787,11 +664,7 @@ HRESULT CNktDvHookEngine::EnableHook(__in DWORD dwHookId, __in BOOL bEnable)
   {
     if (lpHookEntry->dwId == dwHookId)
     {
-      //write enable/disable flag
-      _ReadWriteBarrier();
-      lpHookEntry->lpUninstalledDisabledAddr[0] = (bEnable != FALSE) ? 0 : 1;
-      _ReadWriteBarrier();
-      //done
+      cHookLib.EnableHook(lpHookEntry->sHookLibInfo.nHookId, bEnable);
       return S_OK;
     }
   }
@@ -806,9 +679,11 @@ BOOL CNktDvHookEngine::CheckIfInTrampoline(__in SIZE_T nCurrIP)
 
   for (lpHookEntry=it.Begin(cHooksList); lpHookEntry!=NULL; lpHookEntry=it.Next())
   {
-    if (nCurrIP >= (SIZE_T)(lpHookEntry->lpInjectedCodeAddr) &&
-        nCurrIP < (SIZE_T)(lpHookEntry->lpInjectedCodeAddr)+lpHookEntry->nInjectedCodeSize)
+    if (nCurrIP >= (SIZE_T)(lpHookEntry->lpSuperHookStub) &&
+        nCurrIP < (SIZE_T)(lpHookEntry->lpSuperHookStub) + nBaseStubCopyMaxSize)
+    {
       return TRUE;
+    }
   }
   return FALSE;
 }
@@ -831,7 +706,8 @@ HRESULT CNktDvHookEngine::CheckOverwrittenHooks()
     {
       if (lpHookEntry->bChangedInformed == FALSE && (lpHookEntry->dwId & 0x80000000) == 0)
       {
-        if (SecureMemIsDiff(lpHookEntry->lpHookedAddr, lpHookEntry->aModifiedStub, 5) != FALSE)
+        if (SecureMemIsDiff(lpHookEntry->sHookLibInfo.lpProcToHook, lpHookEntry->aModifiedEntrypointCode, 
+                            sizeof(lpHookEntry->aModifiedEntrypointCode)) != FALSE)
         {
           lpHookEntry->bChangedInformed = TRUE;
           aHookIdsList[nCount++] = lpHookEntry->dwId;
@@ -864,8 +740,11 @@ HRESULT CNktDvHookEngine::QueryOverwrittenHooks(__in SIZE_T nCount, __in LPDWORD
       {
         if (lpdwHookIds[i] == lpHookEntry->dwId)
         {
-          if (SecureMemIsDiff(lpHookEntry->lpHookedAddr, lpHookEntry->aModifiedStub, 5) != FALSE)
+          if (SecureMemIsDiff(lpHookEntry->sHookLibInfo.lpProcToHook, lpHookEntry->aModifiedEntrypointCode,
+                              sizeof(lpHookEntry->aModifiedEntrypointCode)) != FALSE)
+          {
             lpnResults[i] = 1;
+          }
           break;
         }
       }
@@ -910,8 +789,8 @@ SIZE_T CNktDvHookEngine::PreCall(__in LPVOID lpHookEntryVoid, __inout CNktDvTlsD
                                    cFunctionTimingTemp.nUserMs, cFunctionTimingTemp.nCpuClockCycles);
   //debug print info
   NKT_DEBUGPRINTLNA(Nektra::dlHookEnginePreCall, ("%lu) HookEngine[PreCall]: Entry=%IXh, OrigProc=%IXh, "
-                    "InjCode=%IXh (%S)", ::GetTickCount(), lpHookEntry, lpHookEntry->lpHookedAddr,
-                    lpHookEntry->lpInjectedCodeAddr, (lpHookEntry->lpDbFunc != NULL) ?
+                    "InjCode=%IXh (%S)", ::GetTickCount(), lpHookEntry, lpHookEntry->sHookLibInfo.lpProcToHook,
+                    lpHookEntry->sHookLibInfo.lpNewProcAddr, (lpHookEntry->lpDbFunc != NULL) ?
                     lpHookEntry->lpDbFunc->GetName() : L""));
   //check for system thread
   if (lpCallback->HEC_IsSystemThread() != FALSE)
@@ -1120,7 +999,7 @@ SIZE_T CNktDvHookEngine::PostCall(__in LPVOID lpHookEntryVoid, __inout CNktDvTls
   //debug print info
   NKT_DEBUGPRINTLNA(Nektra::dlHookEnginePostCall, ("%lu) HookEngine[PostCall]: Entry=%IXh, "
                     "OrigProc=%IXh, InjCode=%IXh (%S)", ::GetTickCount(), lpHookEntry,
-                    lpHookEntry->lpHookedAddr, lpHookEntry->lpInjectedCodeAddr,
+                    lpHookEntry->sHookLibInfo.lpProcToHook, lpHookEntry->sHookLibInfo.lpNewProcAddr,
                     (lpHookEntry->lpDbFunc != NULL) ? lpHookEntry->lpDbFunc->GetName() : L""));
   //obtain registers data
   LoadRegisters(&sAsmRegisters, NULL, nStackPointer, lpHookEntry, FALSE);
@@ -1283,169 +1162,123 @@ SIZE_T CNktDvHookEngine::PostCall(__in LPVOID lpHookEntryVoid, __inout CNktDvTls
   return nRetAddr;
 }
 
-LPBYTE CNktDvHookEngine::AllocInjectedCode(__in LPVOID lpRefAddr)
+LPBYTE CNktDvHookEngine::AllocateForBaseStubCopy()
 {
-  LPBYTE lpPtr, lpInjCodeAddr;
-  SIZE_T i, k, nCount;
-  INJCODE_BLOCK sNewBlock;
-#if defined _M_X64
-  //calculate min/max address
-  ULONGLONG nMin, nMax;
-  MEMORY_BASIC_INFORMATION sMbi;
-#endif //_M_X64
+  LPBYTE lpPtr, lpBaseStub, lpBitmap;
+  SIZE_T i, nCount, nSlot, nMaxSlots;
+  LPBASESTUBCOPY_BLOCK lpBlock;
 
   //we are inside CNktDvHookEngine's lock so this call is safe
-  if (nInjectedCodeMaxSize == 0)
+  if (nBaseStubCopyMaxSize == 0)
   {
 #if defined _M_IX86
-    lpInjCodeAddr = (LPBYTE)NktDvSuperHook_x86;
+    lpBaseStub = MiscHelpers::SkipJumpInstructions((LPBYTE)NktDvSuperHook_x86);
 #elif defined _M_X64
-    lpInjCodeAddr = (LPBYTE)NktDvSuperHook_x64;
+    lpBaseStub = MiscHelpers::SkipJumpInstructions((LPBYTE)NktDvSuperHook_x64);
 #endif
-    lpInjCodeAddr = HookEng_SkipJumpInstructions(lpInjCodeAddr);
-    for (lpPtr=lpInjCodeAddr; ; lpPtr++)
+    for (lpPtr=lpBaseStub; ; lpPtr++)
     {
 #if defined _M_IX86
-      if (HookEng_ReadUnalignedSizeT(lpPtr) == 0xFFDDFFFF)
+      if (*((ULONG NKT_UNALIGNED *)lpPtr) == 0xFFDDFFFF)
         break;
 #elif defined _M_X64
-      if (HookEng_ReadUnalignedSizeT(lpPtr) == 0xFFDDFFDDFFDDFFFF)
+      if (*((ULONGLONG NKT_UNALIGNED *)lpPtr) == 0xFFDDFFDDFFDDFFFF)
         break;
 #endif
     }
-    k = (SIZE_T)(lpPtr - lpInjCodeAddr);
-    k = (k+31) & (~31);
-    k += 2*sizeof(SIZE_T); //max stub size
-    NKT_ASSERT(k < 65536);
-    //http://graphics.stanford.edu/~seander/bithacks.html#RoundUpPowerOf2
-    k--;
-    k |= k >> 1;
-    k |= k >> 2;
-    k |= k >> 4;
-    k |= k >> 8;
-    k |= k >> 16;
-    nInjectedCodeMaxSize = k+1;
-    if (nInjectedCodeMaxSize < sizeof(LPBYTE))
-      nInjectedCodeMaxSize = sizeof(LPBYTE); //minimum is sizeof(LPBYTE) for free-list pointers
-    NKT_ASSERT(nInjectedCodeMaxSize <= 65536);
+    nBaseStubCopyMaxSize = (SIZE_T)(lpPtr - lpBaseStub);
+    nBaseStubCopyMaxSize = (nBaseStubCopyMaxSize+31) & (~31);
+    nBaseStubCopyMaxSize += 2*sizeof(SIZE_T); //max stub size
+    NKT_ASSERT(nBaseStubCopyMaxSize < 65536);
+    //http://graphics.stanford.edu/~seander/bithacnBaseStubCopyMaxSizes.html#RoundUpPowerOf2
+    nBaseStubCopyMaxSize--;
+    nBaseStubCopyMaxSize |= nBaseStubCopyMaxSize >> 1;
+    nBaseStubCopyMaxSize |= nBaseStubCopyMaxSize >> 2;
+    nBaseStubCopyMaxSize |= nBaseStubCopyMaxSize >> 4;
+    nBaseStubCopyMaxSize |= nBaseStubCopyMaxSize >> 8;
+    nBaseStubCopyMaxSize |= nBaseStubCopyMaxSize >> 16;
+    nBaseStubCopyMaxSize++;
+    if (nBaseStubCopyMaxSize < sizeof(LPBYTE))
+      nBaseStubCopyMaxSize = sizeof(LPBYTE); //minimum is sizeof(LPBYTE) for free-list pointers
+    NKT_ASSERT(nBaseStubCopyMaxSize <= 65536);
   }
-  //find a previously allocated block
-#if defined _M_X64
-  //calculate min/max address
-  nMin = nMax = ((ULONGLONG)(SIZE_T)lpRefAddr) & (~65535ui64);
-  if (nMin > 0x40000000ui64)
-    nMin -= 0x40000000ui64;
-  else
-    nMin = 0ui64;
-  if (nMax < 0xFFFFFFFFFFFFFFFFui64-0x40000000ui64)
-    nMax += 0x40000000ui64;
-  else
-    nMax = 0xFFFFFFFFFFFFFFFFui64;
-#endif //_M_X64
-  nCount = cInjectedCodeBlocks.GetCount();
+  nMaxSlots = 65536 / nBaseStubCopyMaxSize;
+  //find a free slot in a previously allocated block
+  nCount = cBaseStubCopyCodeBlocks.GetCount();
   for (i=0; i<nCount; i++)
   {
-    if (cInjectedCodeBlocks[i].lpFirstFreeItem != NULL)
+    lpBlock = cBaseStubCopyCodeBlocks[i];
+    lpBitmap = lpBlock->aFreeSlotBitmap;
+    for (nSlot=0; nSlot<nMaxSlots; nSlot++)
     {
-#if defined _M_X64
-      if ((ULONGLONG)(SIZE_T)(cInjectedCodeBlocks[i].lpBaseAddress) >= nMin &&
-          (ULONGLONG)(SIZE_T)(cInjectedCodeBlocks[i].lpBaseAddress) < nMax)
-      {
-#endif //_M_X64
-        break;
-#if defined _M_X64
-      }
-#endif //_M_X64
+      if ((lpBitmap[nSlot >> 3] & (1 << (nSlot & 7))) != 0)
+        break; //got a free slow
     }
+    if (nSlot < nMaxSlots)
+      break;
   }
   if (i >= nCount)
   {
-    //allocate a new block if no free slot is found
-    sNewBlock.nFreeItemsCount = 65536/nInjectedCodeMaxSize;
-#if defined _M_IX86
-    sNewBlock.lpBaseAddress = (LPBYTE)::VirtualAlloc(NULL, 65536, MEM_RESERVE|MEM_COMMIT, PAGE_EXECUTE_READWRITE);
-#elif defined _M_X64
-    sNewBlock.lpBaseAddress = NULL;
-    while (nMin < nMax)
-    {
-      memset(&sMbi, 0, sizeof(sMbi));
-      ::VirtualQuery((LPCVOID)nMin, &sMbi, sizeof(sMbi));
-      if (sMbi.State == MEM_FREE)
-      {
-        sNewBlock.lpBaseAddress = (LPBYTE)::VirtualAlloc((LPVOID)nMin, 65536, MEM_RESERVE|MEM_COMMIT,
-                                                         PAGE_EXECUTE_READWRITE);
-        if (sNewBlock.lpBaseAddress != NULL)
-          break;
-      }
-      nMin += 65536;
-    }
-#endif
-    if (sNewBlock.lpBaseAddress == NULL)
+    //allocate a new block if no free slot was found
+    lpBlock = (LPBASESTUBCOPY_BLOCK)malloc(sizeof(BASESTUBCOPY_BLOCK) + (nMaxSlots >> 3));
+    if (lpBlock == NULL)
       return NULL;
-    //initialize free list
-    lpPtr = sNewBlock.lpFirstFreeItem = sNewBlock.lpBaseAddress;
-    for (i=0; i<sNewBlock.nFreeItemsCount-1; i++)
+    lpBlock->lpBaseAddress = (LPBYTE)::VirtualAlloc(NULL, 65536, MEM_RESERVE|MEM_COMMIT, PAGE_EXECUTE_READ);
+    if (lpBlock->lpBaseAddress == NULL)
     {
-      *((LPBYTE*)lpPtr) = lpPtr+nInjectedCodeMaxSize;
-      lpPtr += nInjectedCodeMaxSize;
+      free(lpBlock);
+      return NULL;
     }
-    *((LPBYTE*)lpPtr) = NULL;
+    memset(lpBlock->aFreeSlotBitmap, 0xFF, (nMaxSlots >> 3) + 1);
     //add to list
-    if (cInjectedCodeBlocks.AddElement(&sNewBlock) == FALSE)
+    if (cBaseStubCopyCodeBlocks.AddElement(lpBlock) == FALSE)
     {
-      ::VirtualFree(sNewBlock.lpBaseAddress, 0, MEM_FREE);
+      ::VirtualFree(lpBlock->lpBaseAddress, 0, MEM_FREE);
+      free(lpBlock);
       return NULL;
     }
-    i = cInjectedCodeBlocks.GetCount()-1;
+    nSlot = 0;
   }
-  //now get a free subblock
-  NKT_ASSERT(cInjectedCodeBlocks[i].nFreeItemsCount > 0);
-  lpInjCodeAddr = cInjectedCodeBlocks[i].lpFirstFreeItem;
-  //set new list header
-  cInjectedCodeBlocks[i].lpFirstFreeItem = *((LPBYTE*)lpInjCodeAddr);
-  (cInjectedCodeBlocks[i].nFreeItemsCount)--;
-#ifdef _DEBUG
-  if (cInjectedCodeBlocks[i].lpFirstFreeItem == NULL)
-  {
-    NKT_ASSERT(cInjectedCodeBlocks[i].nFreeItemsCount == 0);
-  }
-  else
-  {
-    NKT_ASSERT(cInjectedCodeBlocks[i].nFreeItemsCount > 0);
-  }
-#endif //_DEBUG
+  //mark slot as used
+  lpBlock->aFreeSlotBitmap[nSlot >> 3] &= ~(1 << (nSlot & 7));
   //done
-  return lpInjCodeAddr;
+  return lpBlock->lpBaseAddress + nBaseStubCopyMaxSize * nSlot;
 }
 
-VOID CNktDvHookEngine::FreeInjectedCode(__in CHookEntry *lpHookEntry)
+VOID CNktDvHookEngine::FreeBaseStubCopy(__in CHookEntry *lpHookEntry)
 {
   //we are inside CNktDvHookEngine's lock so this call is safe
-  SIZE_T i, k, nCount;
+  SIZE_T i, j, nSlot, nCount;
+  LPBASESTUBCOPY_BLOCK lpBlock;
+  LPBYTE lpBitmap;
 
-  if (lpHookEntry->lpInjectedCodeAddr != NULL)
+  if (lpHookEntry->lpSuperHookStub != NULL)
   {
-    nCount = cInjectedCodeBlocks.GetCount();
+    nCount = cBaseStubCopyCodeBlocks.GetCount();
     for (i=0; i<nCount; i++)
     {
-      if ((SIZE_T)(lpHookEntry->lpInjectedCodeAddr) >= (SIZE_T)(cInjectedCodeBlocks[i].lpBaseAddress))
+      lpBlock = cBaseStubCopyCodeBlocks[i];
+      if ((LPBYTE)(lpHookEntry->lpSuperHookStub) >= lpBlock->lpBaseAddress &&
+          (LPBYTE)(lpHookEntry->lpSuperHookStub) < lpBlock->lpBaseAddress+65536)
       {
-        k = (SIZE_T)(lpHookEntry->lpInjectedCodeAddr) - (SIZE_T)(cInjectedCodeBlocks[i].lpBaseAddress);
-        if (k < 65536)
+        nSlot = (SIZE_T)((LPBYTE)(lpHookEntry->lpSuperHookStub) - lpBlock->lpBaseAddress) / nBaseStubCopyMaxSize;
+        lpBitmap = lpBlock->aFreeSlotBitmap;
+
+        NKT_ASSERT((lpBitmap[nSlot >> 3] & (1 << (nSlot & 7))) == 0);
+        lpBitmap[nSlot >> 3] |= (1 << (nSlot & 7));
+        //check if all slots are free
+        for (j=(65536/nBaseStubCopyMaxSize)+1; j>0; j--)
         {
-          //got the block
-          NKT_ASSERT((k % nInjectedCodeMaxSize) == 0);
-          //set new free list header
-          *((LPBYTE*)(lpHookEntry->lpInjectedCodeAddr)) = cInjectedCodeBlocks[i].lpFirstFreeItem;
-          cInjectedCodeBlocks[i].lpFirstFreeItem = lpHookEntry->lpInjectedCodeAddr;
-          //really free memory if empty
-          if ((++(cInjectedCodeBlocks[i].nFreeItemsCount)) >= 65536/nInjectedCodeMaxSize)
-          {
-            ::VirtualFree(cInjectedCodeBlocks[i].lpBaseAddress, 0, MEM_FREE);
-            cInjectedCodeBlocks.RemoveElementAt(i);
-          }
-          break;
+          if (*lpBitmap != 0xFF)
+            break;
         }
+        if (j == 0)
+        {
+          cBaseStubCopyCodeBlocks.RemoveElementAt(i);
+          ::VirtualFree(lpBlock->lpBaseAddress, 0, MEM_FREE);
+          free(lpBlock);
+        }
+        break;
       }
     }
   }
@@ -1670,13 +1503,14 @@ static BOOL SecureCheckStub(__in CHookEntry *lpHookEntry)
 
   __try
   {
-    b = (nktMemCompare(lpHookEntry->lpHookedAddr, lpHookEntry->aModifiedStub, 8) == 0) ? TRUE : FALSE;
+    b = (nktMemCompare(lpHookEntry->sHookLibInfo.lpProcToHook, lpHookEntry->aModifiedEntrypointCode,
+                       sizeof(lpHookEntry->aModifiedEntrypointCode)) == 0) ? TRUE : FALSE;
     if (b != FALSE)
     {
       //check double hook
       for (k=0; k<8; k++)
       {
-        if (lpHookEntry->lpInjectedCodeAddr[k] != 0x90)
+        if (((LPBYTE)(lpHookEntry->sHookLibInfo.lpNewProcAddr))[k] != 0x90)
         {
           b = FALSE;
           break;

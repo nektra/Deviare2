@@ -34,6 +34,7 @@
 #include "..\..\Common\TransportCommon.h"
 #include "..\..\Common\ProcessMemory.h"
 #include "..\..\Common\FunctionParamsCache.h"
+#include "..\..\..\Externals\DeviareInProc\Include\NktHookLib.h"
 #include "TlsData.h"
 #include "HookEngineCallDataEntry.h"
 #include "HookEngineInternals.h"
@@ -86,19 +87,19 @@ public:
   CNktDvHookEngine(__in CNktDvHookEngineCallback *lpCallback);
   virtual ~CNktDvHookEngine();
 
-  virtual HRESULT Initialize();
-  virtual VOID Finalize();
+  HRESULT Initialize();
+  VOID Finalize();
 
-  virtual HRESULT Hook(__in HOOKINFO aHookInfo[], __in SIZE_T nCount);
-  virtual HRESULT Unhook(__in LPDWORD lpdwHookIds, __in SIZE_T nCount);
-  virtual VOID DllUnloadUnhook(__in HINSTANCE hDll);
-  virtual VOID UnhookAll();
-  virtual HRESULT EnableHook(__in DWORD dwHookId, __in BOOL bEnable);
+  HRESULT Hook(__in HOOKINFO aHookInfo[], __in SIZE_T nCount);
+  HRESULT Unhook(__in LPDWORD lpdwHookIds, __in SIZE_T nCount);
+  VOID DllUnloadUnhook(__in HINSTANCE hDll);
+  VOID UnhookAll();
+  HRESULT EnableHook(__in DWORD dwHookId, __in BOOL bEnable);
 
-  virtual BOOL CheckIfInTrampoline(__in SIZE_T nCurrIP);
+  BOOL CheckIfInTrampoline(__in SIZE_T nCurrIP);
 
-  virtual HRESULT CheckOverwrittenHooks();
-  virtual HRESULT QueryOverwrittenHooks(__in SIZE_T nCount, __in LPDWORD lpdwHookIds, __out LPBYTE lpnResults);
+  HRESULT CheckOverwrittenHooks();
+  HRESULT QueryOverwrittenHooks(__in SIZE_T nCount, __in LPDWORD lpdwHookIds, __out LPBYTE lpnResults);
 
 #if defined _M_IX86
   static VOID GetStackTrace(__out SIZE_T *lpnOutput, __in SIZE_T nCount, __in SIZE_T nSkipCount, __in ULONG Esp,
@@ -111,6 +112,11 @@ public:
 #endif
   static VOID GetStackLimits(__in HANDLE hThread, __out SIZE_T &nLow, __out SIZE_T &nHigh);
 
+  CNktHookLib& HookLib()
+    {
+    return cHookLib;
+    };
+
 private:
   friend static SIZE_T __stdcall PreCallCommon(__inout CNktDvHookEngine*, __in LPVOID, __in SIZE_T);
   friend static SIZE_T __stdcall PostCallCommon(__inout CNktDvHookEngine*, __in LPVOID, __in SIZE_T);
@@ -121,21 +127,22 @@ private:
   virtual SIZE_T PostCall(__in LPVOID lpHookEntry, __inout CNktDvTlsData *lpTlsData, __in SIZE_T nStackPointer,
                           __inout DWORD &dwOsLastError);
 
-  virtual LPBYTE AllocInjectedCode(__in LPVOID lpRefAddr);
-  virtual VOID FreeInjectedCode(__in CHookEntry *lpHookEntry);
-
 private:
   friend SIZE_T __stdcall PreCallCommon(__in CNktDvHookEngine*, __in LPVOID, __in SIZE_T);
   friend SIZE_T __stdcall PostCallCommon(__in CNktDvHookEngine*, __in LPVOID, __in SIZE_T);
 
+  LPBYTE AllocateForBaseStubCopy();
+  VOID FreeBaseStubCopy(__in CHookEntry *lpHookEntry);
+
   typedef struct {
     LPBYTE lpBaseAddress;
-    LPBYTE lpFirstFreeItem;
-    SIZE_T nFreeItemsCount;
-  } INJCODE_BLOCK;
+    BYTE aFreeSlotBitmap[1];
+  } BASESTUBCOPY_BLOCK, *LPBASESTUBCOPY_BLOCK;
 
-  SIZE_T nInjectedCodeMaxSize;
-  TNktArrayList4Structs<INJCODE_BLOCK> cInjectedCodeBlocks;
+  CNktHookLib cHookLib;
+
+  SIZE_T nBaseStubCopyMaxSize;
+  TNktArrayList<LPBASESTUBCOPY_BLOCK> cBaseStubCopyCodeBlocks;
 
   CNktDvHookEngineCallback *lpCallback;
   TNktLnkLst<CHookEntry> cHooksList;
@@ -215,11 +222,3 @@ private:
   HRESULT hRes;
   BOOL bAlreadyLocked;
 };
-
-//-----------------------------------------------------------
-
-HRESULT nktDvHookEng_MiniHookInstall(__in LPVOID lpAddress2Hook, __in LPVOID lpNewFunction,
-                                     __out LPVOID *lplpCallOriginal, __out LONG volatile **lplpnDisableHook);
-
-//-----------------------------------------------------------
-

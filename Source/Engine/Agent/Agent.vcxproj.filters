@@ -48,16 +48,7 @@
     <ClCompile Include="HookEngineHookEntry.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="HookEngineMini.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="HookEngineMiscHelpers.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="HookEngineStackTrace.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ThreadSuspend.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="TlsData.cpp">
@@ -156,6 +147,9 @@
     <ClCompile Include="..\..\Common\WaitableObjects.cpp">
       <Filter>Source Files\Common</Filter>
     </ClCompile>
+    <ClCompile Include="HookEngineMiscHelpers.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Agent.def">
@@ -182,12 +176,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="HookEngineInternals.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="HookEngineMiscHelpers.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ThreadSuspend.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="TlsData.h">
@@ -312,6 +300,9 @@
     </ClInclude>
     <ClInclude Include="resource.h">
       <Filter>Resource Files</Filter>
+    </ClInclude>
+    <ClInclude Include="HookEngineMiscHelpers.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

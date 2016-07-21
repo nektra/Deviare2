@@ -518,10 +518,6 @@ MT.EXE -manifest "$(ProjectDir)RegFreeCOM_Manifest_Files\DeviareCOM64.X.manifest
       <Project>{bf4ba8be-12dc-4d9f-9939-1505a451e293}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
-    <ProjectReference Include="..\..\SupportLibs\UDis86\UDis86Lib.vcxproj">
-      <Project>{0014c72e-342c-4406-80b7-2a009a5c1649}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

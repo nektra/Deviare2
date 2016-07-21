@@ -568,7 +568,7 @@ HRESULT CNktDvSpyMgr::CAgentController::LoadAgentIntoProcess(__in LPCWSTR szAgen
   {
     //write server token
     if (bIs64BitProcess == FALSE)
-      hRes = cProcMem->WriteDWord(lpDest+k+2*nSizeOfSize, (DWORD)hToken[3]);
+      hRes = cProcMem->WriteDWord(lpDest+k+2*nSizeOfSize, (DWORD)((ULONG_PTR)hToken[3]));
     else
       hRes = cProcMem->WriteQWord(lpDest+k+2*nSizeOfSize, (ULONGLONG)hToken[3]);
   }

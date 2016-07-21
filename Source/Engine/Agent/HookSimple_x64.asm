@@ -38,30 +38,23 @@ _TEXT SEGMENT
 PUBLIC NktDvSuperHook_x64
 
 USAGE_COUNT                     equ 0FFDDFFDDFFDDFF01h
-UNINSTALL_DISABLE_FLAGS         equ 0FFDDFFDDFFDDFF02h
-HOOK_ENGINE_PTR                 equ 0FFDDFFDDFFDDFF03h
-HOOK_ENTRY_PTR                  equ 0FFDDFFDDFFDDFF04h
-PRECALL_ADDR                    equ 0FFDDFFDDFFDDFF05h
-POSTCALL_ADDR                   equ 0FFDDFFDDFFDDFF06h
-ORIGINAL_STUB_AND_JUMP          equ 0FFDDFFDDFFDDFF07h
-CONTINUE_AFTER_CALL_MARK        equ 0FFDDFFDDFFDDFF08h
-AFTER_CALL_STACK_PRESERVE_SIZE  equ 0FFDDFFDDFFDDFF09h
-AFTER_CALL_STACK_PRESERVE_SIZE2 equ 0FFDDFFDDFFDDFF10h
+HOOK_ENGINE_PTR                 equ 0FFDDFFDDFFDDFF02h
+HOOK_ENTRY_PTR                  equ 0FFDDFFDDFFDDFF03h
+PRECALL_ADDR                    equ 0FFDDFFDDFFDDFF04h
+POSTCALL_ADDR                   equ 0FFDDFFDDFFDDFF05h
+JMP_TO_ORIGINAL                 equ 0FFDDFFDDFFDDFF06h
+CONTINUE_AFTER_CALL_MARK        equ 0FFDDFFDDFFDDFF07h
+AFTER_CALL_STACK_PRESERVE_SIZE  equ 0FFDDFFDDFFDDFF08h
+AFTER_CALL_STACK_PRESERVE_SIZE2 equ 0FFDDFFDDFFDDFF09h
 
 ALIGN 8
 NktDvSuperHook_x64:
-
-    DB      8 DUP (90h)                    ;NOPs for hotpatching double hooks
     sub     rsp, 200h + 28h                ;locals + shadow space + return address. Size should be
                                            ;    0x####8h always to mantain 16-byte alignment
     mov     qword ptr [rsp+20h], rax       ;save rax
 
-    mov     rax, USAGE_COUNT              
+    mov     rax, USAGE_COUNT
     lock    inc qword ptr [rax] ;increment usage count
-
-    mov     rax, UNINSTALL_DISABLE_FLAGS
-    test    qword ptr [rax], 0101h
-    jne     @not_hooked
 
     mov     qword ptr [rsp+28h], rbx       ;save the rest of the registers
     mov     qword ptr [rsp+30h], rcx
@@ -180,10 +173,13 @@ NktDvSuperHook_x64:
     mov     rax, qword ptr [rsp+20h]
     add     rsp, 200h + 28h
 
-    DQ      ORIGINAL_STUB_AND_JUMP
-    DB      56 DUP (90h)                   ;original prolog (64 bytes total)
-    DB      0FFh, 25h, 0h, 0h, 0h, 0h      ;JMP QWORD PTR [RIP+0h]
-    DQ      0h                             ;address of original proc after prolog
+    push    rax
+    push    rax
+    mov     rax, JMP_TO_ORIGINAL
+    mov     rax, QWORD PTR [rax]
+    mov     QWORD PTR [rsp+8], rax
+    pop     rax
+    ret
 
     DQ      CONTINUE_AFTER_CALL_MARK
     ;here is the return address when the call to the original function returns
@@ -299,17 +295,19 @@ NktDvSuperHook_x64:
     mov     rcx, qword ptr [rsp+30h]
     mov     rbx, qword ptr [rsp+28h]
 
-@not_hooked:
     mov     rax, USAGE_COUNT
     lock    sub qword ptr [rax], 1h        ;decrement usage count
 
     mov     rax, qword ptr [rsp+20h]
     add     rsp, 200h + 28h
 
-    DQ      ORIGINAL_STUB_AND_JUMP
-    DB      56 DUP (90h)                   ;original prolog
-    DB      0FFh, 25h, 0h, 0h, 0h, 0h      ;JMP QWORD PTR [RIP+0h]
-    DQ      0h                             ;address of original proc after prolog
+    push    rax
+    push    rax
+    mov     rax, JMP_TO_ORIGINAL
+    mov     rax, QWORD PTR [rax]
+    mov     QWORD PTR [rsp+8], rax
+    pop     rax
+    ret
 
     DQ      0FFDDFFDDFFDDFFFFh
 

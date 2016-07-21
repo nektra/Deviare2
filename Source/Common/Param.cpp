@@ -785,7 +785,7 @@ HRESULT CNktDvParam::GetPointer(__out LPVOID *lplpValue)
 
           if (SUCCEEDED(GetDWord(&nTemp32, 0)))
           {
-            *lplpValue = (LPVOID)nTemp32;
+            *lplpValue = (LPVOID)((ULONG_PTR)nTemp32);
             hRes = S_OK;
           }
         }
@@ -838,7 +838,7 @@ HRESULT CNktDvParam::SetPointer(__in LPVOID lpValue)
               if ((ULONGLONG)lpValue > 0xFFFFFFFFUi64)
                 break;
 #endif //_M_X64
-              nValue32 = (ULONG)lpValue;
+              nValue32 = (ULONG)((ULONG_PTR)lpValue);
               return WriteMemoryBytes(lpAddress, &nValue32, sizeof(nValue32));
 #if defined _M_X64
             case 64:
@@ -1926,7 +1926,7 @@ HRESULT CNktDvParam::ReadPointer(__out LPBYTE *lplpDest, __in LPVOID lpAddress)
   {
     case 32:
       hRes = ReadMemoryBytes(&nValue32, lpAddress, sizeof(nValue32), FALSE);
-      *lplpDest = (SUCCEEDED(hRes)) ? (LPBYTE)nValue32 : NULL;
+      *lplpDest = (SUCCEEDED(hRes)) ? (LPBYTE)((ULONG_PTR)nValue32) : NULL;
       break;
 #if defined _M_X64
     case 64:

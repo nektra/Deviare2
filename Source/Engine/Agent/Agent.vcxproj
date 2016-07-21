@@ -223,10 +223,8 @@
     <ClCompile Include="HookEngine.cpp" />
     <ClCompile Include="HookEngineCallDataEntry.cpp" />
     <ClCompile Include="HookEngineHookEntry.cpp" />
-    <ClCompile Include="HookEngineMini.cpp" />
     <ClCompile Include="HookEngineMiscHelpers.cpp" />
     <ClCompile Include="HookEngineStackTrace.cpp" />
-    <ClCompile Include="ThreadSuspend.cpp" />
     <ClCompile Include="TlsData.cpp" />
     <ClCompile Include="TransportAgent.cpp" />
     <ClCompile Include="..\..\Common\ComPtr.cpp" />
@@ -305,7 +303,6 @@
     <ClInclude Include="HookEngineCallDataEntry.h" />
     <ClInclude Include="HookEngineInternals.h" />
     <ClInclude Include="HookEngineMiscHelpers.h" />
-    <ClInclude Include="ThreadSuspend.h" />
     <ClInclude Include="TlsData.h" />
     <ClInclude Include="TransportAgent.h" />
     <ClInclude Include="..\..\Common\AgentCommon.h" />
@@ -354,10 +351,6 @@
   <ItemGroup>
     <ProjectReference Include="..\..\SupportLibs\Lz4\Lz4Lib.vcxproj">
       <Project>{bf4ba8be-12dc-4d9f-9939-1505a451e293}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-    </ProjectReference>
-    <ProjectReference Include="..\..\SupportLibs\UDis86\UDis86Lib.vcxproj">
-      <Project>{0014c72e-342c-4406-80b7-2a009a5c1649}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
   </ItemGroup>

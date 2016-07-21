@@ -358,7 +358,7 @@ HRESULT CHookCustomHandlerMgr::CreateHookInfo(__deref_out IDispatch **ppDisp, __
   if (fnDllGetClassObject == NULL || fnInternal1 == NULL)
     return E_FAIL;
   sCreateData.dwId = lpHookEntry->dwSpyMgrId;
-  sCreateData.nAddress = (SIZE_T)(lpHookEntry->lpHookedAddr);
+  sCreateData.nAddress = (SIZE_T)(lpHookEntry->sHookLibInfo.lpProcToHook);
   sCreateData.lpDbFunc = lpHookEntry->lpDbFunc;
   sCreateData.szFunctionNameW = (LPWSTR)(lpHookEntry->cStrFunctionNameW);
   sCreateData.sCallTrampoline.fnSendCustomMessage = &Internal_SendCustomMessage;
@@ -511,7 +511,7 @@ HRESULT CHookCustomHandlerMgr::ProcessFunctionCall(__in CHookEntry *lpHookEntry,
                             (lpHookEntry->lpDbFunc != NULL &&
                              lpHookEntry->lpDbFunc->GetName()[0] != 0) ?
                                               (lpHookEntry->lpDbFunc->GetName()) : L"???",
-                            (SIZE_T)(lpHookEntry->lpHookedAddr)));
+                            (SIZE_T)(lpHookEntry->sHookLibInfo.lpProcToHook)));
         }
       }
     }
@@ -522,7 +522,7 @@ HRESULT CHookCustomHandlerMgr::ProcessFunctionCall(__in CHookEntry *lpHookEntry,
                       "hRes=%08X [%S @ %IXh ]", ::GetTickCount(), hRes,
                       (lpHookEntry->lpDbFunc != NULL && lpHookEntry->lpDbFunc->GetName()[0] != 0) ?
                                             (lpHookEntry->lpDbFunc->GetName()) : L"???",
-                      (SIZE_T)(lpHookEntry->lpHookedAddr)));
+                      (SIZE_T)(lpHookEntry->sHookLibInfo.lpProcToHook)));
   }
   /*
   CUSTOMHANDLERS_TRY
@@ -608,7 +608,7 @@ HRESULT CHookCustomHandlerMgr::InitializeDotNetMgr()
   hMsCoreeDll = ::LoadLibraryW(L"mscoree.dll");
   if (hMsCoreeDll == NULL)
     return NKT_DVERR_NotFound;
-  hRes = MiniHooks_Install();
+  hRes = InstallMiniHooks();
   if (SUCCEEDED(hRes))
   {
     fnCLRCreateInstance = (lpfnCLRCreateInstance)::GetProcAddress(hMsCoreeDll, "CLRCreateInstance");
