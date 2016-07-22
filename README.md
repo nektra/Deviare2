@@ -90,4 +90,4 @@ author at vivek[at]sig9[dot]com.
 [UDis86 link]: http://udis86.sourceforge.net/
 [Nektra contact]: http://www.nektra.com/contact/
 [Deviare homepage]: http://www.nektra.com/products/deviare-api-hook-windows/
-[Deviare InProc github]https://github.com/nektra/Deviare-InProc
+[Deviare InProc github]: https://github.com/nektra/Deviare-InProc
