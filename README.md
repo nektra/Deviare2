@@ -49,6 +49,16 @@ included in the solution.
 
 
 -------------
+# BUILDING
+
+Since Deviare depends directly on [Deviare-InProc][Deviare InProc github], it is
+included as a submodule in this repository. To clone this repository do
+`git clone --recursive`. If you already cloned without the `--recursive` option,
+you can complete the repository initialization with `git submodule update --init --recursive`.
+
+To build Deviare successfully, Deviare-Inproc libraries for both x86 and x64 targets and should be built first.
+
+-------------
 # BUG REPORTS
 
 If you experience something you think might be a bug in Deviare, please
@@ -80,3 +90,4 @@ author at vivek[at]sig9[dot]com.
 [UDis86 link]: http://udis86.sourceforge.net/
 [Nektra contact]: http://www.nektra.com/contact/
 [Deviare homepage]: http://www.nektra.com/products/deviare-api-hook-windows/
+[Deviare InProc github]https://github.com/nektra/Deviare-InProc
