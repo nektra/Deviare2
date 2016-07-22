@@ -28,7 +28,23 @@
  **/
 
 #include "StdAfx.h"
-#include "..\..\SupportLibs\UDis86\GetInstructionLength.h"
+#include "../../../Externals/DeviareInProc/Include/NktHookLib.h"
+
+#if defined _M_IX86
+  #ifdef _DEBUG
+    #pragma comment(lib, "..\\..\\..\\Externals\\DeviareInProc\\Libs\\2015\\NktHookLib_Debug.lib")
+#else //_DEBUG
+    #pragma comment(lib, "..\\..\\..\\Externals\\DeviareInProc\\Libs\\2015\\NktHookLib.lib")
+  #endif //_DEBUG
+#elif defined _M_X64
+  #ifdef _DEBUG
+    #pragma comment(lib, "..\\..\\..\\Externals\\DeviareInProc\\Libs\\2015\\NktHookLib64_Debug.lib")
+  #else //_DEBUG
+    #pragma comment(lib, "..\\..\\..\\Externals\\DeviareInProc\\Libs\\2015\\NktHookLib64.lib")
+  #endif //_DEBUG
+#else
+  #error Unsupported platform
+#endif
 
 //-----------------------------------------------------------
 
@@ -292,7 +308,7 @@ static SIZE_T BuildOriginalNtCall(__in LPVOID lpDest, __in LPBYTE lpFileFuncAddr
           k++;
           break;
         }
-        nInstrLen = GetInstructionLength(lpSrc+k, 128, (BYTE)nPlatformBits, NULL);
+        nInstrLen = NktHookLibHelpers::GetInstructionLength(lpSrc+k, 128, (BYTE)nPlatformBits);
         k += nInstrLen;
       }
       //add to extra size
@@ -302,7 +318,7 @@ static SIZE_T BuildOriginalNtCall(__in LPVOID lpDest, __in LPBYTE lpFileFuncAddr
     }
     else
     {
-      nInstrLen = GetInstructionLength(lpFileFuncAddr+nCurrSize, 128, (BYTE)nPlatformBits, NULL);
+      nInstrLen = NktHookLibHelpers::GetInstructionLength(lpFileFuncAddr+nCurrSize, 128, (BYTE)nPlatformBits);
       nCurrSize += nInstrLen;
     }
   }
@@ -350,7 +366,7 @@ static SIZE_T BuildOriginalNtCall(__in LPVOID lpDest, __in LPBYTE lpFileFuncAddr
             k++;
             break;
           }
-          nInstrLen = GetInstructionLength(lpSrc+k, 128, (BYTE)nPlatformBits, NULL);
+          nInstrLen = NktHookLibHelpers::GetInstructionLength(lpSrc+k, 128, (BYTE)nPlatformBits);
           memcpy(d+k, lpSrc+k, nInstrLen);
           k += nInstrLen;
         }
@@ -360,7 +376,7 @@ static SIZE_T BuildOriginalNtCall(__in LPVOID lpDest, __in LPBYTE lpFileFuncAddr
       }
       else
       {
-        nInstrLen = GetInstructionLength(lpFileFuncAddr+i, 128, (BYTE)nPlatformBits, NULL);
+        nInstrLen = NktHookLibHelpers::GetInstructionLength(lpFileFuncAddr+i, 128, (BYTE)nPlatformBits);
         memcpy(lpStub+i, lpFileFuncAddr+i, nInstrLen);
         i += nInstrLen;
       }

@@ -49,14 +49,12 @@ included in the solution.
 
 
 -------------
-# BUILDING
+# BEFORE BUILDING
 
 Since Deviare depends directly on [Deviare-InProc][Deviare InProc github], it is
 included as a submodule in this repository. To clone this repository do
 `git clone --recursive`. If you already cloned without the `--recursive` option,
 you can complete the repository initialization with `git submodule update --init --recursive`.
-
-To build Deviare successfully, Deviare-Inproc libraries for both x86 and x64 targets and should be built first.
 
 -------------
 # BUG REPORTS
