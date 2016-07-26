@@ -351,12 +351,12 @@ HRESULT CNktDvSpyMgr::CAgentController::LoadAgentIntoProcess(__in LPCWSTR szAgen
   TNktComPtr<CNktDvProcessMemory> cProcMem;
   TNktComPtr<CNktDvEngDatabase> cDvDB;
   LPBYTE lpInjCodeAddr, lpDest;
-  SIZE_T k, nToWrite, nInjCodeSize, nAgentPathLen, nAgentNameLen, nSizeOfSize;
+  SIZE_T k, nToWrite, nTotalInjCodeSize, nInjCodeSize, nAgentPathLen, nAgentNameLen, nSizeOfSize;
   HMODULE hNtDll;
   lpfnNtCreateThreadEx fnNtCreateThreadEx;
   BOOL bIs64BitProcess;
   HANDLE hProc, hProc2, hRemThread, hDestHandle[2], hToken[4];
-  DWORD dwTid, dwRes;
+  DWORD dw, dwTid, dwRes;
   SECURITY_ATTRIBUTES sSecAttrib;
   SECURITY_DESCRIPTOR sSecDesc;
   OBJECT_ATTRIBUTES sObjAttr;
@@ -429,17 +429,17 @@ HRESULT CNktDvSpyMgr::CAgentController::LoadAgentIntoProcess(__in LPCWSTR szAgen
   nAgentNameLen = (bIs64BitProcess == FALSE) ? 11 : 13;
   //allocate memory for inject code in target process
   nSizeOfSize = (bIs64BitProcess != FALSE) ? sizeof(ULONGLONG) : sizeof(ULONG);
-  k = MY_SIZE_ALIGN(nInjCodeSize, nSizeOfSize);  //injected code size
-  k += 3 * nSizeOfSize; //... plus pointer to Dll path + pointer to initdata + server process token
-  k += MY_SIZE_ALIGN(sizeof(NKT_DV_AGENTINITDATA), nSizeOfSize); //... plus agent initialization data
-  k += MY_SIZE_ALIGN((nAgentPathLen+nAgentNameLen+1)*sizeof(WCHAR), nSizeOfSize); //...plus len of "DvAgent##.DLL"
+  nTotalInjCodeSize = MY_SIZE_ALIGN(nInjCodeSize, nSizeOfSize);  //injected code size
+  nTotalInjCodeSize += 3 * nSizeOfSize; //... plus pointer to Dll path + pointer to initdata + server process token
+  nTotalInjCodeSize += MY_SIZE_ALIGN(sizeof(NKT_DV_AGENTINITDATA), nSizeOfSize); //... plus agent initialization data
+  nTotalInjCodeSize += MY_SIZE_ALIGN((nAgentPathLen+nAgentNameLen+1)*sizeof(WCHAR), nSizeOfSize); //...plus len of dll
   cProcMem.Attach(CNktDvProcessMemory::CreateForPID(cProc->GetProcessId()));
   if (cProcMem == NULL)
   {
     hRes = E_OUTOFMEMORY;
     goto laip_end;
   }
-  hRes = cProcMem->AllocMem((LPVOID*)&lpDest, k, TRUE);
+  hRes = cProcMem->AllocMem((LPVOID*)&lpDest, nTotalInjCodeSize, TRUE);
   if (FAILED(hRes))
   {
     NKT_DEBUGPRINTLNA(Nektra::dlEngine, ("%lu) LoadAgentIntoProcess[AllocMem]: hRes=%08X",
@@ -608,6 +608,9 @@ HRESULT CNktDvSpyMgr::CAgentController::LoadAgentIntoProcess(__in LPCWSTR szAgen
                        ::GetTickCount(), hRes));
     goto laip_end;
   }
+  //flush cache and change page protection
+  ::FlushInstructionCache(hProc, lpInjCodeAddr, nTotalInjCodeSize);
+  ::VirtualProtectEx(hProc, lpInjCodeAddr, nTotalInjCodeSize, PAGE_EXECUTE_READ, &dw);
   //execute remote code
   hNtDll = ::GetModuleHandleW(L"ntdll.dll");
   fnNtCreateThreadEx = (hNtDll != NULL) ? (lpfnNtCreateThreadEx)::GetProcAddress(hNtDll, "NtCreateThreadEx") : NULL;
