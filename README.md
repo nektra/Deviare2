@@ -56,6 +56,9 @@ included as a submodule in this repository. To clone this repository do
 `git clone --recursive`. If you already cloned without the `--recursive` option,
 you can complete the repository initialization with `git submodule update --init --recursive`.
 
+When pulling from this repository we recommend always appending `--recurse-submodules` to
+the command. This ensures the Deviare-InProc submodule is up to date with the HEAD of the Deviare2 branch.
+
 -------------
 # BUG REPORTS
 
