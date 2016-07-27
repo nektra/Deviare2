@@ -923,7 +923,7 @@ HRESULT CNktDvTools::SuspendAfterCreateProcessW(__out LPHANDLE lphReadyExecution
                                                 __in HANDLE hEngineProc, __in HANDLE hSuspendedProc,
                                                 __in HANDLE hSuspendedMainThread)
 {
-  BYTE aTempBuf[256], *lpRemoteCode;
+  BYTE aTempBuf[256], *lpRemoteCode, *lpRemoteData;
   CNktEvent cContinueEvent, cReadyEvent;
   HANDLE hContinueEventCopy, hReadyEventCopy, hEngineProcCopy;
   SIZE_T nOrigIP, nSetEventAddr, nWaitMultObjAddr, nCloseHandleAddr, nWritten;
@@ -941,8 +941,7 @@ HRESULT CNktDvTools::SuspendAfterCreateProcessW(__out LPHANDLE lphReadyExecution
     return E_POINTER;
   *lphReadyExecutionEvent = NULL;
   *lphContinueExecutionEvent = NULL;
-  NKT_DEBUGPRINTLNA(Nektra::dlTools, ("%lu) Tools[SuspendAfterCreateProcessW]: ProcHnd=%08X, "
-                                      "ThreadHnd=%08X",
+  NKT_DEBUGPRINTLNA(Nektra::dlTools, ("%lu) Tools[SuspendAfterCreateProcessW]: ProcHnd=%08X, ThreadHnd=%08X",
                     ::GetTickCount(), hSuspendedProc, hSuspendedMainThread));
   //get suspended thread execution context
   bIs64BitProcess = nktDvDynApis_Is64BitProcess(hSuspendedProc);
@@ -979,8 +978,6 @@ HRESULT CNktDvTools::SuspendAfterCreateProcessW(__out LPHANDLE lphReadyExecution
   nSetEventAddr = (SIZE_T)GetApiAddress(hKernel32DLL, "SetEvent", TRUE);
   nWaitMultObjAddr = (SIZE_T)GetApiAddress(hKernel32DLL, "WaitForMultipleObjects", TRUE);
   nCloseHandleAddr = (SIZE_T)GetApiAddress(hKernel32DLL, "CloseHandle", TRUE);
-  if (nSetEventAddr == 0 || nWaitMultObjAddr == 0 || nCloseHandleAddr == 0)
-    return E_FAIL;
 #elif defined _M_X64
   if (bIs64BitProcess == FALSE)
   {
@@ -1070,8 +1067,10 @@ HRESULT CNktDvTools::SuspendAfterCreateProcessW(__out LPHANDLE lphReadyExecution
           //get address of function
           if (ReadProcMem(hSuspendedProc, &dwTemp32, lpdwAddressOfFunctions+(SIZE_T)wTemp16,
                           sizeof(DWORD)) == FALSE ||
-              dwTemp32 == NULL)
+              dwTemp32 == 0)
+          {
             continue;
+          }
           //retrieve function address
           lpFuncAddr = lpBaseAddr + (SIZE_T)dwTemp32;
           if (lpFuncAddr >= lpExpDir && lpFuncAddr < lpExpDir+nExpDirSize)
@@ -1102,8 +1101,6 @@ HRESULT CNktDvTools::SuspendAfterCreateProcessW(__out LPHANDLE lphReadyExecution
         lpCurrAddress += sMbi.RegionSize;
       }
     }
-    if (nSetEventAddr == 0 || nWaitMultObjAddr == 0 || nCloseHandleAddr == 0)
-      return E_FAIL;
   }
   else
   {
@@ -1113,13 +1110,12 @@ HRESULT CNktDvTools::SuspendAfterCreateProcessW(__out LPHANDLE lphReadyExecution
     nSetEventAddr = (SIZE_T)GetApiAddress(hKernel32DLL, "SetEvent", TRUE);
     nWaitMultObjAddr = (SIZE_T)GetApiAddress(hKernel32DLL, "WaitForMultipleObjects", TRUE);
     nCloseHandleAddr = (SIZE_T)GetApiAddress(hKernel32DLL, "CloseHandle", TRUE);
-    if (nSetEventAddr == 0 || nWaitMultObjAddr == 0 || nCloseHandleAddr == 0)
-      return E_FAIL;
   }
 #endif
+  if (nSetEventAddr == 0 || nWaitMultObjAddr == 0 || nCloseHandleAddr == 0)
+    return E_FAIL;
   //create "ready" and "continue" events
-  if (cReadyEvent.Create(NULL, FALSE) == FALSE ||
-      cContinueEvent.Create(NULL, FALSE) == FALSE)
+  if (cReadyEvent.Create(NULL, FALSE) == FALSE || cContinueEvent.Create(NULL, FALSE) == FALSE)
     return E_OUTOFMEMORY;
   hRes = nktDvDynApis_DuplicateHandle(::GetCurrentProcess(), cReadyEvent.GetEventHandle(), hSuspendedProc,
                                       &hReadyEventCopy, 0, FALSE, DUPLICATE_SAME_ACCESS);
@@ -1135,17 +1131,23 @@ HRESULT CNktDvTools::SuspendAfterCreateProcessW(__out LPHANDLE lphReadyExecution
   }
   if (FAILED(hRes))
     return hRes;
-  //create remote code
-  lpRemoteCode = (LPBYTE)::VirtualAllocEx(hSuspendedProc, NULL, 1024, MEM_RESERVE|MEM_COMMIT, PAGE_EXECUTE_READWRITE);
-  if (lpRemoteCode == NULL)
+  //create remote data. NOTE: We are wasting memory by allocating a 4K (page size) block and only use 4/8 bytes :(
+  lpRemoteData = (LPBYTE)::VirtualAllocEx(hSuspendedProc, NULL, 4096, MEM_RESERVE|MEM_COMMIT, PAGE_READWRITE);
+  if (lpRemoteData == NULL)
     return E_OUTOFMEMORY;
+  //create remote code
+  lpRemoteCode = (LPBYTE)::VirtualAllocEx(hSuspendedProc, NULL, 4096, MEM_RESERVE|MEM_COMMIT, PAGE_EXECUTE_READWRITE);
+  if (lpRemoteCode == NULL)
+  {
+    ::VirtualFreeEx(hSuspendedProc, lpRemoteData, 0, MEM_RELEASE);
+    return E_OUTOFMEMORY;
+  }
   //write new stub
   m = 0;
   if (bIs64BitProcess == FALSE)
   {
 #if defined _M_IX86
     //data
-    nktMemSet(aTempBuf+m, 0x00, 4);  m+=4; //will contain the entrypoint to jump to
     nktMemCopy(aTempBuf+m, &hEngineProcCopy, 4);  m+=4;
     nktMemCopy(aTempBuf+m, &hContinueEventCopy, 4);  m+=4;
     //new entrypoint starts here
@@ -1167,7 +1169,7 @@ HRESULT CNktDvTools::SuspendAfterCreateProcessW(__out LPHANDLE lphReadyExecution
     //push FALSE
     aTempBuf[m++] = 0x68;  nktMemSet(aTempBuf+m, 0x00, 4);  m+=4;
     //push address of array of ENGINE PROC HANDLE and CONTINUE EVENT HANDLE
-    k = (SIZE_T)lpRemoteCode + 4;
+    k = (SIZE_T)lpRemoteCode;
     aTempBuf[m++] = 0x68;  nktMemCopy(aTempBuf+m, &k, 4);  m+=4;
     //push 2
     k = 2;
@@ -1188,16 +1190,16 @@ HRESULT CNktDvTools::SuspendAfterCreateProcessW(__out LPHANDLE lphReadyExecution
     aTempBuf[m++] = 0xB8;  nktMemCopy(aTempBuf+m, &nCloseHandleAddr, 4);  m+=4;
     //call eax
     aTempBuf[m++] = 0xFF;  aTempBuf[m++] = 0xD0;
-    //jmp dword ptr [lpRemoteCode] (absolute)
-    dwTemp32 = (DWORD)lpRemoteCode;
-    aTempBuf[m++] = 0xFF; aTempBuf[m++] = 0x25;  nktMemCopy(aTempBuf+m, &dwTemp32, 4);  m+=4;
+    //jmp dword ptr [lpRemoteData] (absolute)
+    dwTemp32 = (DWORD)lpRemoteData;
+    aTempBuf[m++] = 0xFF;  aTempBuf[m++] = 0x25;  nktMemCopy(aTempBuf+m, &dwTemp32, 4);  m+=4;
     //NEW STUB
     //at this point eax has the original entry point, store it in lpRemoteCode using interlocked
     nNewStubOfs = m;
     //push ecx
     aTempBuf[m++] = 0x51;
-    //mov ecx, lpRemoteCode
-    k = (SIZE_T)lpRemoteCode;
+    //mov ecx, lpRemoteData
+    k = (SIZE_T)lpRemoteData;
     aTempBuf[m++] = 0xB9;  nktMemCopy(aTempBuf+m, &k, 4);  m+=4;
     //lock xchg eax, [ecx]
     aTempBuf[m++] = 0xF0;  aTempBuf[m++] = 0x87;  aTempBuf[m++] = 0x01;
@@ -1208,11 +1210,10 @@ HRESULT CNktDvTools::SuspendAfterCreateProcessW(__out LPHANDLE lphReadyExecution
     aTempBuf[m++] = 0x59;
     //jmp to original eip
     k = (SIZE_T)lpRemoteCode + (m+6);
-    aTempBuf[m++] = 0xFF; aTempBuf[m++] = 0x25;  nktMemCopy(aTempBuf+m, &k, 4);  m+=4;
+    aTempBuf[m++] = 0xFF;  aTempBuf[m++] = 0x25;  nktMemCopy(aTempBuf+m, &k, 4);  m+=4;
     nktMemCopy(aTempBuf+m, &nOrigIP, 4);  m+=4;
 #elif defined _M_X64
     //data
-    nktMemSet(aTempBuf+m, 0x00, 4);  m+=4; //will contain the entrypoint to jump to
     nktMemCopy(aTempBuf+m, &hEngineProcCopy, 4);  m+=4;
     nktMemCopy(aTempBuf+m, &hContinueEventCopy, 4);  m+=4;
     //new entrypoint starts here
@@ -1239,7 +1240,7 @@ HRESULT CNktDvTools::SuspendAfterCreateProcessW(__out LPHANDLE lphReadyExecution
     dwTemp32 = 1;
     aTempBuf[m++] = 0x68;  nktMemCopy(aTempBuf+m, &dwTemp32, 4);  m+=4;
     //push address of array of ENGINE PROC HANDLE and CONTINUE EVENT HANDLE
-    k = (SIZE_T)lpRemoteCode + 4;
+    k = (SIZE_T)lpRemoteCode;
     aTempBuf[m++] = 0x68;  nktMemCopy(aTempBuf+m, &k, 4);  m+=4;
     //push 2
     dwTemp32 = 2;
@@ -1260,16 +1261,16 @@ HRESULT CNktDvTools::SuspendAfterCreateProcessW(__out LPHANDLE lphReadyExecution
     aTempBuf[m++] = 0xB8;  nktMemCopy(aTempBuf+m, &nCloseHandleAddr, 4);  m+=4;
     //call eax
     aTempBuf[m++] = 0xFF;  aTempBuf[m++] = 0xD0;
-    //jmp dword ptr [lpRemoteCode] (absolute)
-    dwTemp32 = (DWORD)((ULONG_PTR)lpRemoteCode);
-    aTempBuf[m++] = 0xFF; aTempBuf[m++] = 0x25;  nktMemCopy(aTempBuf+m, &dwTemp32, 4);  m+=4;
+    //jmp dword ptr [lpRemoteData] (absolute)
+    dwTemp32 = (DWORD)((ULONG_PTR)lpRemoteData);
+    aTempBuf[m++] = 0xFF;  aTempBuf[m++] = 0x25;  nktMemCopy(aTempBuf+m, &dwTemp32, 4);  m+=4;
     //NEW STUB
     //at this point eax has the original entry point, store it in lpRemoteCode using interlocked
     nNewStubOfs = m;
     //push ecx
     aTempBuf[m++] = 0x51;
-    //mov ecx, lpRemoteCode
-    k = (SIZE_T)lpRemoteCode;
+    //mov ecx, lpRemoteData
+    k = (SIZE_T)lpRemoteData;
     aTempBuf[m++] = 0xB9;  nktMemCopy(aTempBuf+m, &k, 4);  m+=4;
     //lock xchg eax, [ecx]
     aTempBuf[m++] = 0xF0;  aTempBuf[m++] = 0x87;  aTempBuf[m++] = 0x01;
@@ -1280,14 +1281,13 @@ HRESULT CNktDvTools::SuspendAfterCreateProcessW(__out LPHANDLE lphReadyExecution
     aTempBuf[m++] = 0x59;
     //jmp to original eip
     k = (SIZE_T)lpRemoteCode + (m+6);
-    aTempBuf[m++] = 0xFF; aTempBuf[m++] = 0x25;  nktMemCopy(aTempBuf+m, &k, 4);  m+=4;
+    aTempBuf[m++] = 0xFF;  aTempBuf[m++] = 0x25;  nktMemCopy(aTempBuf+m, &k, 4);  m+=4;
     nktMemCopy(aTempBuf+m, &nOrigIP, 4);  m+=4;
 #endif
   }
   else
   {
     //data
-    nktMemSet(aTempBuf+m, 0x00, 8);  m+=8; //will contain the entrypoint to jump to
     nktMemCopy(aTempBuf+m, &hEngineProcCopy, 8);  m+=8;
     nktMemCopy(aTempBuf+m, &hContinueEventCopy, 8);  m+=8;
     //new entrypoint starts here
@@ -1299,18 +1299,18 @@ HRESULT CNktDvTools::SuspendAfterCreateProcessW(__out LPHANDLE lphReadyExecution
     //mov rax, ADDRESS OF SetEvent
     aTempBuf[m++] = 0x48;  aTempBuf[m++] = 0xB8;  nktMemCopy(aTempBuf+m, &nSetEventAddr, 8);  m+=8;
     //call rax
-    aTempBuf[m++] = 0xFF; aTempBuf[m++] = 0xD0;
+    aTempBuf[m++] = 0xFF;  aTempBuf[m++] = 0xD0;
     //mov rcx, READY EVENT HANDLE
     aTempBuf[m++] = 0x48;  aTempBuf[m++] = 0xB9;  nktMemCopy(aTempBuf+m, &hReadyEventCopy, 8);  m+=8;
     //mov rax, ADDRESS OF CloseHandle
     aTempBuf[m++] = 0x48;  aTempBuf[m++] = 0xB8;  nktMemCopy(aTempBuf+m, &nCloseHandleAddr, 8);  m+=8;
     //call rax
-    aTempBuf[m++] = 0xFF; aTempBuf[m++] = 0xD0;
+    aTempBuf[m++] = 0xFF;  aTempBuf[m++] = 0xD0;
     //mov rcx, 2
     aTempBuf[m++] = 0x48;  aTempBuf[m++] = 0xB9;  aTempBuf[m++] = 0x02;
     nktMemSet(aTempBuf+m, 0x00, 7); m+=7;
     //mov rdx, address of array of ENGINE PROC HANDLE and CONTINUE EVENT HANDLE
-    k = (SIZE_T)lpRemoteCode + 8;
+    k = (SIZE_T)lpRemoteCode;
     aTempBuf[m++] = 0x48;  aTempBuf[m++] = 0xBA;  nktMemCopy(aTempBuf+m, &k, 8);  m+=8;
     //mov r8, FALSE
     aTempBuf[m++] = 0x49;  aTempBuf[m++] = 0xB8;  nktMemSet(aTempBuf+m, 0x00, 8);  m+=8;
@@ -1320,31 +1320,35 @@ HRESULT CNktDvTools::SuspendAfterCreateProcessW(__out LPHANDLE lphReadyExecution
     //mov rax, ADDRESS OF WaitForMultipleObjects
     aTempBuf[m++] = 0x48;  aTempBuf[m++] = 0xB8;  nktMemCopy(aTempBuf+m, &nWaitMultObjAddr, 8);  m+=8;
     //call rax
-    aTempBuf[m++] = 0xFF; aTempBuf[m++] = 0xD0;
+    aTempBuf[m++] = 0xFF;  aTempBuf[m++] = 0xD0;
     //mov rcx, CONTINUE EVENT HANDLE
     aTempBuf[m++] = 0x48;  aTempBuf[m++] = 0xB9;  nktMemCopy(aTempBuf+m, &hContinueEventCopy, 8);  m+=8;
     //mov rax, ADDRESS OF CloseHandle
     aTempBuf[m++] = 0x48;  aTempBuf[m++] = 0xB8;  nktMemCopy(aTempBuf+m, &nCloseHandleAddr, 8);  m+=8;
     //call rax
-    aTempBuf[m++] = 0xFF; aTempBuf[m++] = 0xD0;
+    aTempBuf[m++] = 0xFF;  aTempBuf[m++] = 0xD0;
     //mov rcx, ENGINE PROC HANDLE
     aTempBuf[m++] = 0x48;  aTempBuf[m++] = 0xB9;  nktMemCopy(aTempBuf+m, &hEngineProcCopy, 8);  m+=8;
     //mov rax, ADDRESS OF CloseHandle
     aTempBuf[m++] = 0x48;  aTempBuf[m++] = 0xB8;  nktMemCopy(aTempBuf+m, &nCloseHandleAddr, 8);  m+=8;
     //call rax
-    aTempBuf[m++] = 0xFF; aTempBuf[m++] = 0xD0;
+    aTempBuf[m++] = 0xFF;  aTempBuf[m++] = 0xD0;
     //add rsp, 48h
     aTempBuf[m++] = 0x48;  aTempBuf[m++] = 0x83;  aTempBuf[m++] = 0xC4;  aTempBuf[m++] = 0x48;
-    //jmp qword ptr [lpRemoteCode]
-    dwTemp32 = ~((DWORD)m+6) + 1;
-    aTempBuf[m++] = 0xFF; aTempBuf[m++] = 0x25;  nktMemCopy(aTempBuf+m, &dwTemp32, 4);  m+=4;
+    //mov rax, lpRemoteData
+    k = (SIZE_T)lpRemoteData;
+    aTempBuf[m++] = 0x48;  aTempBuf[m++] = 0xB8;  nktMemCopy(aTempBuf + m, &k, 8);  m += 8;
+    //push QWORD PTR [rax]
+    aTempBuf[m++] = 0xFF;  aTempBuf[m++] = 0x30;
+    //ret
+    aTempBuf[m++] = 0xC3;
     //NEW STUB
     //at this point rcx has the original entry point, store it in lpRemoteCode using interlocked
     nNewStubOfs = m;
     //push rax
     aTempBuf[m++] = 0x50;
-    //mov rax, lpRemoteCode
-    k = (SIZE_T)lpRemoteCode;
+    //mov rax, lpRemoteData
+    k = (SIZE_T)lpRemoteData;
     aTempBuf[m++] = 0x48;  aTempBuf[m++] = 0xB8;  nktMemCopy(aTempBuf+m, &k, 8);  m+=8;
     //lock xchg rcx, [rax]
     aTempBuf[m++] = 0xF0;  aTempBuf[m++] = 0x48;  aTempBuf[m++] = 0x87;  aTempBuf[m++] = 0x08;
@@ -1354,7 +1358,7 @@ HRESULT CNktDvTools::SuspendAfterCreateProcessW(__out LPHANDLE lphReadyExecution
     //pop rax
     aTempBuf[m++] = 0x58;
     //jmp to original rip
-    aTempBuf[m++] = 0xFF; aTempBuf[m++] = 0x25;  nktMemSet(aTempBuf+m, 0x00, 4);  m+=4;
+    aTempBuf[m++] = 0xFF;  aTempBuf[m++] = 0x25;  nktMemSet(aTempBuf+m, 0x00, 4);  m+=4;
     nktMemCopy(aTempBuf+m, &nOrigIP, 8);  m+=8;
   }
   //write memory
@@ -1362,15 +1366,19 @@ HRESULT CNktDvTools::SuspendAfterCreateProcessW(__out LPHANDLE lphReadyExecution
       nWritten != m)
   {
     ::VirtualFreeEx(hSuspendedProc, lpRemoteCode, 0, MEM_RELEASE);
+    ::VirtualFreeEx(hSuspendedProc, lpRemoteData, 0, MEM_RELEASE);
     return E_FAIL;
   }
-  ::VirtualProtectEx(hSuspendedProc, lpRemoteCode, 1024, PAGE_EXECUTE_READ, &dwTemp32);
-  ::FlushInstructionCache(hSuspendedProc, lpRemoteCode, (m+0xFF) & (~0xFF));
+  //flush cache and change page protection
+  ::FlushInstructionCache(hSuspendedProc, lpRemoteCode, 4096);
+  dwTemp32 = 0;
+  ::VirtualProtectEx(hSuspendedProc, lpRemoteCode, 4096, PAGE_EXECUTE_READ, &dwTemp32);
   //set new entry point address
 #if defined _M_IX86
   sThreadCtx.Eip = (DWORD)lpRemoteCode + nNewStubOfs;
   if (::SetThreadContext(hSuspendedMainThread, &sThreadCtx) == FALSE)
   {
+    ::VirtualFreeEx(hSuspendedProc, lpRemoteData, 0, MEM_RELEASE);
     ::VirtualFreeEx(hSuspendedProc, lpRemoteCode, 0, MEM_RELEASE);
     return E_FAIL;
   }
@@ -1382,6 +1390,7 @@ HRESULT CNktDvTools::SuspendAfterCreateProcessW(__out LPHANDLE lphReadyExecution
     if (FAILED(hRes))
     {
       ::VirtualFreeEx(hSuspendedProc, lpRemoteCode, 0, MEM_RELEASE);
+      ::VirtualFreeEx(hSuspendedProc, lpRemoteCode, 0, MEM_RELEASE);
       return hRes;
     }
   }
@@ -1390,6 +1399,7 @@ HRESULT CNktDvTools::SuspendAfterCreateProcessW(__out LPHANDLE lphReadyExecution
     sThreadCtx.Rip = (DWORD64)(lpRemoteCode + nNewStubOfs);
     if (::SetThreadContext(hSuspendedMainThread, &sThreadCtx) == FALSE)
     {
+      ::VirtualFreeEx(hSuspendedProc, lpRemoteCode, 0, MEM_RELEASE);
       ::VirtualFreeEx(hSuspendedProc, lpRemoteCode, 0, MEM_RELEASE);
       return E_FAIL;
     }

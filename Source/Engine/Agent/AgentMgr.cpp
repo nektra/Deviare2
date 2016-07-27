@@ -1238,7 +1238,6 @@ icp_pc_cont1:
 icp_pc_end:
       if (lpUserData->bWasSuspended == FALSE && hThread != NULL)
       {
-
         nktDvDynApis_NtResumeThread(hThread);
         if (SUCCEEDED(hRes) && sCp != NULL)
         {

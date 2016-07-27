@@ -557,8 +557,7 @@ LPVOID CNktMemMgrBin::Alloc(__in SIZE_T nSize)
   }
   else
   {
-    lpPtr = (LPHEADER)::VirtualAlloc(NULL, nSize+sizeof(HEADER), MEM_RESERVE|MEM_COMMIT,
-                                     PAGE_READWRITE);
+    lpPtr = (LPHEADER)::VirtualAlloc(NULL, nSize+sizeof(HEADER), MEM_RESERVE|MEM_COMMIT, PAGE_READWRITE);
     if (lpPtr != NULL)
     {
       NKT_ASSERT(((SIZE_T)lpPtr & 0xFFFF) == 0); //ensure it is 64k aligned

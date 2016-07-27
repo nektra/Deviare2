@@ -311,7 +311,7 @@ public:
   HRESULT FireCommon(__inout IDispatch *lpConnDisp, __in DISPID nDispId,
                      __in CComVariant aVarParams[], __in int aVarParamsCount)
     {
-    DISPPARAMS sParams = { aVarParams, NULL, aVarParamsCount, 0 };
+    DISPPARAMS sParams = { aVarParams, NULL, (UINT)aVarParamsCount, 0 };
     CComVariant cVarResult;
     HRESULT hRes;
     UINT nArgErr;

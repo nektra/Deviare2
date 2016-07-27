@@ -610,6 +610,7 @@ HRESULT CNktDvSpyMgr::CAgentController::LoadAgentIntoProcess(__in LPCWSTR szAgen
   }
   //flush cache and change page protection
   ::FlushInstructionCache(hProc, lpInjCodeAddr, nTotalInjCodeSize);
+  dw = 0;
   ::VirtualProtectEx(hProc, lpInjCodeAddr, nTotalInjCodeSize, PAGE_EXECUTE_READ, &dw);
   //execute remote code
   hNtDll = ::GetModuleHandleW(L"ntdll.dll");

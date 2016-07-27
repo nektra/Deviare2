@@ -309,6 +309,7 @@ HRESULT CNktDvProcessMemory::WriteProtected(__in LPVOID lpRemoteDest, __in LPCVO
       //if access protection needs a change, do it
       if (dwNewProt != sMbi.Protect)
       {
+        dwOrigProt = 0;
         if (::VirtualProtectEx(hTempProc, sMbi.BaseAddress, sMbi.RegionSize, dwNewProt, &dwOrigProt) == FALSE)
         {
           hRes = E_ACCESSDENIED;
