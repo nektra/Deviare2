@@ -1,6 +1,12 @@
 ﻿Known issues:
 ============
-* C# plugins may not work if "RegisterClassA" or "RegisterClassW" Apis is hooked because CoInitialize(Ex) calls RegisterClass on STA and, at this point, COM initialization is not complete yet.
+* C# plugins may not work if "RegisterClassA" or "RegisterClassW" Apis are hooked because CoInitialize(Ex) calls RegisterClass on STA and, at this point, COM initialization is not complete yet.
+
+Version 2.8.0
+=============
+-Internal hooking engine is implemented by Deviare InProc now.
+-Page write flag is now turned off after trampoline generation is complete.
+-Fixed a minor issue in ISpyMgr::CallCustomApi that prevented correct behaviour when passing a null reference instead of a parameters object from managed code.
 
 Version 2.7.6
 =============
