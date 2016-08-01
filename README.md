@@ -59,6 +59,9 @@ you can complete the repository initialization with `git submodule update --init
 When pulling from this repository we recommend always appending `--recurse-submodules` to
 the command. This ensures the Deviare-InProc submodule is up to date with the HEAD of the Deviare2 branch.
 
+If you downloaded the zipped source package from Github instead, you need to satisfy this dependency manually.
+To do so, place the contents of Deviare-InProc inside `Externals/DeviareInProc`.
+
 -------------
 # BUG REPORTS
 
