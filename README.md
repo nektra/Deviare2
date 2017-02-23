@@ -62,6 +62,15 @@ This ensures the Deviare-InProc submodule is up to date with the HEAD of the Dev
 If you downloaded the zipped source package from Github instead, you need to satisfy this dependency manually.
 To do so, place the contents of Deviare-InProc inside `Externals/DeviareInProc`.
 
+
+-------------
+# BUILDING DEVIARE
+
+To build Deviare you can either execute the build script (build.bat) in a VS2015
+ command prompt or open the solution and build it from within Visual Studio.
+ When doing the latter, make sure to build for both x86 and x64 target platforms.
+ 
+
 -------------
 # BUG REPORTS
 
