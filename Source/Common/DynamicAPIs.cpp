@@ -53,9 +53,6 @@
 
 #ifdef AGENTDLL
 static HRESULT BuildOriginalNtCalls();
-static LPVOID BuildOriginalNtCall(__in LPBYTE lpFileFuncAddr, __in PRTL_OSVERSIONINFOW lpOsVerInfoW,
-                                  __in LPBYTE lpData, __in IMAGE_SECTION_HEADER *lpFileImgSect, __in SIZE_T nSecCount);
-static DWORD HelperConvertVAToRaw(__in DWORD dwVirtAddr, __in IMAGE_SECTION_HEADER *lpImgSect, __in SIZE_T nSecCount);
 #endif //AGENTDLL
 
 //-----------------------------------------------------------
@@ -1476,376 +1473,98 @@ static HRESULT InitializeInternals()
 //-----------------------------------------------------------
 
 #ifdef AGENTDLL
-
 static HRESULT BuildOriginalNtCalls()
 {
-  static struct {
-    LPSTR szApiNameA;
-    LPVOID *lpAddr;
-  } aToCheckApis[] = {
-    { "NtQueryInformationProcess", (LPVOID*)&fnNtQueryInformationProcess },
-    { "NtQueryInformationThread",  (LPVOID*)&fnNtQueryInformationThread },
-    { "NtSetInformationThread",    (LPVOID*)&fnNtSetInformationThread },
-    { "NtQueryInformationFile",    (LPVOID*)&fnNtQueryInformationFile },
-//    { "NtQueryObject",             (LPVOID*)&fnNtQueryObject }, //affects ThinApp virtual handles
-    { "NtQueryVirtualMemory",      (LPVOID*)&fnNtQueryVirtualMemory },
-    { "NtSuspendThread",           (LPVOID*)&fnNtSuspendThread },
-    { "NtResumeThread",            (LPVOID*)&fnNtResumeThread },
-    { "NtQuerySystemInformation",  (LPVOID*)&fnNtQuerySystemInformation },
-    { "NtAllocateVirtualMemory",   (LPVOID*)&fnNtAllocateVirtualMemory },
-    { "NtFreeVirtualMemory",       (LPVOID*)&fnNtFreeVirtualMemory },
-    { "NtProtectVirtualMemory",    (LPVOID*)&fnNtProtectVirtualMemory },
-    { "NtFlushInstructionCache",   (LPVOID*)&fnNtFlushInstructionCache },
-    { "NtClose",                   (LPVOID*)&fnNtClose },
-    { "NtCreateEvent",             (LPVOID*)&fnNtCreateEvent },
-    { "NtOpenEvent",               (LPVOID*)&fnNtOpenEvent },
-    { "NtResetEvent",              (LPVOID*)&fnNtResetEvent },
-    { "NtSetEvent",                (LPVOID*)&fnNtSetEvent },
-    { "NtOpenThread",              (LPVOID*)&fnNtOpenThread },
-    { "NtGetContextThread",        (LPVOID*)&fnNtGetContextThread },
-    { "NtDelayExecution",          (LPVOID*)&fnNtDelayExecution },
-    { "NtDuplicateObject",         (LPVOID*)&fnNtDuplicateObject },
-    { NULL, NULL }
+#define DECLARE_API(apiName)     { #apiName, 0 }
+  NktHookLibHelpers::SYSCALLDEF aToCheckApis[] = {
+    DECLARE_API(NtQueryInformationProcess), //0
+    DECLARE_API(NtQueryInformationThread),  //1
+    DECLARE_API(NtSetInformationThread),    //2
+    DECLARE_API(NtQueryInformationFile),    //3
+    //DECLARE_API(NtQueryObject),           //4 //affects ThinApp virtual handles
+    DECLARE_API(NtQueryVirtualMemory),      //4
+    DECLARE_API(NtSuspendThread),           //5
+    DECLARE_API(NtResumeThread),            //6
+    DECLARE_API(NtQuerySystemInformation),  //7
+    DECLARE_API(NtAllocateVirtualMemory),   //8
+    DECLARE_API(NtFreeVirtualMemory),       //9
+    DECLARE_API(NtProtectVirtualMemory),    //10
+    DECLARE_API(NtFlushInstructionCache),   //11
+    DECLARE_API(NtClose),                   //12
+    DECLARE_API(NtCreateEvent),             //13
+    DECLARE_API(NtOpenEvent),               //14
+    DECLARE_API(NtResetEvent),              //15
+    DECLARE_API(NtSetEvent),                //16
+    DECLARE_API(NtOpenThread),              //17
+    DECLARE_API(NtGetContextThread),        //18
+    DECLARE_API(NtDelayExecution),          //19
+    DECLARE_API(NtDuplicateObject)          //20
   };
-  WCHAR szBufW[4096];
-  HANDLE hFile, hFileMap;
-  NKT_DV_IMAGE_NT_HEADER sFileNtHdr;
-  LPBYTE lpData, lpFileNtHdrAddr, lpFileFuncAddr;
-  SIZE_T nSecCount;
-  IMAGE_SECTION_HEADER *lpFileImgSect;
-  IMAGE_DATA_DIRECTORY *lpFileExportsDir, *lpBaseRelocDir;
-  IMAGE_EXPORT_DIRECTORY *lpExpDir;
-  DWORD i, j, dwRawAddr, *lpdwAddressOfFunctions, *lpdwAddressOfNames;
-  WORD wOrd, *lpwAddressOfNameOrdinals;
-  LPSTR sA;
-  RTL_OSVERSIONINFOW sOsVerInfoW;
+#undef DECLARE_API
+  LPBYTE lpCode = NULL;
+  SIZE_T nCodeSize;
+  DWORD dw;
   HRESULT hRes;
 
-  nktMemSet(&sOsVerInfoW, 0, sizeof(sOsVerInfoW));
-  sOsVerInfoW.dwOSVersionInfoSize = sizeof(sOsVerInfoW);
-  if (fnRtlGetVersion != NULL)
-    fnRtlGetVersion(&sOsVerInfoW);
-  //----
-  hFile = hFileMap = NULL;
-  lpData = NULL;
-  ::GetModuleFileNameW(hNtDll, szBufW, (DWORD)NKT_DV_ARRAYLEN(szBufW));
-  hFile = ::CreateFileW(szBufW, GENERIC_READ, FILE_SHARE_READ|FILE_SHARE_DELETE, NULL, OPEN_EXISTING, 0, NULL);
-  hRes = (hFile != NULL && hFile != INVALID_HANDLE_VALUE) ? S_OK : NKT_HRESULT_FROM_LASTERROR();
-  if (SUCCEEDED(hRes))
-  {
-    hFileMap = ::CreateFileMappingW(hFile, NULL, PAGE_READONLY, 0, 0, NULL);
-    if (hFileMap == NULL || hFileMap == INVALID_HANDLE_VALUE)
-      hRes = NKT_HRESULT_FROM_LASTERROR();
-  }
-  if (SUCCEEDED(hRes))
-  {
-    lpData = (LPBYTE)::MapViewOfFile(hFileMap, FILE_MAP_READ, 0, 0, 0);
-    if (lpData == NULL)
-      hRes = NKT_HRESULT_FROM_LASTERROR();
-  }
-  if (SUCCEEDED(hRes))
-  {
-    switch (nktDvNtCheckImageType(&sFileNtHdr, ::GetCurrentProcess(), lpData, &lpFileNtHdrAddr))
-    {
-#if defined _M_IX86
-      case 32:
-        nSecCount = (SIZE_T)(sFileNtHdr.u32.FileHeader.NumberOfSections);
-        lpFileImgSect = (IMAGE_SECTION_HEADER*)(lpFileNtHdrAddr + sizeof(sFileNtHdr.u32));
-        lpFileExportsDir = &(sFileNtHdr.u32.OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_EXPORT]);
-        lpBaseRelocDir = &(sFileNtHdr.u32.OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_BASERELOC]);
-        break;
-#elif defined _M_X64
-      case 64:
-        nSecCount = (SIZE_T)(sFileNtHdr.u64.FileHeader.NumberOfSections);
-        lpFileImgSect = (IMAGE_SECTION_HEADER*)(lpFileNtHdrAddr + sizeof(sFileNtHdr.u64));
-        lpFileExportsDir = &(sFileNtHdr.u64.OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_EXPORT]);
-        lpBaseRelocDir = &(sFileNtHdr.u64.OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_BASERELOC]);
-        break;
+  hRes = HRESULT_FROM_WIN32(NktHookLibHelpers::BuildNtSysCalls(aToCheckApis, _countof(aToCheckApis),
+#if defined(_M_IX86)
+                            NKTHOOKLIB_ProcessPlatformX86,
+#elif defined(_M_X64)
+                            NKTHOOKLIB_ProcessPlatformX64,
 #endif
-      default:
-        hRes = E_FAIL;
-        break;
-    }
-    //check exports
-    if (SUCCEEDED(hRes) && lpFileExportsDir->VirtualAddress != 0 && lpFileExportsDir->Size > 0)
+                            NULL, &nCodeSize));
+  if (SUCCEEDED(hRes))
+  {
+    lpCode = (LPBYTE)::VirtualAlloc(NULL, nCodeSize, MEM_RESERVE | MEM_COMMIT, PAGE_EXECUTE_READWRITE);
+    if (lpCode != NULL)
     {
-      dwRawAddr = HelperConvertVAToRaw(lpFileExportsDir->VirtualAddress, lpFileImgSect, nSecCount);
-      if (dwRawAddr != 0)
-      {
-        lpExpDir = (IMAGE_EXPORT_DIRECTORY*)(lpData + (SIZE_T)dwRawAddr);
-        dwRawAddr = HelperConvertVAToRaw(lpExpDir->AddressOfFunctions, lpFileImgSect, nSecCount);
-      }
-      if (dwRawAddr != 0)
-      {
-        lpdwAddressOfFunctions = (LPDWORD)(lpData + (SIZE_T)dwRawAddr);
-        dwRawAddr = HelperConvertVAToRaw(lpExpDir->AddressOfNames, lpFileImgSect, nSecCount);
-      }
-      if (dwRawAddr != 0)
-      {
-        lpdwAddressOfNames = (LPDWORD)(lpData + (SIZE_T)dwRawAddr);
-        dwRawAddr = HelperConvertVAToRaw(lpExpDir->AddressOfNameOrdinals, lpFileImgSect, nSecCount);
-      }
-      if (dwRawAddr != 0)
-      {
-        lpwAddressOfNameOrdinals = (LPWORD)(lpData + (SIZE_T)dwRawAddr);
-        for (i=0; i<lpExpDir->NumberOfNames; i++)
-        {
-          dwRawAddr = HelperConvertVAToRaw(lpdwAddressOfNames[i], lpFileImgSect, nSecCount);
-          if (dwRawAddr == 0)
-            continue;
-          sA = (LPSTR)(lpData + (SIZE_T)dwRawAddr);
-          for (j=0; aToCheckApis[j].szApiNameA!=NULL; j++)
-          {
-            if (strcmp(sA, aToCheckApis[j].szApiNameA) == 0)
-              break;
-          }
-          if (aToCheckApis[j].szApiNameA != NULL)
-          {
-            wOrd = lpwAddressOfNameOrdinals[i];
-            dwRawAddr = HelperConvertVAToRaw(lpdwAddressOfFunctions[wOrd], lpFileImgSect, nSecCount);
-            lpFileFuncAddr = lpData + (SIZE_T)dwRawAddr;
-            if (lpFileFuncAddr >= (LPBYTE)lpExpDir &&
-                lpFileFuncAddr < (LPBYTE)lpExpDir+(SIZE_T)(lpFileExportsDir->Size))
-              continue;//a forwarded function => ignore
-            //create new stub
-            *(aToCheckApis[j].lpAddr) = BuildOriginalNtCall(lpFileFuncAddr, &sOsVerInfoW, lpData, lpFileImgSect,
-                                                            nSecCount);
-          }
-        }
-      }
+      hRes = HRESULT_FROM_WIN32(NktHookLibHelpers::BuildNtSysCalls(aToCheckApis, _countof(aToCheckApis),
+#if defined(_M_IX86)
+                                NKTHOOKLIB_ProcessPlatformX86,
+#elif defined(_M_X64)
+                                NKTHOOKLIB_ProcessPlatformX64,
+#endif
+                                lpCode, &nCodeSize));
+    }
+    else
+    {
+      hRes = E_OUTOFMEMORY;
     }
   }
-  if (lpData != NULL)
-    ::UnmapViewOfFile(lpData);
-  if (hFileMap != NULL && hFileMap != INVALID_HANDLE_VALUE)
-    ::CloseHandle(hFileMap);
-  if (hFile != NULL && hFile != INVALID_HANDLE_VALUE)
-    ::CloseHandle(hFile);
+  if (SUCCEEDED(hRes))
+  {
+#define PROCESS_API(apiName, idx)     fn##apiName = (lpfn##apiName)(lpCode + aToCheckApis[idx].nOffset)
+    PROCESS_API(NtQueryInformationProcess, 0);
+    PROCESS_API(NtQueryInformationThread,  1);
+    PROCESS_API(NtSetInformationThread,    2);
+    PROCESS_API(NtQueryInformationFile,    3);
+    //PROCESS_API(NtQueryObject, 4); //affects ThinApp virtual handles
+    PROCESS_API(NtQueryVirtualMemory,      4);
+    PROCESS_API(NtSuspendThread,           5);
+    PROCESS_API(NtResumeThread,            6);
+    PROCESS_API(NtQuerySystemInformation,  7);
+    PROCESS_API(NtAllocateVirtualMemory,   8);
+    PROCESS_API(NtFreeVirtualMemory,       9);
+    PROCESS_API(NtProtectVirtualMemory,   10);
+    PROCESS_API(NtFlushInstructionCache,  11);
+    PROCESS_API(NtClose,                  12);
+    PROCESS_API(NtCreateEvent,            13);
+    PROCESS_API(NtOpenEvent,              14);
+    PROCESS_API(NtResetEvent,             15);
+    PROCESS_API(NtSetEvent,               16);
+    PROCESS_API(NtOpenThread,             17);
+    PROCESS_API(NtGetContextThread,       18);
+    PROCESS_API(NtDelayExecution,         19);
+    PROCESS_API(NtDuplicateObject,        20);
+#undef PROCESS_API
+
+    ::VirtualProtect(lpCode, nCodeSize, PAGE_EXECUTE_READ, &dw);
+  }
+  else
+  {
+    if (lpCode != NULL)
+      ::VirtualFree(lpCode, 0, MEM_RELEASE);
+  }
   return hRes;
 }
-
-static LPVOID BuildOriginalNtCall(__in LPBYTE lpFileFuncAddr, __in PRTL_OSVERSIONINFOW lpOsVerInfoW,
-                                  __in LPBYTE lpData, __in IMAGE_SECTION_HEADER *lpFileImgSect, __in SIZE_T nSecCount)
-{
-  SIZE_T k, nSrcOfs, nInstrLen, nCurrSize, nExtraSize, nMainCodeSize;
-#if defined _M_IX86
-  SIZE_T nDestSize;
-  DWORD dwRawAddr;
-#endif //_M_IX86
-  DWORD dwOldProt;
-  LPBYTE lpSrc, lpDest, lpStub;
-
-  //stage 1: scan for a return
-  nSrcOfs = nCurrSize = nExtraSize = 0;
-  while (nCurrSize < 128)
-  {
-    if (lpFileFuncAddr[nSrcOfs] == 0xC2)
-    {
-      nSrcOfs += 3;
-      nCurrSize += 3;
-      break;
-    }
-    if (lpFileFuncAddr[nSrcOfs] == 0xC3)
-    {
-      nSrcOfs++;
-      nCurrSize++;
-      break;
-    }
-#if defined _M_IX86
-    //handle special case for Windows 10 x86
-    if (lpOsVerInfoW->dwMajorVersion >= 10 && lpFileFuncAddr[nSrcOfs] == 0xBA &&
-        lpFileFuncAddr[nSrcOfs+5] == 0xFF && lpFileFuncAddr[nSrcOfs+6] == 0xD2)
-    {
-      //call edx
-      dwRawAddr = HelperConvertVAToRaw(*((ULONG NKT_UNALIGNED*)(lpFileFuncAddr+nSrcOfs+1)), lpFileImgSect, nSecCount);
-      lpSrc = lpData + dwRawAddr;
-      nSrcOfs += 7;
-      nCurrSize += 5;
-      k = nDestSize = 0;
-      while (nDestSize < 128)
-      {
-        if (lpSrc[k] == 0xFF && lpSrc[k] == 0xE2)
-        {
-          nDestSize += 2;
-          break;
-        }
-        if (lpSrc[k] == 0xEA && lpSrc[k+5] == 0x33 && lpSrc[k+6] == 0x00)
-        {
-          k += 7;
-          nDestSize += 12;
-          continue;
-        }
-        nInstrLen = NktHookLibHelpers::GetInstructionLength(lpSrc + k, 128, sizeof(SIZE_T) << 3);
-        k += nInstrLen;
-        nDestSize += nInstrLen;
-      }
-      //add to extra size
-      if (nDestSize >= 128)
-        return NULL; //unsupported size
-      nExtraSize += nDestSize;
-      continue;
-    }
-#endif
-    if (lpFileFuncAddr[nSrcOfs] == 0xE8)
-    {
-      //near call found, calculate size too
-      lpSrc = lpFileFuncAddr+nSrcOfs+5 + (SSIZE_T) *((LONG NKT_UNALIGNED*)(lpFileFuncAddr+nSrcOfs+1));
-      nSrcOfs += 5;
-      nCurrSize += 5;
-      k = 0;
-      while (k < 128)
-      {
-        if (lpSrc[k] == 0xC2)
-        {
-          k += 3;
-          break;
-        }
-        if (lpSrc[k] == 0xC3)
-        {
-          k++;
-          break;
-        }
-        nInstrLen = NktHookLibHelpers::GetInstructionLength(lpSrc+k, 128, sizeof(SIZE_T) << 3);
-        k += nInstrLen;
-      }
-      //add to extra size
-      if (k >= 128)
-        return NULL; //unsupported size
-      nExtraSize += k;
-      continue;
-    }
-    //no special behavior
-    nInstrLen = NktHookLibHelpers::GetInstructionLength(lpFileFuncAddr+nSrcOfs, 128, sizeof(SIZE_T) << 3);
-    nSrcOfs += nInstrLen;
-    nCurrSize += nInstrLen;
-  }
-  if (nCurrSize >= 128)
-    return NULL; //unsupported size
-  nMainCodeSize = nCurrSize;
-  //allocate memory
-  lpStub = (LPBYTE)::VirtualAlloc(NULL, nCurrSize+nExtraSize, MEM_RESERVE|MEM_COMMIT, PAGE_EXECUTE_READWRITE);
-  if (lpStub != NULL)
-  {
-    //stage 2: copy
-    nSrcOfs = nCurrSize = nExtraSize = 0;
-    while (nCurrSize < 128)
-    {
-      if (lpFileFuncAddr[nSrcOfs] == 0xC2)
-      {
-        memcpy(lpStub+nCurrSize, lpFileFuncAddr+nSrcOfs, 3);
-        nSrcOfs += 3;
-        nCurrSize += 3;
-        break;
-      }
-      if (lpFileFuncAddr[nSrcOfs] == 0xC3)
-      {
-        lpStub[nCurrSize] = lpFileFuncAddr[nSrcOfs];
-        nSrcOfs++;
-        nCurrSize++;
-        break;
-      }
-#if defined _M_IX86
-      //handle special case for Windows 10 x86
-      if (lpOsVerInfoW->dwMajorVersion >= 10 && lpFileFuncAddr[nSrcOfs] == 0xBA &&
-          lpFileFuncAddr[nSrcOfs+5] == 0xFF && lpFileFuncAddr[nSrcOfs+6] == 0xD2)
-      {
-        //call edx
-        dwRawAddr = HelperConvertVAToRaw(*((ULONG NKT_UNALIGNED*)(lpFileFuncAddr+nSrcOfs+1)), lpFileImgSect, nSecCount);
-        lpStub[nCurrSize] = 0xE8;
-        *((ULONG NKT_UNALIGNED*)(lpStub+nCurrSize+1)) = (ULONG)(nMainCodeSize+nExtraSize - (nCurrSize+5));
-        lpSrc = lpData + dwRawAddr;
-        nSrcOfs += 7;
-        nCurrSize += 5;
-        lpDest = lpStub+nMainCodeSize+nExtraSize;
-        k = nDestSize = 0;
-        while (nDestSize < 128)
-        {
-          if (lpSrc[k] == 0xFF && lpSrc[k] == 0xE2)
-          {
-            memcpy(lpDest+nDestSize, lpSrc+k, 2);
-            nDestSize += 2;
-            break;
-          }
-          if (lpSrc[k] == 0xEA && lpSrc[k+5] == 0x33 && lpSrc[k+6] == 0x00)
-          {
-            lpDest[nDestSize] = 0x6A; lpDest[nDestSize+1] = 0x33;                     //push 0x0033
-            lpDest[nDestSize+2] = 0xE8;                                               //call +0
-            lpDest[nDestSize+3] = lpDest[nDestSize+4] =
-                lpDest[nDestSize+5] = lpDest[nDestSize+6] = 0x00;
-            lpDest[nDestSize+7] = 0x83;  lpDest[nDestSize+8] = 0x05;                  //add DWORD PTR [esp], 5
-            lpDest[nDestSize+9] = 0x24;  lpDest[nDestSize+10] = 0x04;
-            lpDest[nDestSize+11] = 0xCB;                                              //retf
-            k += 7;
-            nDestSize += 12;
-            continue;
-          }
-          nInstrLen = NktHookLibHelpers::GetInstructionLength(lpSrc+k, 128, sizeof(SIZE_T) << 3);
-          memcpy(lpDest+nDestSize, lpSrc+k, nInstrLen);
-          k += nInstrLen;
-          nDestSize += nInstrLen;
-        }
-        //add to extra size
-        NKT_ASSERT(nDestSize < 128);
-        nExtraSize += nDestSize;
-        continue;
-      }
-#endif
-      if (lpFileFuncAddr[nSrcOfs] == 0xE8)
-      {
-        //near call found, relocate
-        lpStub[nCurrSize] = 0xE8;
-        *((ULONG NKT_UNALIGNED*)(lpStub+nCurrSize+1)) = (ULONG)(nMainCodeSize+nExtraSize - (nCurrSize+5));
-        lpSrc = lpFileFuncAddr+nSrcOfs+5 + (SSIZE_T) *((LONG NKT_UNALIGNED*)(lpFileFuncAddr+nSrcOfs+1));
-        nSrcOfs += 5;
-        nCurrSize += 5;
-        lpDest = lpStub+nMainCodeSize+nExtraSize;
-        k = 0;
-        while (k < 128)
-        {
-          if (lpSrc[k] == 0xC2)
-          {
-            memcpy(lpDest+k, lpSrc+k, 3);
-            k += 3;
-            break;
-          }
-          if (lpSrc[k] == 0xC3)
-          {
-            lpDest[k] = lpSrc[k];
-            k++;
-            break;
-          }
-          nInstrLen = NktHookLibHelpers::GetInstructionLength(lpSrc+k, 128, sizeof(SIZE_T) << 3);
-          memcpy(lpDest+k, lpSrc+k, nInstrLen);
-          k += nInstrLen;
-        }
-        //add to extra size
-        NKT_ASSERT(k < 128);
-        nExtraSize += k;
-        continue;
-      }
-      //no special behavior
-      nInstrLen = NktHookLibHelpers::GetInstructionLength(lpFileFuncAddr+nSrcOfs, 128, sizeof(SIZE_T) << 3);
-      memcpy(lpStub+nCurrSize, lpFileFuncAddr+nSrcOfs, nInstrLen);
-      nSrcOfs += nInstrLen;
-      nCurrSize += nInstrLen;
-    }
-    NKT_ASSERT(nMainCodeSize == nCurrSize);
-    ::VirtualProtect(lpStub, nCurrSize + nExtraSize, PAGE_EXECUTE_READ, &dwOldProt);
-  }
-  return lpStub;
-}
-
-static DWORD HelperConvertVAToRaw(__in DWORD dwVirtAddr, __in IMAGE_SECTION_HEADER *lpImgSect, __in SIZE_T nSecCount)
-{
-  SIZE_T i;
-
-  for (i=0; i<nSecCount; i++)
-  {
-    if (dwVirtAddr >= lpImgSect[i].VirtualAddress &&
-        dwVirtAddr < lpImgSect[i].VirtualAddress + lpImgSect[i].Misc.VirtualSize)
-      return dwVirtAddr - lpImgSect[i].VirtualAddress + lpImgSect[i].PointerToRawData;
-  }
-  return 0;
-}
-
 #endif //AGENTDLL
