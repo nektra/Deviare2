@@ -2,6 +2,10 @@
 ============
 * C# plugins may not work if "RegisterClassA" or "RegisterClassW" Apis are hooked because CoInitialize(Ex) calls RegisterClass on STA and, at this point, COM initialization is not complete yet.
 
+Version 2.8.2
+=============
+-Fixed compatibility issue with Windows 10 Anniversary Edition.
+
 Version 2.8.1
 =============
 Deviare InProc engine was updated to the latest version. It includes many fixes. For details on these, please check the commit logs in its repository.
