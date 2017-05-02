@@ -143,7 +143,7 @@ VOID nktDvTlsData_OnThreadExit()
     {
       lpTlsData = (CNktDvTlsData*)::TlsGetValue(dwTlsDataIndex);
       ::TlsSetValue(dwTlsDataIndex, NULL);
-	}
+    }
   }
   if (lpTlsData != NULL && lpTlsData != (CNktDvTlsData*)1)
     lpTlsData->Release(); //final release

@@ -549,7 +549,7 @@ HRESULT CNktDvSpyMgr::HookEnableProcess(__inout CNktDvHooksEnumerator *lpHooksEn
     nOldState = aHookItemsListByHookAndProc[nIndex]->nState;
     if (nOldState == CNktDvHook::stRemoved)
       continue; //return NKT_DVERR_NotFound;
-    if (nOldState != CNktDvHook::stActivating && nOldState != CNktDvHook::stActive)
+    if (nOldState != CNktDvHook::stActivating && nOldState != CNktDvHook::stActive && nOldState != CNktDvHook::stDisabled)
       continue; //return NKT_DVERR_HookIsInactive;
     dwHookId = aHookItemsListByHookAndProc[nIndex]->dwHookId;
     {

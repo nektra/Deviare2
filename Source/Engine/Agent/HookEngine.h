@@ -90,7 +90,7 @@ public:
   HRESULT Initialize();
   VOID Finalize();
 
-  HRESULT Hook(__in HOOKINFO aHookInfo[], __in SIZE_T nCount);
+  HRESULT Hook(__in HOOKINFO aHookInfo[], __in SIZE_T nCount, __in BOOL bIsInternal);
   HRESULT Unhook(__in LPDWORD lpdwHookIds, __in SIZE_T nCount);
   VOID DllUnloadUnhook(__in HINSTANCE hDll);
   VOID UnhookAll();

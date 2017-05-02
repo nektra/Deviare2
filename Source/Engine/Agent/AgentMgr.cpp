@@ -311,7 +311,7 @@ HRESULT CDvAgentMgr::Initialize(__in LPNKT_DV_AGENTINITDATA lpInitData, __in HAN
       {
         for (i=0; i<NKT_DV_ARRAYLEN(sHookInfo); i++)
           sHookInfo[i].nFlags |= NKT_DV_TMSG_ADDHOOK_FLAG_DisableStackWalk;
-        hRes = cHookEngine.Hook(sHookInfo, NKT_DV_ARRAYLEN(sHookInfo));
+        hRes = cHookEngine.Hook(sHookInfo, NKT_DV_ARRAYLEN(sHookInfo), TRUE);
       }
       else
       {
@@ -2519,7 +2519,7 @@ HRESULT CDvAgentMgr::OnEngMsg_AddHook(__inout NKT_DV_TMSG_ADDHOOK *lpMsg,
       CDvAgentMgrAutoSendDllNotificationAsync cAutoNotifyAsync(&nSendLoadedUnloadedDllAsync);
       //CDvAgentMgrAutoTlsSendDllNotificationAsync cAutoTlsNotifyAsync;
 
-      hRes = cHookEngine.Hook(&(cData->sHookInfo), 1);
+      hRes = cHookEngine.Hook(&(cData->sHookInfo), 1, FALSE);
     }
     if (SUCCEEDED(hRes))
     {
@@ -2661,7 +2661,7 @@ HRESULT CDvAgentMgr::OnEngMsg_BatchHookExec(__inout NKT_DV_TMSG_BATCHHOOKEXEC *l
           CDvAgentMgrAutoSendDllNotificationAsync cAutoNotifyAsync(&nSendLoadedUnloadedDllAsync);
           //CDvAgentMgrAutoTlsSendDllNotificationAsync cAutoTlsNotifyAsync;
 
-          hRes = cHookEngine.Hook(sHookInfos, nEntriesCount);
+          hRes = cHookEngine.Hook(sHookInfos, nEntriesCount, FALSE);
         }
         if (SUCCEEDED(hRes))
         {
@@ -2717,7 +2717,7 @@ HRESULT CDvAgentMgr::OnEngMsg_BatchHookExec(__inout NKT_DV_TMSG_BATCHHOOKEXEC *l
           CDvAgentMgrAutoSendDllNotificationAsync cAutoNotifyAsync(&nSendLoadedUnloadedDllAsync);
           //CDvAgentMgrAutoTlsSendDllNotificationAsync cAutoTlsNotifyAsync;
 
-          hRes = cHookEngine.Hook(sHookInfos, nEntriesCount);
+          hRes = cHookEngine.Hook(sHookInfos, nEntriesCount, FALSE);
         }
         if (SUCCEEDED(hRes))
         {

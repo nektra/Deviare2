@@ -121,7 +121,7 @@ VOID CNktDvHookEngine::Finalize()
   return;
 }
 
-HRESULT CNktDvHookEngine::Hook(__in HOOKINFO aHookInfo[], __in SIZE_T nCount)
+HRESULT CNktDvHookEngine::Hook(__in HOOKINFO aHookInfo[], __in SIZE_T nCount, __in BOOL bIsInternal)
 {
   CNktDvHookEngineAutoTlsLock cAutoTls;
   CNktAutoFastMutex cLock(this);
@@ -198,7 +198,7 @@ HRESULT CNktDvHookEngine::Hook(__in HOOKINFO aHookInfo[], __in SIZE_T nCount)
     else
     {
       dw = (lpHookEntry->cStrFunctionNameW.Format(L"0x%0*Ix", (int)(sizeof(SIZE_T)>>3),
-                                 (SIZE_T)(aHookInfo[nHookIdx].lpProcToHook)) != FALSE) ? 1 : 0;
+                                                  (SIZE_T)(aHookInfo[nHookIdx].lpProcToHook)) != FALSE) ? 1 : 0;
     }
     if (dw == 0)
     {
@@ -254,8 +254,7 @@ HRESULT CNktDvHookEngine::Hook(__in HOOKINFO aHookInfo[], __in SIZE_T nCount)
       break;
     }
     //attach custom handlers
-    if (aHookInfo[nHookIdx].sCustomHandlers.lpData != NULL &&
-        aHookInfo[nHookIdx].sCustomHandlers.nDataSize > 0)
+    if (aHookInfo[nHookIdx].sCustomHandlers.lpData != NULL && aHookInfo[nHookIdx].sCustomHandlers.nDataSize > 0)
     {
       SIZE_T nLen[2], nSize, nCount, nFlags;
       LPBYTE d;
@@ -311,7 +310,6 @@ hk_badtransport:
         nCount--;
       }
     }
-    
     //calculate base stub code size
 #if defined _M_IX86
     lpBaseStub = (LPBYTE)MiscHelpers::SkipJumpInstructions((LPBYTE)NktDvSuperHook_x86);
@@ -469,7 +467,10 @@ hk_badtransport:
   }
   //hook new items
   if (SUCCEEDED(hRes))
-    hRes = NKT_HRESULT_FROM_WIN32(cHookLib.Hook(cHookInfoList.Get(), nCount));
+  {
+    hRes = NKT_HRESULT_FROM_WIN32(cHookLib.Hook(cHookInfoList.Get(), nCount,
+                                                (bIsInternal != FALSE) ? NKTHOOKLIB_DisallowReentrancy : 0));
+  }
   //done
   if (SUCCEEDED(hRes))
   {
