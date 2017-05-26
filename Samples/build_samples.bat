@@ -1,6 +1,6 @@
 @ECHO OFF
 SETLOCAL
-IF NOT "%VC150COMNTOOLS%" == "" GOTO do_process
+IF NOT "%VS150COMNTOOLS%" == "" GOTO do_process
 IF NOT EXIST "%ProgramFiles(x86)%\Microsoft Visual Studio\2017\Enterprise\Common7\Tools\VsDevCmd.bat" GOTO show_err
 
 CALL "%ProgramFiles(x86)%\Microsoft Visual Studio\2017\Enterprise\Common7\Tools\VsDevCmd.bat"

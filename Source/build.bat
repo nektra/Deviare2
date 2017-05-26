@@ -6,7 +6,7 @@ IF /I [%1] == [debug] (
     SET __Config=Debug
 )
 
-IF NOT "%VC150COMNTOOLS%" == "" GOTO do_process
+IF NOT "%VS150COMNTOOLS%" == "" GOTO do_process
 
 IF NOT EXIST "%ProgramFiles(x86)%\Microsoft Visual Studio\2017\Enterprise\Common7\Tools\VsDevCmd.bat" (
     ECHO Visual Studio 2017 not found on this computer
