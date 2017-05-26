@@ -36,7 +36,7 @@ installed.
 
 To compile Deviare and/or build samples you need:
 
-- Visual Studio 2015 with Update 1 or later.
+- Visual Studio 2017.
 - .NET Framework 4.
 - Windows SDK 8 with all .NET Framework components installed.
 
@@ -45,7 +45,7 @@ To compile Deviare and/or build samples you need:
 generated when building Deviare. Deviare needs these files to work. If you
 create new databases, don't forget to move them to the *BIN* folder.
 To create them you must first build the corresponding tools that are
-included in the solution.
+included in the solution. Refer to [these instructions](Source/Database/Generator/README.txt) for further details.
 
 
 -------------
@@ -66,7 +66,7 @@ To do so, place the contents of Deviare-InProc inside `Externals/DeviareInProc`.
 -------------
 # BUILDING DEVIARE
 
-To build Deviare you can either execute the build script (build.bat) in a VS2015
+To build Deviare you can either execute the build script (build.bat) in a VS2017
  command prompt or open the solution and build it from within Visual Studio.
  When doing the latter, make sure to build for both x86 and x64 target platforms.
  
