@@ -1,12 +1,11 @@
 @ECHO OFF
 SETLOCAL
-IF NOT "%VCINSTALLDIR%" == "" GOTO do_process
-IF "%VS140COMNTOOLS%" == "" GOTO show_err
+IF NOT "%VS150COMNTOOLS%" == "" GOTO do_process
+IF NOT EXIST "%ProgramFiles(x86)%\Microsoft Visual Studio\2017\Enterprise\Common7\Tools\VsDevCmd.bat" GOTO show_err
+
+CALL "%ProgramFiles(x86)%\Microsoft Visual Studio\2017\Enterprise\Common7\Tools\VsDevCmd.bat"
 
 :do_process
-CALL "%VS140COMNTOOLS%\..\..\VC\vcvarsall.bat" x86
-IF "%VS140COMNTOOLS%" == "" GOTO err_cantsetupvs_x86
-
 DEVENV C\RegistryPlugin\RegistryPlugin.sln /rebuild "Release|Win32"
 IF NOT %ERRORLEVEL% == 0 goto bad_compile
 
@@ -28,12 +27,6 @@ IF NOT %ERRORLEVEL% == 0 goto bad_compile
 DEVENV CSharp\PrintLogger\PrintLogger.sln /rebuild "Release|x86"
 IF NOT %ERRORLEVEL% == 0 goto bad_compile
 
-ENDLOCAL
-
-SETLOCAL
-CALL "%VS140COMNTOOLS%\..\..\VC\vcvarsall.bat" x64
-IF "%VS140COMNTOOLS%" == "" GOTO err_cantsetupvs_x64
-
 DEVENV C\RegistryPlugin\RegistryPlugin.sln /rebuild "Release|x64"
 IF NOT %ERRORLEVEL% == 0 goto bad_compile
 
@@ -52,17 +45,7 @@ IF NOT %ERRORLEVEL% == 0 goto bad_compile
 GOTO end
 
 :show_err
-ECHO Please execute this batch file inside a Visual Studio Command Prompt
-PAUSE
-GOTO end
-
-:err_cantsetupvs_x86
-ECHO Cannot initialize Visual Studio x86 Command Prompt environment
-PAUSE
-GOTO end
-
-:err_cantsetupvs_x64
-ECHO Cannot initialize Visual Studio x64 Command Prompt environment
+ECHO Please execute this batch file inside a Visual Studio 2017 Command Prompt
 PAUSE
 GOTO end
 
