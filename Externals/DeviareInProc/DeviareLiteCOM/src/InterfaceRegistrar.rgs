@@ -1,0 +1,26 @@
+HKCR
+{
+	%PROGID%.%VERSION% = s '%DESCRIPTION%'
+	{
+		CLSID = s '%CLSID%'
+	}
+	%PROGID% = s '%DESCRIPTION%'
+	{
+		CLSID = s '%CLSID%'
+		CurVer = s '%PROGID%.%VERSION%'
+	}
+	NoRemove CLSID
+	{
+		ForceRemove %CLSID% = s '%DESCRIPTION%'
+		{
+			ProgID = s '%PROGID%.%VERSION%'
+			VersionIndependentProgID = s '%PROGID%'
+			ForceRemove 'Programmable'
+			InprocServer32 = s '%MODULE%'
+			{
+				val ThreadingModel = s '%THREADING%'
+			}
+			'TypeLib' = s '%LIBID%'
+		}
+	}
+}
