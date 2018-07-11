@@ -120,14 +120,14 @@
     <_ProjectFileVersion>11.0.60610.1</_ProjectFileVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>$(SolutionDir)\bin\2017\</OutDir>
+    <OutDir>..\bin\2017\</OutDir>
     <IntDir>..\obj\2017\$(ProjectName)\$(Configuration)\$(Platform)\</IntDir>
     <IgnoreImportLibrary>true</IgnoreImportLibrary>
     <LinkIncremental>true</LinkIncremental>
     <TargetName>DeviareLiteCOM</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugXP|Win32'">
-    <OutDir>$(SolutionDir)\bin\2017\</OutDir>
+    <OutDir>..\bin\2017\</OutDir>
     <IntDir>..\obj\2017\$(ProjectName)\$(Configuration)\$(Platform)\</IntDir>
     <IgnoreImportLibrary>true</IgnoreImportLibrary>
     <LinkIncremental>true</LinkIncremental>
@@ -135,14 +135,14 @@
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>$(SolutionDir)\bin64\2017\</OutDir>
+    <OutDir>..\bin64\2017\</OutDir>
     <IntDir>..\obj\2017\$(ProjectName)\$(Configuration)\$(Platform)\</IntDir>
     <IgnoreImportLibrary>true</IgnoreImportLibrary>
     <LinkIncremental>true</LinkIncremental>
     <TargetName>DeviareLiteCOM64</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugXP|x64'">
-    <OutDir>$(SolutionDir)\bin64\2017\</OutDir>
+    <OutDir>..\bin64\2017\</OutDir>
     <IntDir>..\obj\2017\$(ProjectName)\$(Configuration)\$(Platform)\</IntDir>
     <IgnoreImportLibrary>true</IgnoreImportLibrary>
     <LinkIncremental>true</LinkIncremental>
@@ -150,14 +150,14 @@
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>$(SolutionDir)\bin\2017\</OutDir>
+    <OutDir>..\bin\2017\</OutDir>
     <IntDir>..\obj\2017\$(ProjectName)\$(Configuration)\$(Platform)\</IntDir>
     <IgnoreImportLibrary>true</IgnoreImportLibrary>
     <LinkIncremental>false</LinkIncremental>
     <TargetName>DeviareLiteCOM</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseXP|Win32'">
-    <OutDir>$(SolutionDir)\bin\2017\</OutDir>
+    <OutDir>..\bin\2017\</OutDir>
     <IntDir>..\obj\2017\$(ProjectName)\$(Configuration)\$(Platform)\</IntDir>
     <IgnoreImportLibrary>true</IgnoreImportLibrary>
     <LinkIncremental>false</LinkIncremental>
@@ -165,14 +165,14 @@
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>$(SolutionDir)\bin64\2017\</OutDir>
+    <OutDir>..\bin64\2017\</OutDir>
     <IntDir>..\obj\2017\$(ProjectName)\$(Configuration)\$(Platform)\</IntDir>
     <IgnoreImportLibrary>true</IgnoreImportLibrary>
     <LinkIncremental>false</LinkIncremental>
     <TargetName>DeviareLiteCOM64</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseXP|x64'">
-    <OutDir>$(SolutionDir)\bin64\2017\</OutDir>
+    <OutDir>..\bin64\2017\</OutDir>
     <IntDir>..\obj\2017\$(ProjectName)\$(Configuration)\$(Platform)\</IntDir>
     <IgnoreImportLibrary>true</IgnoreImportLibrary>
     <LinkIncremental>false</LinkIncremental>
@@ -197,7 +197,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
-      <AdditionalIncludeDirectories>$(SolutionDir)\include;$(IntDir)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\include;$(IntDir)</AdditionalIncludeDirectories>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -209,7 +209,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
-      <AdditionalLibraryDirectories>$(SolutionDir)\lib\2017\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\lib\2017\</AdditionalLibraryDirectories>
       <AdditionalDependencies>NktHookLib_Debug.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
@@ -237,7 +237,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
-      <AdditionalIncludeDirectories>$(SolutionDir)\include;$(IntDir)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\include;$(IntDir)</AdditionalIncludeDirectories>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -249,7 +249,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
-      <AdditionalLibraryDirectories>$(SolutionDir)\lib\2017\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\lib\2017\</AdditionalLibraryDirectories>
       <AdditionalDependencies>NktHookLib_Debug.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
@@ -277,7 +277,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>$(SolutionDir)\include;$(IntDir)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\include;$(IntDir)</AdditionalIncludeDirectories>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -289,7 +289,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX64</TargetMachine>
-      <AdditionalLibraryDirectories>$(SolutionDir)\lib\2017\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\lib\2017\</AdditionalLibraryDirectories>
       <AdditionalDependencies>NktHookLib64_Debug.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
@@ -317,7 +317,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>$(SolutionDir)\include;$(IntDir)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\include;$(IntDir)</AdditionalIncludeDirectories>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -329,7 +329,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX64</TargetMachine>
-      <AdditionalLibraryDirectories>$(SolutionDir)\lib\2017\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\lib\2017\</AdditionalLibraryDirectories>
       <AdditionalDependencies>NktHookLib64_Debug.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
@@ -355,7 +355,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>$(SolutionDir)\include;$(IntDir)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\include;$(IntDir)</AdditionalIncludeDirectories>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -369,7 +369,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <TargetMachine>MachineX86</TargetMachine>
-      <AdditionalLibraryDirectories>$(SolutionDir)\lib\2017\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\lib\2017\</AdditionalLibraryDirectories>
       <AdditionalDependencies>NktHookLib.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
@@ -395,7 +395,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>$(SolutionDir)\include;$(IntDir)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\include;$(IntDir)</AdditionalIncludeDirectories>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -409,7 +409,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <TargetMachine>MachineX86</TargetMachine>
-      <AdditionalLibraryDirectories>$(SolutionDir)\lib\2017\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\lib\2017\</AdditionalLibraryDirectories>
       <AdditionalDependencies>NktHookLib.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
@@ -435,7 +435,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>$(SolutionDir)\include;$(IntDir)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\include;$(IntDir)</AdditionalIncludeDirectories>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -449,7 +449,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <TargetMachine>MachineX64</TargetMachine>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)\lib\2017\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\lib\2017\</AdditionalLibraryDirectories>
       <AdditionalDependencies>NktHookLib64.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
@@ -475,7 +475,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>$(SolutionDir)\include;$(IntDir)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\include;$(IntDir)</AdditionalIncludeDirectories>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -489,7 +489,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <TargetMachine>MachineX64</TargetMachine>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)\lib\2017\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\lib\2017\</AdditionalLibraryDirectories>
       <AdditionalDependencies>NktHookLib64.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>

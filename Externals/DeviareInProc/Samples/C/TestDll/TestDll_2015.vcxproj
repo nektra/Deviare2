@@ -116,49 +116,49 @@
     <_ProjectFileVersion>11.0.61030.0</_ProjectFileVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>$(SolutionDir)bin\2015\</OutDir>
+    <OutDir>..\..\..\bin\2015\</OutDir>
     <IntDir>..\..\..\obj\2015\$(ProjectName)\$(Configuration)\$(Platform)\</IntDir>
     <LinkIncremental>true</LinkIncremental>
     <TargetName>TestDll</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugXP|Win32'">
-    <OutDir>$(SolutionDir)bin\2015\</OutDir>
+    <OutDir>..\..\..\bin\2015\</OutDir>
     <IntDir>..\..\..\obj\2015\$(ProjectName)\$(Configuration)\$(Platform)\</IntDir>
     <LinkIncremental>true</LinkIncremental>
     <TargetName>TestDllXP</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>$(SolutionDir)bin\2015\</OutDir>
+    <OutDir>..\..\..\bin\2015\</OutDir>
     <IntDir>..\..\..\obj\2015\$(ProjectName)\$(Configuration)\$(Platform)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
     <TargetName>TestDll</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseXP|Win32'">
-    <OutDir>$(SolutionDir)bin\2015\</OutDir>
+    <OutDir>..\..\..\bin\2015\</OutDir>
     <IntDir>..\..\..\obj\2015\$(ProjectName)\$(Configuration)\$(Platform)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
     <TargetName>TestDllXP</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>$(SolutionDir)bin64\2015\</OutDir>
+    <OutDir>..\..\..\bin64\2015\</OutDir>
     <IntDir>..\..\..\obj\2015\$(ProjectName)\$(Configuration)\$(Platform)\</IntDir>
     <LinkIncremental>true</LinkIncremental>
     <TargetName>TestDll64</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugXP|x64'">
-    <OutDir>$(SolutionDir)bin64\2015\</OutDir>
+    <OutDir>..\..\..\bin64\2015\</OutDir>
     <IntDir>..\..\..\obj\2015\$(ProjectName)\$(Configuration)\$(Platform)\</IntDir>
     <LinkIncremental>true</LinkIncremental>
     <TargetName>TestDllXP64</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>$(SolutionDir)bin64\2015\</OutDir>
+    <OutDir>..\..\..\bin64\2015\</OutDir>
     <IntDir>..\..\..\obj\2015\$(ProjectName)\$(Configuration)\$(Platform)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
     <TargetName>TestDll64</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseXP|x64'">
-    <OutDir>$(SolutionDir)bin64\2015\</OutDir>
+    <OutDir>..\..\..\bin64\2015\</OutDir>
     <IntDir>..\..\..\obj\2015\$(ProjectName)\$(Configuration)\$(Platform)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
     <TargetName>TestDllXP64</TargetName>
