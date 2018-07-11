@@ -28,19 +28,19 @@
  **/
 
 #include "StdAfx.h"
-#include "../../../Externals/DeviareInProc/Include/NktHookLib.h"
+#include "..\..\..\Externals\DeviareInProc\Include\NktHookLib.h"
 
 #if defined _M_IX86
   #ifdef _DEBUG
-    #pragma comment(lib, "..\\..\\..\\Externals\\DeviareInProc\\Libs\\2017\\NktHookLib_Debug.lib")
+    #pragma comment(lib, "..\\..\\..\\Externals\\DeviareInProc\\lib\\2017\\NktHookLib_Debug.lib")
 #else //_DEBUG
-    #pragma comment(lib, "..\\..\\..\\Externals\\DeviareInProc\\Libs\\2017\\NktHookLib.lib")
+    #pragma comment(lib, "..\\..\\..\\Externals\\DeviareInProc\\lib\\2017\\NktHookLib.lib")
   #endif //_DEBUG
 #elif defined _M_X64
   #ifdef _DEBUG
-    #pragma comment(lib, "..\\..\\..\\Externals\\DeviareInProc\\Libs\\2017\\NktHookLib64_Debug.lib")
+    #pragma comment(lib, "..\\..\\..\\Externals\\DeviareInProc\\lib\\2017\\NktHookLib64_Debug.lib")
   #else //_DEBUG
-    #pragma comment(lib, "..\\..\\..\\Externals\\DeviareInProc\\Libs\\2017\\NktHookLib64.lib")
+    #pragma comment(lib, "..\\..\\..\\Externals\\DeviareInProc\\lib\\2017\\NktHookLib64.lib")
   #endif //_DEBUG
 #else
   #error Unsupported platform

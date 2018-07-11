@@ -46,18 +46,18 @@
 #if defined _M_IX86
   #ifdef _DEBUG
     #pragma comment(lib, "..\\..\\..\\Libs\\Lz4Lib_Debug.lib")
-    #pragma comment(lib, "..\\..\\..\\Externals\\DeviareInProc\\Libs\\2017\\NktHookLib_Debug.lib")
+    #pragma comment(lib, "..\\..\\..\\Externals\\DeviareInProc\\lib\\2017\\NktHookLib_Debug.lib")
 #else //_DEBUG
     #pragma comment(lib, "..\\..\\..\\Libs\\Lz4Lib.lib")
-    #pragma comment(lib, "..\\..\\..\\Externals\\DeviareInProc\\Libs\\2017\\NktHookLib.lib")
+    #pragma comment(lib, "..\\..\\..\\Externals\\DeviareInProc\\lib\\2017\\NktHookLib.lib")
   #endif //_DEBUG
 #elif defined _M_X64
   #ifdef _DEBUG
     #pragma comment(lib, "..\\..\\..\\Libs\\Lz4Lib64_Debug.lib")
-    #pragma comment(lib, "..\\..\\..\\Externals\\DeviareInProc\\Libs\\2017\\NktHookLib64_Debug.lib")
+    #pragma comment(lib, "..\\..\\..\\Externals\\DeviareInProc\\lib\\2017\\NktHookLib64_Debug.lib")
   #else //_DEBUG
     #pragma comment(lib, "..\\..\\..\\Libs\\Lz4Lib64.lib")
-    #pragma comment(lib, "..\\..\\..\\Externals\\DeviareInProc\\Libs\\2017\\NktHookLib64.lib")
+    #pragma comment(lib, "..\\..\\..\\Externals\\DeviareInProc\\lib\\2017\\NktHookLib64.lib")
   #endif //_DEBUG
 #else
   #error Unsupported platform
@@ -467,7 +467,7 @@ static VOID Finalize(__in BOOL bFinishMainThread)
     CNktSimpleLockNonReentrant cLock(&nMiniHooksLock);
     SIZE_T i;
 
-    for (i=0; i<_countof(sMiniHooks); i++)
+    for (i=0; i<sizeof(sMiniHooks)/sizeof(sMiniHooks[0]); i++)
     {
       if (sMiniHooks[i].nHookId != 0)
       {
