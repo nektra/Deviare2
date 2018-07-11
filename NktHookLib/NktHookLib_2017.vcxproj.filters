@@ -45,7 +45,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="$(SolutionDir)\Include\NktHookLib.h">
+    <ClInclude Include="..\Include\NktHookLib.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\HookEntry.h">
@@ -86,8 +86,8 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="$(SolutionDir)\LICENSE.COMMERCIAL" />
-    <None Include="$(SolutionDir)\LICENSE.GPL" />
+    <None Include="..\LICENSE.COMMERCIAL" />
+    <None Include="..\LICENSE.GPL" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Header Files">
