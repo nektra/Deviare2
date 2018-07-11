@@ -30,6 +30,7 @@
 #include "NtInternals.h"
 #include "AutoPtr.h"
 #include "DynamicAPIs.h"
+#include <VersionHelpers.h>
 
 //-----------------------------------------------------------
 
@@ -272,7 +273,6 @@ HRESULT nktDvNtFindApiMapSet(__out CNktStringW &cStrReplDllW, __in HANDLE hProce
                              __in SIZE_T nPlatformBits, __in LPCWSTR szDllToFindW,
                              __in LPCWSTR szImportingDllW)
 {
-  DWORD dwOsVer;
   LPBYTE lpPeb, lpApiMapSet, lpPtr;
   DWORD dwTemp32, dwDllToFindLen, dwDllToFindLenInBytes, dwImportingDllLen, dwImportingDllLenInBytes;
 #if defined _M_X64
@@ -289,13 +289,8 @@ HRESULT nktDvNtFindApiMapSet(__out CNktStringW &cStrReplDllW, __in HANDLE hProce
     return E_INVALIDARG;
   dwImportingDllLenInBytes = dwImportingDllLen * (DWORD)sizeof(WCHAR);
   //----
-  dwOsVer = ::GetVersion();
-  if ((dwOsVer & 0x80000000) != 0)
-    return E_NOTIMPL; //reject win9x
-  if ((LOBYTE(LOWORD(dwOsVer))) < 6)
+  if (!IsWindows7OrGreater()) //reject pre-win7
     return NKT_DVERR_NotFound; //reject pre-winvista
-  if ((LOBYTE(LOWORD(dwOsVer))) == 6 && (HIBYTE(LOWORD(dwOsVer))) < 1)
-    return NKT_DVERR_NotFound; //reject pre-win7
   //remove dll extension if any
   dwDllToFindLen = (DWORD)wcslen(szDllToFindW);
   for (dwTemp32=dwDllToFindLen; dwTemp32 > 0 && szDllToFindW[dwTemp32-1] != L'.'; dwTemp32--);

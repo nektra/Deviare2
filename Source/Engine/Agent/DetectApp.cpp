@@ -30,6 +30,7 @@
 #include "DetectApp.h"
 #include "..\..\Common\WaitableObjects.h"
 #include "..\..\Common\Tools.h"
+#include <VersionHelpers.h>
 
 #pragma comment(lib, "version.lib")
 
@@ -83,8 +84,7 @@ BOOL IsRunningElevated()
   DWORD dwRet;
   HANDLE hToken;
 
-  dwRet = ::GetVersion();
-  if ((DWORD)(LOBYTE(LOWORD(dwRet))) < 6)
+  if (!IsWindowsVistaOrGreater())
     return TRUE; //pre-Vista => always elevated
   if (::OpenProcessToken(::GetCurrentProcess(), TOKEN_QUERY, &hToken) == FALSE)
     return FALSE; //assume not elevated on error

@@ -34,6 +34,7 @@
 #include <ShellAPI.h>
 #include <process.h>
 #include <intrin.h>
+#include <VersionHelpers.h>
 #include "AutoPtr.h"
 #include "WaitableObjects.h"
 #include "NtInternals.h"
@@ -2342,7 +2343,6 @@ static VOID ToolsHelperThread_Stop(__in BOOL bWait)
 {
   typedef LONG (__stdcall *lpfnRtlFreeUserThreadStack)(__in HANDLE procHandle, __in HANDLE threadHandle);
   lpfnRtlFreeUserThreadStack fnRtlFreeUserThreadStack;
-  OSVERSIONINFO sOvi;
   HINSTANCE hNtDll;
   SIZE_T i;
 
@@ -2354,9 +2354,7 @@ static VOID ToolsHelperThread_Stop(__in BOOL bWait)
       //terminate thread if didn't end successfully
       ::SuspendThread(sHelperThread.hThread);
       //on pre-vista call "RtlFreeUserThreadStack" to avoid leaks when terminating threads
-      nktMemSet(&sOvi, 0, sizeof(sOvi));
-      sOvi.dwOSVersionInfoSize = sizeof(sOvi);
-      if (::GetVersionEx(&sOvi) != FALSE && sOvi.dwPlatformId == VER_PLATFORM_WIN32_NT && sOvi.dwMajorVersion < 6)
+      if (!IsWindowsVistaOrGreater())
       {
         hNtDll = ::GetModuleHandleW(L"ntdll.dll");
         if (hNtDll != NULL)

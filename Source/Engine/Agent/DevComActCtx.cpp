@@ -28,6 +28,7 @@
  **/
 
 #include "DevComActCtx.h"
+#include <VersionHelpers.h>
 
 #ifdef NKT_ENABLE_MEMORY_TRACKING
   #undef THIS_FILE
@@ -45,19 +46,12 @@ typedef BOOL (WINAPI *lpfnDeactivateActCtx)(__in DWORD dwFlags, __in ULONG_PTR u
 
 CNktDeviareComActCtx::CNktDeviareComActCtx() : CNktMemMgrObj()
 {
-  OSVERSIONINFO sOvi;
-
   hActCtx = NULL;
   nktMemSet(fn, 0, sizeof(fn));
-  bIsXPorLater = FALSE;
   hKernel32Dll = NULL;
   //----
-  nktMemSet(&sOvi, 0, sizeof(sOvi));
-  sOvi.dwOSVersionInfoSize = sizeof(sOvi);
-  if (::GetVersionEx(&sOvi) != FALSE &&
-      sOvi.dwPlatformId == VER_PLATFORM_WIN32_NT &&
-      (sOvi.dwMajorVersion > 5 ||
-      (sOvi.dwMajorVersion == 5 && sOvi.dwMinorVersion >= 1)))
+  bIsXPorLater = IsWindowsXPOrGreater();
+  if (bIsXPorLater != FALSE)
   {
     bIsXPorLater = TRUE;
     hKernel32Dll = ::LoadLibraryW(L"kernel32.dll");

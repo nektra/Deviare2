@@ -32,6 +32,7 @@
 #include "Debug.h"
 #include "WaitableObjects.h"
 #include "RegistrySettings.h"
+#include <VersionHelpers.h>
 
 //-----------------------------------------------------------
 
@@ -216,7 +217,8 @@ static VOID SendDebugOutput(__in LPCSTR szBufA, __in SIZE_T nBufLen)
 
   if (nIsVistaOrLater < 0)
   {
-    NktInterlockedExchange(&nIsVistaOrLater, (LOBYTE(LOWORD(::GetVersion())) >= 6) ? 1 : 0);
+    
+    NktInterlockedExchange(&nIsVistaOrLater, IsWindowsVistaOrGreater() ? 1 : 0);
   }
   if (sDebugOutput.nInitialized == 0)
   {

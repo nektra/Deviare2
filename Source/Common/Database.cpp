@@ -564,17 +564,6 @@ CNktDvDbObjectNoRef* CNktDvEngDatabase::FindFunctionTypeByName(__in_nz_opt LPCWS
 HRESULT CNktDvEngDatabase::CreateMapping(__out HANDLE *lphFileMap, __in_z LPCWSTR szDatabasePathW,
                                          __in SIZE_T _nPlatformBits)
 {
-  /*
-  static LPCWSTR szW2kSID = L"D:P(D;OICI;GA;;;BG)" //deny guests
-                            L"(D;OICI;GA;;;AU)" //deny authenticated users
-                            L"(A;OICI;GA;;;SY)" //allow system
-                            L"(A;OICI;GA;;;BA)"; //allow administrators
-  static LPCWSTR szWXPOrLaterSID = L"D:P(D;OICI;GA;;;BG)" //deny guests
-                                   L"(D;OICI;GA;;;AN)" //deny anonymous logon (XP and later)
-                                   L"(D;OICI;GA;;;AU)" //deny authenticated users
-                                   L"(A;OICI;GA;;;SY)" //allow system
-                                   L"(A;OICI;GA;;;BA)"; //allow administrators
-  */
   TNktAutoFreePtr<BYTE> aCompressedData;
   CNktStringW cStrDbFileNameW;
   SECURITY_ATTRIBUTES sSa;
@@ -675,20 +664,12 @@ cdbm_err_fail:
   //create shared memory for decompressed data
   nktMemSet(&sSa, 0, sizeof(sSa));
   sSa.nLength = sizeof(SECURITY_ATTRIBUTES);
-  dw = ::GetVersion();
-  dw = ((LOBYTE(LOWORD(dw))) < 5 ||
-        ((LOBYTE(LOWORD(dw))) == 5 && HIBYTE(LOWORD(dw)) == 0)) ? 0 : 1;
   //create a descriptor to allow access to administrators and system account. the rest will be denied by default
   //http://msdn.microsoft.com/en-us/library/windows/hardware/ff563667(v=vs.85).aspx
   //FILE_MAP_ALL_ACCESS | GENERIC_ALL = 0xF01F001F
   if (::ConvertStringSecurityDescriptorToSecurityDescriptorW(L"D:P(A;;0xF01F001F;;;SY)(A;;0xF01F001F;;;BA)",
                              SDDL_REVISION_1, &(sSa.lpSecurityDescriptor), NULL) == FALSE)
     goto cdbm_err_lasterr;
-  /*
-  if (::ConvertStringSecurityDescriptorToSecurityDescriptorW((dw == 0) ? szW2kSID : szWXPOrLaterSID,
-                SDDL_REVISION_1, &(sSa.lpSecurityDescriptor), NULL) == FALSE)
-    goto cdbm_err_lasterr;
-  */
   hFileMap = ::CreateFileMapping(INVALID_HANDLE_VALUE, &sSa, PAGE_READWRITE|SEC_COMMIT, 0,
                                  (DWORD)nDecompressedSize, NULL);
   hRes = (hFileMap != NULL && hFileMap != INVALID_HANDLE_VALUE) ? S_OK : NKT_HRESULT_FROM_LASTERROR();

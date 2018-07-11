@@ -35,6 +35,7 @@
 #include "..\..\Common\RegistrySettings.h"
 #include <Aclapi.h>
 #include <Sddl.h>
+#include <VersionHelpers.h>
 
 //-----------------------------------------------------------
 
@@ -370,8 +371,6 @@ HRESULT CNktDvSpyMgr::CAgentController::LoadAgentIntoProcess(__in LPCWSTR szAgen
   NKT_ASSERT(szAgentPathW != NULL && szAgentPathW[0] != 0);
   if (cProc->GetProcessId() == 0 || cProc->GetProcessId() == ::GetCurrentProcessId())
     return E_INVALIDARG; //reject self inject
-  if ((::GetVersion() & 0x80000000) != 0)
-    return E_NOTIMPL; //reject win9x
   //check if the target process platform is the same than us
   switch (cProc->GetPlatformBits())
   {
@@ -709,13 +708,9 @@ static DWORD GetWinlogonProcessId()
   HANDLE hSnapshot;
   PROCESSENTRY32W sPe32_W;
   BOOL b, bIsVista;
-  OSVERSIONINFOW sOvi;
   CNktStringW cStrTempW;
 
-  nktMemSet(&sOvi, 0, sizeof(sOvi));
-  sOvi.dwOSVersionInfoSize = sizeof(sOvi);
-  bIsVista = (::GetVersionEx(&sOvi) != FALSE && sOvi.dwPlatformId == VER_PLATFORM_WIN32_NT &&
-              sOvi.dwMajorVersion >= 6) ? TRUE : FALSE;
+  bIsVista = IsWindowsVistaOrGreater();
   //create process snapshot
   hSnapshot = ::CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
   if (hSnapshot != INVALID_HANDLE_VALUE)

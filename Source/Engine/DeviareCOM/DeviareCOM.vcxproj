@@ -26,28 +26,28 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <PlatformToolset>v141_xp</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <UseOfAtl>Static</UseOfAtl>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <PlatformToolset>v141_xp</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <UseOfAtl>Static</UseOfAtl>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>false</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <PlatformToolset>v141_xp</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <UseOfAtl>Static</UseOfAtl>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <PlatformToolset>v141_xp</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <UseOfAtl>Static</UseOfAtl>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>false</WholeProgramOptimization>
@@ -113,7 +113,7 @@
       <InterfaceIdentifierFileName>DeviareCOM_i.c</InterfaceIdentifierFileName>
       <ProxyFileName>DeviareCOM_p.c</ProxyFileName>
       <EnableErrorChecks>All</EnableErrorChecks>
-      <ValidateAllParameters>true</ValidateAllParameters>
+      <MinimumTargetSystem />
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
@@ -157,6 +157,7 @@ MT.EXE -manifest "$(ProjectDir)RegFreeCOM_Manifest_Files\DeviareCOM.X.manifest" 
       <InterfaceIdentifierFileName>DeviareCOM64_i.c</InterfaceIdentifierFileName>
       <ProxyFileName>DeviareCOM64_p.c</ProxyFileName>
       <EnableErrorChecks>All</EnableErrorChecks>
+      <MinimumTargetSystem />
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
@@ -198,7 +199,7 @@ MT.EXE -manifest "$(ProjectDir)RegFreeCOM_Manifest_Files\DeviareCOM64.X.manifest
       <DllDataFileName>dlldata.c</DllDataFileName>
       <InterfaceIdentifierFileName>DeviareCOM_i.c</InterfaceIdentifierFileName>
       <ProxyFileName>DeviareCOM_p.c</ProxyFileName>
-      <ValidateAllParameters>true</ValidateAllParameters>
+      <MinimumTargetSystem />
     </Midl>
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
@@ -240,6 +241,7 @@ MT.EXE -manifest "$(ProjectDir)RegFreeCOM_Manifest_Files\DeviareCOM.X.manifest" 
       <DllDataFileName>dlldata64.c</DllDataFileName>
       <InterfaceIdentifierFileName>DeviareCOM64_i.c</InterfaceIdentifierFileName>
       <ProxyFileName>DeviareCOM64_p.c</ProxyFileName>
+      <MinimumTargetSystem />
     </Midl>
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>

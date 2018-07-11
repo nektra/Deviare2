@@ -35,6 +35,7 @@
 #include "..\..\Common\RegistrySettings.h"
 #include <tlhelp32.h>
 #include "DetectApp.h"
+#include <VersionHelpers.h>
 
 #ifdef _DEBUG
   #define ATTACH_2_DEBUGGER_AT_STARTUP
@@ -172,21 +173,13 @@ __declspec(dllexport) HRESULT APIENTRY Initialize(__in LPNKT_DV_AGENTINITDATA lp
   CNktEvent cInitCompletedEvent;
   WCHAR szEventNameW[128];
   MAINTHREAD_PARAMS sThreadParams;
-  DWORD dwOsVer, dwMainThreadId;
+  DWORD dwMainThreadId;
   HANDLE hEvents[2];
 
-  dwOsVer = ::GetVersion();
-  if ((dwOsVer & 0x80000000) != 0)
+  if (!IsWindowsXPOrGreater())
   {
-    NKT_DEBUGPRINTLNA(Nektra::dlAgent, ("%lu) AgentInitialize[GetVersion]: hRes=%08X",
-                       ::GetTickCount(), E_NOTIMPL));
-    return E_NOTIMPL; //reject win9x
-  }
-  if ((LOBYTE(LOWORD(dwOsVer))) < 5)
-  {
-    NKT_DEBUGPRINTLNA(Nektra::dlAgent, ("%lu) AgentInitialize[GetVersion]: hRes=%08X",
-                       ::GetTickCount(), E_NOTIMPL));
-    return E_NOTIMPL; //reject pre-win2000
+    NKT_DEBUGPRINTLNA(Nektra::dlAgent, ("%lu) AgentInitialize[GetVersion]: hRes=%08X", ::GetTickCount(), E_NOTIMPL));
+    return E_NOTIMPL; //reject pre-XP
   }
   //Nektra::DebugBreak();
 #ifdef ATTACH_2_DEBUGGER_AT_STARTUP

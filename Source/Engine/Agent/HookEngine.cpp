@@ -139,8 +139,6 @@ HRESULT CNktDvHookEngine::Hook(__in HOOKINFO aHookInfo[], __in SIZE_T nCount, __
     return E_INVALIDARG;
   if (FAILED(cAutoTls.GetError()))
     return cAutoTls.GetError();
-  if ((::GetVersion() & 0x80000000) != 0)
-    return E_NOTIMPL; //reject win9x
   //check parameters
   for (nHookIdx=0; nHookIdx<nCount; nHookIdx++)
   {
@@ -148,7 +146,9 @@ HRESULT CNktDvHookEngine::Hook(__in HOOKINFO aHookInfo[], __in SIZE_T nCount, __
       return E_POINTER;
     if ((aHookInfo[nHookIdx].nFlags & (NKT_DV_TMSG_ADDHOOK_FLAG_OnlyPreCall|NKT_DV_TMSG_ADDHOOK_FLAG_OnlyPostCall)) ==
                   (NKT_DV_TMSG_ADDHOOK_FLAG_OnlyPreCall|NKT_DV_TMSG_ADDHOOK_FLAG_OnlyPostCall))
+    {
       return E_INVALIDARG;
+    }
     //check if already exists
     for (lpHookEntry=it.Begin(cHooksList); lpHookEntry!=NULL; lpHookEntry=it.Next())
     {

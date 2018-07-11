@@ -33,22 +33,21 @@
   #define WIN32_LEAN_AND_MEAN
 #endif //!WIN32_LEAN_AND_MEAN
 #ifndef WINVER
-  #define WINVER 0x0500
+  #define WINVER 0x0501
 #endif //!WINVER
 #ifndef _WIN32_WINNT
 #ifndef _M_X64
-  #define _WIN32_WINNT 0x0500
+  #define _WIN32_WINNT 0x0501
 #else
   #define _WIN32_WINNT 0x0501
 #endif
 #endif //!_WIN32_WINN
 #ifndef _WIN32_WINDOWS
-  #define _WIN32_WINDOWS 0x0510
+  #define _WIN32_WINDOWS 0x0501
 #endif //!_WIN32_WINDOWS
 #ifndef _WIN32_IE
   #define _WIN32_IE 0x0700
 #endif //!_WIN32_IE
-
 
 #include <windows.h>
 #include "MemoryManager.h"
