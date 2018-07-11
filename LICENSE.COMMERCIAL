@@ -1,0 +1,199 @@
+Terms and conditions
+
+Company Information
+
+AGREEMENT BETWEEN YOU AND NEKTRA LLC.
+
+
+Nektra Deviare In-Proc Software License Agreement
+Nektra, Software License Agreement 
+LICENSE AGREEMENT
+
+THIS LICENSE AGREEMENT (THE "AGREEMENT") IS A LEGAL AGREEMENT BETWEEN YOU
+(EITHER AN INDIVIDUAL OR A LEGAL ENTITY) AND NEKTRA FOR THE SOFTWARE PRODUCT
+IDENTIFIED ABOVE, WHICH INCLUDES COMPUTER SOFTWARE AND ELECTRONIC DOCUMENTATION
+("SOFTWARE"). PLEASE READ THE FOLLOWING LICENSE AGREEMENT CAREFULLY BEFORE USING
+THE SOFTWARE. BY INSTALLING, COPYING, OR OTHERWISE USING THE SOFTWARE YOU AGREE
+TO BE BOUND BY THE TERMS AND CONDITIONS OF THIS AGREEMENT. IF YOU DO NOT ACCEPT
+THE TERMS OF THIS AGREEMENT, YOU ARE NOT AUTHORISED TO INSTALL, COPY OR USE THE
+SOFTWARE.
+
+1. DEFINITIONS
+The following terms shall have the following meanings:
+
+"Documentation" means the technical publications prepared and delivered to
+Licensee by Nektra relating to use of the Software, such as reference and
+tutorial manuals.
+
+"License Key(s)" means the code(s) transferred from Nektra to Licensee allowing
+Licensee to use the Software.
+
+"License Key Information Form" means the form completed by Licensee and
+submitted to Nektra setting forth the information requested by Nektra for the
+transfer of the License Key.
+
+"Source code" (also referred to as source or code) is the version of software as
+it is originally written (i.e., typed into a computer) by a human in plain text
+(i.e., human readable alphanumeric characters).
+
+"Licensee" means the individual or entity licensing the Software hereunder as
+listed on the License Key Information Form.
+
+"Software" means those items of software, in object code format, source code,
+example programs and the documentation, proprietary to Nektra and/or its
+suppliers, that Licensee has ordered from Nektra pursuant to the License Key
+Information Form. 
+
+
+2. LICENSE TERMS
+Nektra grants to Licensee as an individual a personal, nonexclusive,
+non-transferable license to make and use copies of the Licensed Software for the
+sole purposes of designing, developing, and testing one, and only one,
+Licensee's software product ("Application"). Licensee may install copies of the
+Licensed Software on an unlimited number of computers provided that Licensee is
+the only individual using the Licensed Software. If Licensee is an entity,
+Nektra grants Licensee the right to designate one, and only one, individual
+within Licensee's organization who shall have the sole right to use the Licensed
+Software in the manner provided above. Licensee may at any time, but not more
+frequently that once every six (6) months, designate another individual to
+replace the current designated user by notifying Nektra, so long as there is no
+more than one designated user at any given time.
+
+Licensee must acquire a license of Licensed Software for each developer
+designing, developing, or testing, and for each product that uses Licensed
+Software, whichever number is greater.
+
+
+3. GENERAL TERMS THAT APPLY TO APPLICATIONS AND REDISTRIBUTABLES
+Nektra grants Licensee a non-exclusive, royalty-free right to develop products
+based on the Licensed Software. Copies of the Software or parts of the Software
+should not be distributed. Licensee should not develop similar Software
+including, but not limited to, Interception Library, Api Monitor, Network
+interception. 
+
+Only the necessary binaries to run your software can be distributed within your
+software. Documentation, installer, examples, source code or any other file that
+is not necessary to run your software can be distributed. It is forbidden to
+change software binary names. Only Source code Licenses are allowed to change
+binary names.
+
+4. LIMITED WARRANTY/LIMITATIONS ON LIABILITY
+4.1. Warranty Disclaimer. The Licensed Software is Licensed to Licensee "AS IS".
+To the maximum extent permitted by applicable law, Nektra on behalf of itself
+and its suppliers, disclaims all warranties and conditions, either express or
+implied, including, but not limited to, implied warranties of merchantability,
+fitness for a particular purpose, title and non-infringement with regard to the
+licensed software. This warranty disclaimer notwithstanding, licensee may have
+specific legal right which may vary from state/jurisdiction to
+state/jurisdiction.
+
+4.2. Limited Warranty. Nektra warrants that for your benefit alone, for ninety
+(90) days from the day of delivery to you (the "Warranty Period") the Software
+media, under normal use in a compatible execution environment, will be free from
+defects in material and workmanship. In no event may you bring any claim, action
+or proceeding arising out of the warranty set forth in this Article more six (6)
+months after the date on which the breach of warranty occurred.
+
+4.3. Exceptions to Warranties; Disclaimers. Except for the above express limited
+warranty, Nektra disclaims any and all other warranties, express or implied,
+including any implied warranties of merchantability or fitness for particular
+purpose. Nektra does not warrant that the Software, its use, operation or your
+ability to use the Software will be uninterrupted or error-free or that all
+Software errors will be corrected. The warranty set forth above shall not apply
+to any defect or problems caused by any defect in any hardware or software used
+in combination with the Software, or use of the Software in execution
+environments not specified in the Documentation. Nektra does not warrant that
+the Software or service will meet your requirements or that the operation of the
+Software will be uninterrupted or error free.
+
+Nektra limited warranty is void if a breach of the warranty has resulted from
+(i) accident, corruption or misuse of the Software; or (ii) acts or omissions by
+someone other than Nektra.
+
+4.4. Exclusive Remedies. You agree that if, during the Warranty Period, a defect
+in the Software media appears, your exclusive remedy will be, in Nektra's sole
+option, to replace the media, to credit the amounts paid by you to Nektra, if
+any, and terminate this License. This remedy is subject to the return of all
+copies of the Software.
+
+4.5. Limitations of Liability. In no event shall Nektra be liable for any
+damages to you or any other party whether arising out of contract or from tort
+including loss of data, profits or business or other special, incidental,
+exemplary or consequential damages, even if Nektra has been advised of the
+possibility of such loss or damages.
+Nektra cumulative liability shall not exceed the license fee paid, if any, for
+use of this Software and Documentation. This section shall survive termination
+of this License.
+
+
+5. SUPPORT AND UPDATES
+Licensee will be eligible to receive email based software developer support and
+access to Updates to the Licensed Software for a period not to exceed one year
+from the date of initial delivery, in accordance with Nektra's then current
+license agreement, policies and procedures, if any. Such policies and procedures
+may be changed from time to time.
+
+Support is limited to basic mail support for ninety (90) days from the day of
+delivery to you (the "Warranty Period").
+
+Source code is provided "AS IS" and only compilation support is provided by
+Nektra.
+
+
+6. LICENSE UPGRADE
+The Licensee can upgrade this License to any other available and the funds payed
+for this License will be taken as part paid for the new License for one hundred
+and twenty (120) days from the day of delivery to the Licensee.
+
+
+7. OWNERSHIP
+The Software is protected by copyright laws and international copyright
+treaties, as well as other intellectual property laws and treaties. Title,
+ownership rights, and all intellectual property rights in and to the Software
+and Documentation shall remain with Nektra and/or its licensors. Licensee agrees
+not to modify the Software, reproduce or distribute the Software except as
+expressly authorised herein, create derivative works of, or attempt to decipher,
+translate, decompile, disassemble, reverse engineer the Software or otherwise
+attempt to derive the source code of the Software or assist or encourage any
+third party in doing so.
+
+Source code is provided only to show how the software was developed and it
+cannot be changed to build a different product of any type. Licensee agrees to
+use source code only to build Licensed Software.
+
+
+8. TERMINATION
+Nektra may terminate the Agreement at any time immediately upon written notice
+by Nektra to Licensee if Licensee breaches this Agreement, fails to pay the fees
+for the Licensed Software, or infringes Nektra's intellectual property in or to
+the Licensed Software.  Upon termination of the Licenses, Licensee shall return
+to Nektra all copies of Licensed Software that were supplied by Nektra.  All
+other copies of Licensed Software in the possession or control of Licensee must
+be erased or destroyed. An officer of Licensee must promptly deliver to Nektra a
+written confirmation that this has occurred.
+
+
+9. GOVERNING LAW
+This Agreement shall be governed by and construed in accordance with the laws of
+United States.
+
+
+10. MISCELLANEOUS
+10.1. If any term, condition, or provision in this Agreement is found to be
+invalid, unlawful or unenforceable to any extent, the remaining terms,
+conditions and provisions will continue to be valid and enforceable to the
+fullest extent permitted by law.
+
+10.2. This Agreement represents the entire agreement of the parties with respect
+to the subject matter of this Agreement and supersedes all previous
+communications, representations, understandings and agreements; either oral or
+written, between the parties with respect to said subject matter.
+
+10.3. This Agreement may not be amended, except in writing, signed by both
+parties. No terms, provisions or conditions of any purchase order,
+acknowledgement or other business form that Licensee may use in connection with
+the acquisition or licensing of the Software will have any effect on the rights,
+duties or obligations of the parties under, or otherwise modify, this Agreement,
+regardless of any failure of Nektra to object to such terms, provisions or
+conditions.
+

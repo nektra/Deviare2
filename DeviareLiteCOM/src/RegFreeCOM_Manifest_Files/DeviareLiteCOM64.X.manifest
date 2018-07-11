@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
+	<assemblyIdentity type="win32" name="DeviareLiteCOM64" version="1.0.0.0" processorArchitecture="amd64" />
+	<file name="DeviareLiteCOM64.dll" hashalg="SHA1">
+		<comClass clsid="{CC78D151-6AA0-42d9-B9F1-C434CFAE695E}" tlbid="{F478CE40-7BCB-4304-8B01-2303E597312B}" description="NktHookLib Class" threadingModel="Neutral"/>
+		<comClass clsid="{74A66D3C-D6D5-4991-90FC-59F312BCD624}" tlbid="{F478CE40-7BCB-4304-8B01-2303E597312B}" description="NktHookInfo Class" threadingModel="Neutral"/>
+		<typelib tlbid="{F478CE40-7BCB-4304-8B01-2303E597312B}" resourceid="1" version="1.0" helpdir="" flags="HASDISKIMAGE"></typelib>
+	</file>
+	<comInterfaceExternalProxyStub name="INktHookLib" iid="{64D7AC93-3941-49d7-BCD9-8D697E3D277F}" tlbid="{F478CE40-7BCB-4304-8B01-2303E597312B}" baseInterface="{00000000-0000-0000-C000-000000000046}" proxyStubClsid32="{00020424-0000-0000-C000-000000000046}"/>
+	<comInterfaceExternalProxyStub name="INktHookInfo" iid="{54A166F1-1D5C-45ac-8411-8E1932F21D8B}" tlbid="{F478CE40-7BCB-4304-8B01-2303E597312B}" baseInterface="{00000000-0000-0000-C000-000000000046}" proxyStubClsid32="{00020424-0000-0000-C000-000000000046}"/>
+</assembly>

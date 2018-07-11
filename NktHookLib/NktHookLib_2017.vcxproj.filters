@@ -1,0 +1,125 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="src\HookEntry.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\NktHookLib.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ProcessEntry.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ThreadSuspend.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\WaitableObjects.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\libudis86\amalgamation.c">
+      <Filter>Source Files\LibUDIS</Filter>
+    </ClCompile>
+    <ClCompile Include="src\libudis86\GetInstructionLength.cpp">
+      <Filter>Source Files\LibUDIS</Filter>
+    </ClCompile>
+    <ClCompile Include="src\NktHookLibHelpers.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\NtSysCallGen.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\DynamicApiFinder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\DynamicNtApi.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ProcessInjection.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\RelocatableCode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Wow64.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(SolutionDir)\Include\NktHookLib.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\HookEntry.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\LinkedList.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ProcessEntry.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ThreadSuspend.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\WaitableObjects.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\libudis86\amalgamation_defines.h">
+      <Filter>Header Files\LibUDIS</Filter>
+    </ClInclude>
+    <ClInclude Include="src\NtHeapBaseObj.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\DynamicNtApi.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\NtApiDeclarations.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\RelocatableCode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\AutoPtr.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Wow64.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="$(SolutionDir)\LICENSE.COMMERCIAL" />
+    <None Include="$(SolutionDir)\LICENSE.GPL" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{5913e564-350e-4d53-84c4-71d2b5fe078a}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Header Files\LibUDIS">
+      <UniqueIdentifier>{74420bda-6c73-4631-9bb6-232994472827}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4821e18f-d78e-4641-9363-6466c86f9846}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Source Files\LibUDIS">
+      <UniqueIdentifier>{0a9f1e1d-d59b-469d-97f3-f2f833030445}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Asm">
+      <UniqueIdentifier>{70214cbd-444b-4907-9c56-a3de97bf5804}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="src\Asm\Helpers_x86.asm">
+      <Filter>Source Files\Asm</Filter>
+    </CustomBuild>
+    <CustomBuild Include="src\Asm\Helpers_x64.asm">
+      <Filter>Source Files\Asm</Filter>
+    </CustomBuild>
+    <CustomBuild Include="src\Asm\RelocatableCode_x64.asm">
+      <Filter>Source Files\Asm</Filter>
+    </CustomBuild>
+    <CustomBuild Include="src\Asm\RelocatableCode_x86.asm">
+      <Filter>Source Files\Asm</Filter>
+    </CustomBuild>
+  </ItemGroup>
+</Project>

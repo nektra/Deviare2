@@ -1,0 +1,301 @@
+﻿/*
+ * Copyright (C) 2010-2015 Nektra S.A., Buenos Aires, Argentina.
+ * All rights reserved. Contact: http://www.nektra.com
+ *
+ *
+ * This file is part of Deviare In-Proc
+ *
+ *
+ * Commercial License Usage
+ * ------------------------
+ * Licensees holding valid commercial Deviare In-Proc licenses may use this
+ * file in accordance with the commercial license agreement provided with the
+ * Software or, alternatively, in accordance with the terms contained in
+ * a written agreement between you and Nektra.  For licensing terms and
+ * conditions see http://www.nektra.com/licensing/.  For further information
+ * use the contact form at http://www.nektra.com/contact/.
+ *
+ *
+ * GNU General Public License Usage
+ * --------------------------------
+ * Alternatively, this file may be used under the terms of the GNU
+ * General Public License version 3.0 as published by the Free Software
+ * Foundation and appearing in the file LICENSE.GPL included in the
+ * packaging of this file.  Please review the following information to
+ * ensure the GNU General Public License version 3.0 requirements will be
+ * met: http://www.gnu.org/copyleft/gpl.html.
+ *
+ **/
+
+import "oaidl.idl";
+import "ocidl.idl";
+
+//VERY IMPORTANT NOTE: I don't know the reason (may be the inheritance of interfaces) but the
+//-------------------  proxy/stub code generated is broken with the default /Oicf MIDL compiler
+//                     switch. BE SURE to add "/Os" to the additional options in the MIDL settings.
+//                     Also set the "Generate stubless proxy" to NO and put inside a comment the
+//                     "#define USE_STUBLESS_PROXY" sentence in 'DllDataX.c'
+//                     With these settings now an object can be successfully marshaled between
+//                     two STA threads.
+
+#include "idl_size_t.h"
+#include "disp_ids.h"
+
+#define MY_VARIANT_FALSE   0 //avoid midl compiler errors
+#define MY_VARIANT_TRUE   -1 //in defaultvalue values
+
+//-----------------------------------------------------------
+//-----------------------------------------------------------
+
+interface INktHookLib;
+interface INktHookInfo;
+interface INktHookProcessInfo;
+
+//-----------------------------------------------------------
+//-----------------------------------------------------------
+
+//synchronize with NKTHOOKLIB_xxx hooking flags
+typedef [v1_enum] enum eNktHookFlags {
+  hfDontSkipInitialJumps     = 0x01,
+  hfDontRemoveOnUnhook       = 0x02,
+  hfDontSkipAnyJumps         = 0x04,
+  hfSkipNullProcsToHook      = 0x08,
+  hfUseAbsoluteIndirectJumps = 0x10,
+  hfAllowReentrancy          = 0x20 //for COM dll use the inverse
+} eNktHookFlags;
+
+//-----------------------------------------------------------
+//-----------------------------------------------------------
+
+[
+  object,
+  uuid(64D7AC93-3941-49d7-BCD9-8D697E3D277F),
+  dual, oleautomation, local,
+  nonextensible,
+  helpstring("INktHookLib Interface"),
+  pointer_default(unique)
+]
+interface INktHookLib : IDispatch
+{
+  [id(dispidNktHookLibHook),
+   helpstring("Install hooks in the current process")]
+  HRESULT Hook([in] VARIANT itemsToHook, [in] LONG flags);
+
+  [id(dispidNktHookLibRemoteHook),
+   helpstring("Install hooks in a remote process")]
+  HRESULT RemoteHook([in] VARIANT itemsToHook, [in] LONG pid, [in] LONG flags);
+
+  [id(dispidNktHookLibUnhook),
+   helpstring("Uninstall previously installed hooks")]
+  HRESULT Unhook([in] VARIANT itemsToUnhook);
+
+  [id(dispidNktHookLibUnhookProcess),
+   helpstring("Unhook all hooks belonging to the specified process")]
+  HRESULT UnhookProcess([in] LONG pid);
+
+  [id(dispidNktHookLibUnhookAll),
+   helpstring("Unhook all hooks")]
+  HRESULT UnhookAll();
+
+  [id(dispidNktHookLibEnableHook),
+   helpstring("Enable/disable a set of hooks")]
+  HRESULT EnableHook([in] VARIANT items, [in] VARIANT_BOOL enable);
+
+  [id(dispidNktHookLibRemoveHook),
+   helpstring("Detaches a set of hooks without unhooking them and optionally disabled them")]
+  HRESULT RemoveHook([in] VARIANT items, [in] VARIANT_BOOL disable);
+
+  [propput, id(dispidNktHookLibSuspendThreadsWhileHooking),
+   helpstring("Suspend process' threads while hooking")]
+  HRESULT SuspendThreadsWhileHooking([in] VARIANT_BOOL enable);
+
+  [propget, id(dispidNktHookLibSuspendThreadsWhileHooking),
+   helpstring("Suspend process' threads while hooking")]
+  HRESULT SuspendThreadsWhileHooking([out,retval] VARIANT_BOOL *enable);
+
+  [propput, id(dispidNktHookLibShowDebugOutput),
+   helpstring("Show/hide debug output")]
+  HRESULT ShowDebugOutput([in] VARIANT_BOOL enable);
+
+  [propget, id(dispidNktHookLibShowDebugOutput),
+   helpstring("Show/hide debug output")]
+  HRESULT ShowDebugOutput([out,retval] VARIANT_BOOL *enable);
+
+  [id(dispidNktHookLibGetModuleBaseAddress),
+   helpstring("Gets the base address of a module")]
+  HRESULT GetModuleBaseAddress([in] BSTR moduleName, [out,retval] my_ssize_t *baseAddress);
+
+  [id(dispidNktHookLibGetRemoteModuleBaseAddress),
+   helpstring("Gets the base address of a module in another process")]
+  HRESULT GetRemoteModuleBaseAddress([in] LONG pid, [in] BSTR moduleName, [in] VARIANT_BOOL scanMappedImages,
+                                     [out,retval] my_ssize_t *baseAddress);
+
+  [id(dispidNktHookLibGetProcedureAddress),
+   helpstring("Gets the address of an exported function")]
+  HRESULT GetProcedureAddress([in] my_ssize_t moduleBaseAddress, [in] BSTR procName,
+                              [out,retval] my_ssize_t *funcAddress);
+
+  [id(dispidNktHookLibGetRemoteProcedureAddress),
+   helpstring("Gets the address of an exported function of another process' module")]
+  HRESULT GetRemoteProcedureAddress([in] LONG pid, [in] my_ssize_t moduleBaseAddress, [in] BSTR procName,
+                                    [out,retval] my_ssize_t *funcAddress);
+
+  [id(dispidNktHookLibCreateProcessWithDll),
+   helpstring("Create a process with a dll injected at startup")]
+  HRESULT CreateProcessWithDll([in] BSTR applicationName, [in] BSTR commandLine, [in] my_ssize_t processAttributes,
+                               [in] my_ssize_t threadAttributes, [in] VARIANT_BOOL inheritHandles,
+                               [in] LONG creationFlags, [in] BSTR environment, [in] BSTR currentDirectory,
+                               [in] my_ssize_t startupInfo, [in] BSTR dllName,
+                               [in, defaultvalue(0)] my_ssize_t signalCompletedEvent,
+                               [in, defaultvalue(NULL)] BSTR initFunctionName,
+                               [out, retval] INktHookProcessInfo **ppProcInfo);
+
+  [id(dispidNktHookLibCreateProcessWithLogonAndDll),
+   helpstring("Create a process with a dll injected at startup")]
+  HRESULT CreateProcessWithLogonAndDll([in] BSTR userName, [in] BSTR domain, [in] BSTR password, [in] LONG logonFlags,
+                                       [in] BSTR applicationName, [in] BSTR commandLine, [in] LONG creationFlags,
+                                       [in] BSTR environment, [in] BSTR currentDirectory, [in] my_ssize_t startupInfo,
+                                       [in] BSTR dllName, [in, defaultvalue(0)] my_ssize_t signalCompletedEvent,
+                                       [in, defaultvalue(NULL)] BSTR initFunctionName,
+                                       [out, retval] INktHookProcessInfo **ppProcInfo);
+
+  [id(dispidNktHookLibCreateProcessWithTokenAndDll),
+   helpstring("Create a process with a dll injected at startup")]
+  HRESULT CreateProcessWithTokenAndDll([in] my_ssize_t token, [in] LONG logonFlags, [in] BSTR applicationName,
+                                       [in] BSTR commandLine, [in] LONG creationFlags, [in] BSTR environment,
+                                       [in] BSTR currentDirectory, [in] my_ssize_t startupInfo, [in] BSTR dllName,
+                                       [in, defaultvalue(0)] my_ssize_t signalCompletedEvent,
+                                       [in, defaultvalue(NULL)] BSTR initFunctionName,
+                                       [out,retval] INktHookProcessInfo **ppProcInfo);
+
+  [id(dispidNktHookLibInjectDll),
+   helpstring("Inject a dll in a running process")]
+  HRESULT InjectDll([in] LONG processId, [in] BSTR dllName, [in, defaultvalue(NULL)] BSTR initFunctionName,
+                    [in, defaultvalue(5000)] LONG processInitWaitTimeoutMs,
+                    [out, defaultvalue(NULL)] my_ssize_t *injectorThreadHandle);
+
+  [id(dispidNktHookLibInjectDllH),
+   helpstring("Inject a dll in a running process")]
+  HRESULT InjectDllH([in] my_ssize_t processHandle, [in] BSTR dllName, [in, defaultvalue(NULL)] BSTR initFunctionName,
+                     [in, defaultvalue(5000)] LONG processInitWaitTimeoutMs,
+                     [out, defaultvalue(NULL)] my_ssize_t *injectorThreadHandle);
+};
+
+//-----------------------------------------------------------
+//-----------------------------------------------------------
+
+[
+  object,
+  uuid(54A166F1-1D5C-45ac-8411-8E1932F21D8B),
+  dual, oleautomation, local,
+  nonextensible,
+  helpstring("INktHookInfo Interface"),
+  pointer_default(unique)
+]
+interface INktHookInfo : IDispatch
+{
+  [propget, id(dispidNktHookInfoId),
+   helpstring("Hook id")]
+  HRESULT Id([out, retval] LONG *hookId);
+
+  [propget, id(dispidNktHookInfoOrigProcAddr),
+   helpstring("Original function address")]
+  HRESULT OrigProcAddr([out, retval] my_ssize_t *procAddr);
+
+  [propput, id(dispidNktHookInfoOrigProcAddr),
+   helpstring("Original function address")]
+  HRESULT OrigProcAddr([in] my_ssize_t procAddr);
+
+  [propget, id(dispidNktHookInfoNewProcAddr),
+   helpstring("New function address")]
+  HRESULT NewProcAddr([out, retval] my_ssize_t *procAddr);
+
+  [propput, id(dispidNktHookInfoNewProcAddr),
+   helpstring("New function address")]
+  HRESULT NewProcAddr([in] my_ssize_t procAddr);
+
+  [propget, id(dispidNktHookInfoCallOriginal),
+   helpstring("Address for calling original function")]
+  HRESULT CallOriginalAddr([out, retval] my_ssize_t *procAddr);
+};
+
+//-----------------------------------------------------------
+//-----------------------------------------------------------
+
+[
+  object,
+  uuid(BF063537-2987-445F-8280-1911FB0B7E2A),
+  dual, oleautomation, local,
+  nonextensible,
+  helpstring("INktHookProcessInfo Interface"),
+  pointer_default(unique)
+]
+interface INktHookProcessInfo : IDispatch
+{
+  [propget, id(dispidNktHookProcessInfoProcess),
+   helpstring("Process handle")]
+  HRESULT ProcessHandle([out, retval] my_ssize_t *procHandle);
+
+  [propget, id(dispidNktHookProcessInfoThread),
+   helpstring("Thread handle")]
+  HRESULT ThreadHandle([out, retval] my_ssize_t *threadHandle);
+
+  [propget, id(dispidNktHookProcessInfoProcessId),
+   helpstring("Process id")]
+  HRESULT ProcessId([out, retval] LONG *pid);
+
+  [propget, id(dispidNktHookProcessInfoThreadId),
+   helpstring("Thread id")]
+  HRESULT ThreadId([out, retval] LONG *tid);
+};
+
+//-----------------------------------------------------------
+//-----------------------------------------------------------
+
+[
+  uuid(F478CE40-7BCB-4304-8B01-2303E597312B),
+  version(1.0),
+  helpstring("DeviareLite 1.0 Type Library")
+]
+library DeviareLite
+{
+  importlib("stdole2.tlb");
+
+  [v1_enum] enum eNktHookFlags;
+
+  //---------------------------------------------------------
+  //---------------------------------------------------------
+
+  [
+    uuid(CC78D151-6AA0-42d9-B9F1-C434CFAE695E),
+    helpstring("HookLib Class")
+  ]
+  coclass NktHookLib
+  {
+    [default] interface INktHookLib;
+  };
+
+  //---------------------------------------------------------
+  //---------------------------------------------------------
+
+  [
+    uuid(74A66D3C-D6D5-4991-90FC-59F312BCD624),
+    helpstring("HookInfo Class")
+  ]
+  coclass NktHookInfo
+  {
+    [default] interface INktHookInfo;
+  };
+
+  //---------------------------------------------------------
+  //---------------------------------------------------------
+
+  [
+    uuid(E8E67CCF-4F2B-4099-BD7C-9A0E3BD5B480),
+    helpstring("NktHookProcessInfo Class")
+  ]
+  coclass NktHookProcessInfo
+  {
+    [default] interface INktHookProcessInfo;
+  };
+};

@@ -1,0 +1,11 @@
+HKCR
+{
+	NoRemove AppID
+	{
+		'%APPID%' = s 'DeviareLiteCOM'
+		'DeviareLiteCOM64.DLL'
+		{
+			val AppID = s '%APPID%'
+		}
+	}
+}
