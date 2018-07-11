@@ -61,8 +61,6 @@ VOID CNktDvHookEngine::GetStackTrace(__out SIZE_T *lpnOutput, __in SIZE_T nCount
         lpnOutput[k] = CheckHookedEntry((SIZE_T)*((LPDWORD)Esp), lpInUseStack);
         //NKT_ASSERT((lpnOutput[k] & 0xFFFF) != 0x010E); //<<== CAN LEAD INTO FALSE POSITIVES
         //try to read byte at lpnOutput[k], if that "eip" is invalid, an exception will raise and loop will end
-        if (lpnOutput[k] == 0)
-          break;
         temp8 = *((LPBYTE)lpnOutput[k]);
         k++;
         nCount--;
