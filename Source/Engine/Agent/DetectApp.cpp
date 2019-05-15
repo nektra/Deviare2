@@ -47,35 +47,36 @@ static DWORD GetFileVersion(__in_z LPCWSTR szFileNameW);
 
 eApplication DetectApplication()
 {
-  if (nApp == (eApplication)-1)
-  {
-    CNktSimpleLockNonReentrant cLock(&nMutex);
-    CNktStringW cStrExeFileNameW;
-    LPWSTR sW;
-    DWORD dwVer;
-    LONG _nApp;
-    HRESULT hRes;
+	if (nApp == (eApplication)-1)
+	{
+		CNktSimpleLockNonReentrant cLock(&nMutex);
+		CNktStringW cStrExeFileNameW;
+		/*  LPWSTR sW;*/
+		DWORD dwVer;
+		LONG _nApp;
+		HRESULT hRes;
 
-    if (nApp == (eApplication)-1)
-    {
-      _nApp = (LONG)appOther;
-      hRes = CNktDvTools::GetExecutableFileName(cStrExeFileNameW, ::GetCurrentProcess(), NULL);
-      if (SUCCEEDED(hRes))
-      {
-        sW = (LPWSTR)cStrExeFileNameW;
-        while (sW > (LPWSTR)cStrExeFileNameW && *(sW-1) != L'\\')
-          sW--;
-        if (_wcsicmp(sW, L"iexplore.exe") == 0)
-        {
-          dwVer = GetFileVersion((LPWSTR)cStrExeFileNameW);
-          if ((dwVer  >> 16) == 8)
-            _nApp = (LONG)appInternetExplorer8;
-        }
-      }
-      NktInterlockedExchange(&nApp, _nApp);
-    }
-  }
-  return (eApplication)nApp;
+		if (nApp == (eApplication)-1)
+		{
+			_nApp = (LONG)appOther;
+			hRes = CNktDvTools::GetExecutableFileName(cStrExeFileNameW, ::GetCurrentProcess(), NULL);
+			if (SUCCEEDED(hRes))
+			{
+				//sW = (LPWSTR)cStrExeFileNameW;
+				//while (sW > (LPWSTR)cStrExeFileNameW && *(sW-1) != L'\\')
+				//  sW--;
+				//if (_wcsicmp(sW, L"iexplore.exe") == 0)
+				if (wcsstr((LPWSTR)cStrExeFileNameW, L"iexplore.exe") != NULL)
+				{
+					//dwVer = GetFileVersion((LPWSTR)cStrExeFileNameW);
+					//if ((dwVer  >> 16) == 8)
+					_nApp = (LONG)appInternetExplorer8;
+				}
+			}
+			NktInterlockedExchange(&nApp, _nApp);
+		}
+	}
+	return (eApplication)nApp;
 }
 
 BOOL IsRunningElevated()
